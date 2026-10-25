@@ -1254,6 +1254,7 @@
   }
 
   function initFormService() {
+    stopAndCloseScanner();
     document.getElementById("itemListContainerService").innerHTML = "";
     serviceItemCount = 0;
     addItemCard('itemListContainerService', 'service');
@@ -1261,6 +1262,7 @@
   }
 
   function initFormReturn() {
+    stopAndCloseScanner();
     document.getElementById("itemListContainerReturn").innerHTML = "";
     returnItemCount = 0;
     addItemCard('itemListContainerReturn', 'return');
@@ -1300,6 +1302,16 @@
         card.className = "card p-3 mb-3 text-center bg-warning text-dark border-0 shadow-sm";
         document.getElementById(textId).innerText = "GPS tidak aktif / izin ditolak.";
       }, { enableHighAccuracy: true, timeout: 10000 });
+    }
+  }
+
+  function toggleLocationSame(radio) {
+    const card = radio.closest('.item-card');
+    const locForm = card.querySelector('.location-form-section');
+    if (radio.value === 'same') {
+      locForm.style.display = 'none';
+    } else {
+      locForm.style.display = 'block';
     }
   }
 
@@ -1357,25 +1369,50 @@
     let count = (type === 'service') ? ++serviceItemCount : ++returnItemCount;
     const container = document.getElementById(containerId);
     const cardId = type + "_card_" + count;
+    const readerId = "reader_" + type + "_" + count;
     
+    let locationChooserHtml = '';
+    if (count > 1) {
+      locationChooserHtml = 
+        '<div class="mb-3 p-2 bg-dark rounded border border-secondary">' +
+          '<label class="form-label small mb-1 fw-bold text-info">Apakah Kode Lokasi/Toko sama dengan Aktiva #1?</label>' +
+          '<div class="d-flex gap-4">' +
+            '<div class="form-check">' +
+              '<input class="form-check-input loc-same-radio" type="radio" name="locSame_' + type + '_' + count + '" id="locSameYes_' + type + '_' + count + '" value="same" checked onchange="toggleLocationSame(this)">' +
+              '<label class="form-check-label small text-white" for="locSameYes_' + type + '_' + count + '">Sama dengan Aktiva #1</label>' +
+            '</div>' +
+            '<div class="form-check">' +
+              '<input class="form-check-input loc-same-radio" type="radio" name="locSame_' + type + '_' + count + '" id="locSameNo_' + type + '_' + count + '" value="different" onchange="toggleLocationSame(this)">' +
+              '<label class="form-check-label small text-white" for="locSameNo_' + type + '_' + count + '">Beda Lokasi / Toko</label>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    }
+
     const html = '<div class="item-card shadow-sm" id="' + cardId + '">' +
       '<div class="d-flex justify-content-between align-items-center mb-2 border-bottom border-secondary pb-1">' +
       '<span class="fw-bold ' + (type === 'service' ? 'text-primary' : 'text-warning') + ' small">Aktiva #' + count + '</span>' +
       (count > 1 ? '<button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 rounded-pill" style="font-size:11px;" onclick="document.getElementById(\'' + cardId + '\').remove()">Hapus</button>' : '') +
       '</div>' +
-      '<div class="mb-3"><label class="form-label small mb-1">Sumber Asal Lokasi</label>' +
-      '<div class="d-flex gap-4"><div class="form-check">' +
-      '<input class="form-check-input source-radio" type="radio" name="sourceType_' + type + '_' + count + '" id="srcToko_' + type + '_' + count + '" value="toko" checked onchange="toggleSourceType(this)">' +
-      '<label class="form-check-label small text-white" for="srcToko_' + type + '_' + count + '">Toko</label></div>' +
-      '<div class="form-check">' +
-      '<input class="form-check-input source-radio" type="radio" name="sourceType_' + type + '_' + count + '" id="srcNonToko_' + type + '_' + count + '" value="nontoko" onchange="toggleSourceType(this)">' +
-      '<label class="form-check-label small text-white" for="srcNonToko_' + type + '_' + count + '">Non Toko</label></div></div></div>' +
-      '<div class="toko-section mb-3"><label class="form-label small mb-1">Kode Toko Asal</label>' +
-      '<div class="input-group input-group-sm mb-1"><input type="text" class="form-control input-toko" placeholder="Contoh: TNX1">' +
-      '<button type="button" class="btn btn-outline-primary text-white" onclick="cekToko(this)">Cek</button></div>' +
-      '<div class="toko-info alert success-result-box py-1 px-2 mt-1 mb-0 small" style="display:none; font-size: 11px;"></div></div>' +
-      '<div class="nontoko-section mb-3" style="display: none;"><label class="form-label small mb-1">Nama Departemen</label>' +
-      '<input type="text" class="form-control form-control-sm input-dept" placeholder="Contoh: Dept. Logistik / Head Office..."></div>' +
+
+      locationChooserHtml +
+
+      '<div class="location-form-section" style="' + (count > 1 ? 'display:none;' : '') + '">' +
+        '<div class="mb-3"><label class="form-label small mb-1">Sumber Asal Lokasi</label>' +
+        '<div class="d-flex gap-4"><div class="form-check">' +
+        '<input class="form-check-input source-radio" type="radio" name="sourceType_' + type + '_' + count + '" id="srcToko_' + type + '_' + count + '" value="toko" checked onchange="toggleSourceType(this)">' +
+        '<label class="form-check-label small text-white" for="srcToko_' + type + '_' + count + '">Toko</label></div>' +
+        '<div class="form-check">' +
+        '<input class="form-check-input source-radio" type="radio" name="sourceType_' + type + '_' + count + '" id="srcNonToko_' + type + '_' + count + '" value="nontoko" onchange="toggleSourceType(this)">' +
+        '<label class="form-check-label small text-white" for="srcNonToko_' + type + '_' + count + '">Non Toko</label></div></div></div>' +
+        '<div class="toko-section mb-3"><label class="form-label small mb-1">Kode Toko Asal</label>' +
+        '<div class="input-group input-group-sm mb-1"><input type="text" class="form-control input-toko" placeholder="Contoh: TNX1">' +
+        '<button type="button" class="btn btn-outline-primary text-white" onclick="cekToko(this)">Cek</button></div>' +
+        '<div class="toko-info alert success-result-box py-1 px-2 mt-1 mb-0 small" style="display:none; font-size: 11px;"></div></div>' +
+        '<div class="nontoko-section mb-3" style="display: none;"><label class="form-label small mb-1">Nama Departemen</label>' +
+        '<input type="text" class="form-control form-control-sm input-dept" placeholder="Contoh: Dept. Logistik / Head Office..."></div>' +
+      '</div>' +
+
       '<div class="mb-3"><label class="form-label small mb-1">Tipe Aktiva / Barang</label>' +
       '<div class="d-flex gap-4"><div class="form-check">' +
       '<input class="form-check-input aktiva-radio" type="radio" name="aktivaType_' + type + '_' + count + '" id="typeDat_' + type + '_' + count + '" value="dat" checked onchange="toggleAktivaType(this)">' +
@@ -1387,10 +1424,10 @@
       '<!-- SECTION DAT -->' +
       '<div class="dat-section mb-2"><label class="form-label small mb-1">No. Aktiva / Hasil Scan QR</label>' +
       '<div class="input-group input-group-sm mb-1"><input type="text" class="form-control input-aktiva" placeholder="Scan QR atau Ketik No Aktiva...">' +
-      '<button type="button" class="btn btn-outline-warning text-white" onclick="openBarcodeScanner(this)" title="Scan QR Code"><i class="fa-solid fa-qrcode"></i> Scan QR</button>' +
+      '<button type="button" class="btn btn-outline-warning text-white" onclick="openBarcodeScanner(this, \'' + readerId + '\')" title="Scan QR Code"><i class="fa-solid fa-qrcode"></i> Scan QR</button>' +
       '<button type="button" class="btn btn-outline-primary text-white" onclick="parseAndFillAktivaQR(this)">Parse</button></div>' +
       '<div class="scanner-container mt-2" style="display:none; position:relative;">' +
-        '<div id="reader" style="width:100%; max-height:280px; overflow:hidden; border-radius:8px;"></div>' +
+        '<div id="' + readerId + '" style="width:100%; max-height:280px; overflow:hidden; border-radius:8px;"></div>' +
         '<button type="button" class="btn btn-sm btn-danger w-100 mt-1" onclick="closeBarcodeScanner()"><i class="fa-solid fa-xmark"></i> Tutup Kamera</button>' +
       '</div>' +
       '<div class="aktiva-info alert success-result-box py-1 px-2 mt-1 mb-0 small" style="display:none; font-size: 11px;"></div>' +
@@ -1399,7 +1436,7 @@
       '<input type="text" class="form-control form-control-sm input-manual-nama mb-1" placeholder="Nama Barang...">' +
       '<button type="button" class="btn btn-warning btn-sm w-100 fw-bold text-dark" style="font-size: 11px;" onclick="simpanManual(this)">Gunakan Manual</button></div></div>' +
       
-      '<!-- SECTION NON DAT (TANPA NO AKTIVA, MODIFIKASI KATEGORI DROPDOWN & INPUT CUSTOM) -->' +
+      '<!-- SECTION NON DAT -->' +
       '<div class="nondat-section mb-2" style="display: none;">' +
       '<div class="mb-2"><label class="form-label small mb-1">Nama & Merk Barang</label>' +
       '<input type="text" class="form-control form-control-sm input-nondat-nama" placeholder="Contoh: AC Split 1.5 PK Panasonic"></div>' +
@@ -1427,25 +1464,25 @@
     container.insertAdjacentHTML('beforeend', html);
   }
 
-  function openBarcodeScanner(btn) {
+  function openBarcodeScanner(btn, readerId) {
     const card = btn.closest('.item-card');
     const scannerContainer = card.querySelector('.scanner-container');
     activeCardElement = card;
 
     if (activeHtml5QrCode) {
       activeHtml5QrCode.stop().then(() => {
-        startScannerInstance(scannerContainer);
+        startScannerInstance(scannerContainer, readerId);
       }).catch(() => {
-        startScannerInstance(scannerContainer);
+        startScannerInstance(scannerContainer, readerId);
       });
     } else {
-      startScannerInstance(scannerContainer);
+      startScannerInstance(scannerContainer, readerId);
     }
   }
 
-  function startScannerInstance(scannerContainer) {
+  function startScannerInstance(scannerContainer, readerId) {
     scannerContainer.style.display = 'block';
-    activeHtml5QrCode = new Html5Qrcode("reader");
+    activeHtml5QrCode = new Html5Qrcode(readerId);
     
     const config = { 
       fps: 25, 
@@ -1509,7 +1546,7 @@
     activeCardElement = null;
   }
 
-  // --- FUNGSI PARSING QR CODE INSTAN TANPA KE DATABASE ---
+  // --- FUNGSI PARSING QR CODE INSTAN ---
   function parseAndFillAktivaQR(btn) {
     const card = btn.closest('.item-card');
     const rawText = card.querySelector('.input-aktiva').value.trim();
@@ -1520,7 +1557,6 @@
 
     if (rawText.includes('|')) {
       const parts = rawText.split('|');
-      // Format: [0]=Cabang/Toko, [1]=Lokasi Aktiva, [2]=No Aktiva, [3]=Kategori, [4]=Nama Barang
       const lokasiAktiva = parts[1] || '-';
       const noAktiva     = parts[2] || rawText;
       const kategori     = parts[3] || '-';
@@ -1541,7 +1577,6 @@
       infoBox.style.display = 'block';
       manualBox.style.display = 'none';
     } else {
-      // Jika diketik manual atau format teks biasa tanpa pipa
       card.dataset.aktivaKode = rawText;
       card.dataset.aktivaNama = rawText;
       card.dataset.kategoriAktiva = "-";
@@ -1617,25 +1652,37 @@
     const btnId = type === 'service' ? 'btnSubmitService' : 'btnSubmitReturn';
     const cards = document.querySelectorAll('#' + containerId + ' .item-card');
     let items = [];
+    let firstCardLocationVal = "";
 
     for (let i = 0; i < cards.length; i++) {
       const card = cards[i];
-      const sourceType = card.querySelector('.source-radio:checked').value;
       let tokoVal = "";
 
-      if (sourceType === 'toko') {
-        tokoVal = card.dataset.tokoKode;
-        if (!tokoVal) {
-          showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Kode Toko belum divalidasi (klik Cek)!", "warning");
-          return;
-        }
+      // PENGECEKAN OPSI LOKASI SAMA DENGAN AKTIVA #1
+      const isSameLoc = (i > 0) && card.querySelector('.loc-same-radio:checked') && (card.querySelector('.loc-same-radio:checked').value === 'same');
+
+      if (isSameLoc) {
+        tokoVal = firstCardLocationVal;
       } else {
-        const deptVal = card.querySelector('.input-dept').value.trim();
-        if (!deptVal) {
-          showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Nama Departemen wajib diisi!", "warning");
-          return;
+        const sourceType = card.querySelector('.source-radio:checked').value;
+        if (sourceType === 'toko') {
+          tokoVal = card.dataset.tokoKode;
+          if (!tokoVal) {
+            showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Kode Toko belum divalidasi (klik Cek)!", "warning");
+            return;
+          }
+        } else {
+          const deptVal = card.querySelector('.input-dept').value.trim();
+          if (!deptVal) {
+            showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Nama Departemen wajib diisi!", "warning");
+            return;
+          }
+          tokoVal = "DEPT: " + deptVal;
         }
-        tokoVal = "DEPT: " + deptVal;
+      }
+
+      if (i === 0) {
+        firstCardLocationVal = tokoVal;
       }
 
       const aktivaType = card.querySelector('.aktiva-radio:checked').value;
@@ -1655,8 +1702,7 @@
           return;
         }
       } else {
-        // --- NON DAT MODIFIKASI ---
-        aktivaKode = "-"; // Sesuai instruksi, No Aktiva tidak perlu ditampilkan & diisi '-'
+        aktivaKode = "-";
         const nonDatNamaInput = card.querySelector('.input-nondat-nama').value.trim();
         const categorySelect = card.querySelector('.input-nondat-kategori-select').value;
         const categoryCustom = card.querySelector('.input-nondat-kategori-custom').value.trim();
@@ -1682,7 +1728,6 @@
         }
 
         aktivaNama = nonDatNamaInput + " (Non DAT)";
-        // Lokasi otomatis diambil dari pilihan Toko atau Non Toko (Departemen)
         lokasiAktiva = tokoVal;
       }
 
