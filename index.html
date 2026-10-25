@@ -8,7 +8,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Pustaka Barcode Scanner html5-qrcode -->
+  <!-- Pustaka Barcode & QR Scanner html5-qrcode -->
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     body { 
@@ -765,6 +765,24 @@
   let activeHtml5QrCode = null;
   let activeCardElement = null;
 
+  // --- FUNGSI SUARA BIP OTOMATIS (WEB AUDIO API) ---
+  function playBeep() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Frekuensi nada tinggi (BEEP)
+      gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 0.12); // Durasi cepat 120ms
+    } catch (e) {
+      console.log("Audio beep tidak didukung browser", e);
+    }
+  }
+
   // --- MODAL KUSTOM MODERN (MENGGANTIKAN ALERT & CONFIRM BAWAAN BROWSER) ---
   function showCustomAlert(title, message, type = 'info') {
     const titleEl = document.getElementById("modernModalTitle");
@@ -1414,11 +1432,11 @@
       '<label class="form-check-label small text-white" for="typeNonDat_' + type + '_' + count + '">Non DAT</label></div></div></div>' +
       '<div class="dat-section mb-2"><label class="form-label small mb-1">No. Aktiva / Barang</label>' +
       '<div class="input-group input-group-sm mb-1"><input type="text" class="form-control input-aktiva" placeholder="Contoh: E00.012345">' +
-      '<button type="button" class="btn btn-outline-warning text-white" onclick="openBarcodeScanner(this)" title="Scan Barcode"><i class="fa-solid fa-barcode"></i> Scan</button>' +
+      '<button type="button" class="btn btn-outline-warning text-white" onclick="openBarcodeScanner(this)" title="Scan QR Code"><i class="fa-solid fa-qrcode"></i> Scan QR</button>' +
       '<button type="button" class="btn btn-outline-primary text-white" onclick="cekAktiva(this)">Cek</button></div>' +
-      // Wadah kamera scanner barcode dengan ID Statis "reader"
+      // Wadah kamera scanner QR dengan ID Statis "reader"
       '<div class="scanner-container mt-2" style="display:none; position:relative;">' +
-        '<div id="reader" style="width:100%; max-height:250px; overflow:hidden; border-radius:8px;"></div>' +
+        '<div id="reader" style="width:100%; max-height:280px; overflow:hidden; border-radius:8px;"></div>' +
         '<button type="button" class="btn btn-sm btn-danger w-100 mt-1" onclick="closeBarcodeScanner(this)"><i class="fa-solid fa-xmark"></i> Tutup Kamera</button>' +
       '</div>' +
       '<div class="aktiva-info alert success-result-box py-1 px-2 mt-1 mb-0 small" style="display:none; font-size: 11px;"></div>' +
@@ -1441,7 +1459,7 @@
     container.insertAdjacentHTML('beforeend', html);
   }
 
-  // --- FUNGSI BARCODE SCANNER KAMERA (MENGGUNAKAN ELEMEN STATIS #reader) ---
+  // --- FUNGSI QR CODE SCANNER UTAMA (OPTIMASI KAMERA BELAKANG TERBAIK & KHUSUS QR) ---
   function openBarcodeScanner(btn) {
     const card = btn.closest('.item-card');
     const scannerContainer = card.querySelector('.scanner-container');
@@ -1463,12 +1481,25 @@
     
     activeHtml5QrCode = new Html5Qrcode("reader");
     
-    const config = { fps: 10, qrbox: { width: 250, height: 150 } };
+    // Konfigurasi canggih: Dipercepat (fps: 25), Fokus QR Saja, Resolusi Kamera Tinggi
+    const config = { 
+      fps: 25, 
+      qrbox: { width: 250, height: 250 },
+      formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] // KHUSUS QR CODE SAJA
+    };
+
+    // Pengaturan constraints untuk memaksa menggunakan kamera belakang berkualitas tinggi utama
+    const cameraConstraint = {
+      facingMode: { exact: "environment" }
+    };
     
     activeHtml5QrCode.start(
-      { facingMode: "environment" }, 
+      cameraConstraint, 
       config,
       (decodedText, decodedResult) => {
+        // Bunyikan suara BEEP instan saat QR Code berhasil dibaca
+        playBeep();
+
         if (activeCardElement) {
           const inputAktiva = activeCardElement.querySelector('.input-aktiva');
           inputAktiva.value = decodedText;
@@ -1477,11 +1508,28 @@
         }
       },
       (errorMessage) => {
-        // Silent error saat mencari frame barcode
+        // Silent error saat mencari frame QR code
       }
     ).catch(err => {
-      showCustomAlert("Gagal Mengakses Kamera", "Browser memblokir akses kamera. Pastikan izin kamera pada browser sudah di-izinkan (Allow). Error: " + err, "error");
-      scannerContainer.style.display = 'none';
+      // Fallback jika exact environment tidak didukung, gunakan mode environment standar
+      console.warn("Kamera utama exact gagal, mencoba fallback standar...", err);
+      activeHtml5QrCode.start(
+        { facingMode: "environment" },
+        config,
+        (decodedText, decodedResult) => {
+          playBeep();
+          if (activeCardElement) {
+            const inputAktiva = activeCardElement.querySelector('.input-aktiva');
+            inputAktiva.value = decodedText;
+            stopAndCloseScanner();
+            cekAktiva(activeCardElement.querySelector('.btn-outline-primary'));
+          }
+        },
+        (err2) => {}
+      ).catch(err2 => {
+        showCustomAlert("Gagal Mengakses Kamera", "Browser memblokir akses kamera belakang. Pastikan izin kamera sudah di-allow. Error: " + err2, "error");
+        scannerContainer.style.display = 'none';
+      });
     });
   }
 
