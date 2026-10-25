@@ -133,7 +133,7 @@
     }
     .service-card.repair { border-left: 4px solid #6366f1; }
     .service-card.return { border-left: 4px solid #f59e0b; }
-    .service-card.withdrawal { border-left: 4px solid #ef4444; } /* Warna Merah untuk Penarikan Aktiva */
+    .service-card.withdrawal { border-left: 4px solid #ef4444; }
     .service-card.tracking { border-left: 4px solid #0ea5e9; }
     
     .icon-box {
@@ -386,7 +386,7 @@
         </div>
       </div>
 
-      <!-- E-REQUEST PENARIKAN BARANG TOKO (BERWARNA MERAH SESUAI PERMINTAAN) -->
+      <!-- E-REQUEST PENARIKAN BARANG TOKO (BERWARNA MERAH) -->
       <div onclick="navigateTo('pageFormWithdrawal'); initFormWithdrawal();" class="service-card withdrawal shadow-sm">
         <div class="d-flex justify-content-between align-items-center">
           <div class="d-flex align-items-center">
@@ -575,7 +575,7 @@
     </button>
   </div>
 
-  <!-- PAGE: FORM E-REQUEST PENARIKAN BARANG TOKO -->
+  <!-- PAGE: FORM E-REQUEST PENARIKAN BARANG TOKO (TANPA GPS, DENGAN LIVE COUNTER & BATCH INPUT) -->
   <div id="pageFormWithdrawal" class="page-view">
     <div class="d-flex align-items-center mb-3">
       <button onclick="navigateTo('pageHome')" class="btn btn-sm btn-dark border-secondary me-2 py-1 px-3 rounded-pill">
@@ -584,23 +584,43 @@
       <h6 class="fw-bold m-0 text-danger">E-Request Penarikan Barang Toko</h6>
     </div>
 
-    <div id="gpsStatusCardWithdraw" class="card p-3 mb-3 text-center bg-dark border border-secondary text-light">
-      <div id="gpsSpinnerWithdraw" class="spinner-border spinner-border-sm text-danger"></div>
-      <span id="gpsTextWithdraw" class="small ms-1" style="font-size: 12px;">Mengecek lokasi GPS gudang...</span>
+    <!-- INFO CARD (TANPA VALIDASI GPS) -->
+    <div class="card p-3 mb-3 text-center bg-dark border border-secondary text-light">
+      <div class="small text-info"><i class="fa-solid fa-location-dot me-1"></i> Mode Pengajuan Toko Aktif (Tanpa Validasi Radius GPS Gudang)</div>
+    </div>
+
+    <!-- PANEL RINGKASAN TOTAL BARANG YANG DIANGKUT (LIVE COUNTER) -->
+    <div class="card p-3 mb-3 bg-dark border border-danger shadow-sm">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="small text-secondary" style="font-size: 11px;">RINGKASAN TOTAL DIANGKUT</div>
+          <div class="fw-bold text-white fs-5" id="summaryTotalItems">0 Item</div>
+        </div>
+        <div class="text-end">
+          <span class="badge bg-primary me-1" id="summaryDatCount">DAT: 0</span>
+          <span class="badge bg-warning text-dark" id="summaryNonDatCount">Non-DAT: 0</span>
+        </div>
+      </div>
     </div>
 
     <div id="itemListContainerWithdrawal"></div>
 
-    <button onclick="addItemCard('itemListContainerWithdrawal', 'withdrawal')" class="btn btn-outline-danger btn-sm w-100 fw-bold mb-3 py-2 rounded-3 text-white">
-      + Tambah Aktiva Penarikan Lain
-    </button>
+    <!-- TOMBOL TAMBAH SATUAN & BATCH INPUT 5 SEKALIGUS -->
+    <div class="d-grid gap-2 mb-3">
+      <button onclick="addItemCard('itemListContainerWithdrawal', 'withdrawal')" class="btn btn-outline-danger btn-sm fw-bold py-2 rounded-3 text-white">
+        + Tambah 1 Item Aktiva Lagi
+      </button>
+      <button onclick="addMultipleItemCards('itemListContainerWithdrawal', 'withdrawal', 5)" class="btn btn-dark border-secondary btn-sm fw-bold py-2 rounded-3 text-light" style="font-size: 11px;">
+        ⚡ Tambah 5 Item Sekaligus (Batch Input)
+      </button>
+    </div>
 
-    <button id="btnSubmitWithdrawal" onclick="submitMultiData('withdrawal')" class="btn btn-danger w-100 py-3 fw-bold rounded-3 shadow text-white mb-4" disabled>
+    <button id="btnSubmitWithdrawal" onclick="submitMultiData('withdrawal')" class="btn btn-danger w-100 py-3 fw-bold rounded-3 shadow text-white mb-4">
       Kirim E-Request Penarikan
     </button>
   </div>
 
-  <!-- PAGE 5: TRACKING PAGE (DILENGKAPI 3 TAB: PERBAIKAN, PENGEMBALIAN, PENARIKAN) -->
+  <!-- PAGE 5: TRACKING PAGE (DILENGKAPI 3 TAB) -->
   <div id="pageTracking" class="page-view">
     <div class="d-flex align-items-center justify-content-between mb-3">
       <div class="d-flex align-items-center">
@@ -1301,7 +1321,7 @@
     document.getElementById("itemListContainerWithdrawal").innerHTML = "";
     withdrawalItemCount = 0;
     addItemCard('itemListContainerWithdrawal', 'withdrawal');
-    validateGPS("gpsStatusCardWithdraw", "gpsSpinnerWithdraw", "gpsTextWithdraw", "btnSubmitWithdrawal");
+    updateWithdrawalSummary();
   }
 
   function validateGPS(cardId, spinnerId, textId, btnId) {
@@ -1338,6 +1358,37 @@
         document.getElementById(textId).innerText = "GPS tidak aktif / izin ditolak.";
       }, { enableHighAccuracy: true, timeout: 10000 });
     }
+  }
+
+  // FUNGSI BATCH INPUT (MENAMBAH BEBERAPA ITEM SEKALIGUS)
+  function addMultipleItemCards(containerId, type, countToAdd) {
+    for(let i = 0; i < countToAdd; i++) {
+      addItemCard(containerId, type);
+    }
+  }
+
+  function updateWithdrawalSummary() {
+    const cards = document.querySelectorAll('#itemListContainerWithdrawal .item-card');
+    let total = cards.length;
+    let datCount = 0;
+    let nonDatCount = 0;
+
+    cards.forEach(card => {
+      const aktivaRadio = card.querySelector('.aktiva-radio:checked');
+      if(aktivaRadio && aktivaRadio.value === 'nondat') {
+        nonDatCount++;
+      } else {
+        datCount++;
+      }
+    });
+
+    const totalEl = document.getElementById("summaryTotalItems");
+    const datEl = document.getElementById("summaryDatCount");
+    const nonDatEl = document.getElementById("summaryNonDatCount");
+
+    if(totalEl) totalEl.innerText = total + " Item Barang";
+    if(datEl) datEl.innerText = "DAT: " + datCount;
+    if(nonDatEl) nonDatEl.innerText = "Non-DAT: " + nonDatCount;
   }
 
   function toggleLocationSame(radio) {
@@ -1379,6 +1430,7 @@
       delete card.dataset.kategoriAktiva;
       delete card.dataset.lokasiAktiva;
     }
+    updateWithdrawalSummary();
   }
 
   function toggleCustomCategory(select) {
@@ -1420,7 +1472,7 @@
     const html = '<div class="item-card shadow-sm" id="' + cardId + '">' +
       '<div class="d-flex justify-content-between align-items-center mb-2 border-bottom border-secondary pb-1">' +
       '<span class="fw-bold ' + accentColor + ' small">Aktiva #' + count + '</span>' +
-      (count > 1 ? '<button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 rounded-pill" style="font-size:11px;" onclick="document.getElementById(\'' + cardId + '\').remove()">Hapus</button>' : '') +
+      (count > 1 ? '<button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 rounded-pill" style="font-size:11px;" onclick="document.getElementById(\'' + cardId + '\').remove(); updateWithdrawalSummary();">Hapus</button>' : '') +
       '</div>' +
 
       locationChooserHtml +
@@ -1481,7 +1533,6 @@
       '<input type="text" class="form-control form-control-sm input-nondat-kategori-custom" placeholder="Ketik jenis kategori barang..."></div>' +
       '</div>' +
 
-      // Kolom Kondisi Baru khusus Penarikan atau Umum
       '<div class="mb-2"><label class="form-label small mb-1 fw-bold text-warning">Kondisi Barang</label>' +
       '<select class="form-select form-select-sm input-kondisi">' +
       '<option value="Baik / Tidak Terpakai (Idle)">Baik / Tidak Terpakai (Idle)</option>' +
@@ -1498,6 +1549,7 @@
       '<textarea class="form-control form-control-sm input-deskripsi" rows="2" placeholder="Jelaskan alasan detail..."></textarea></div></div>';
 
     container.insertAdjacentHTML('beforeend', html);
+    if(type === 'withdrawal') updateWithdrawalSummary();
   }
 
   function openBarcodeScanner(btn, readerId) {
@@ -1645,7 +1697,8 @@
   }
 
   function submitMultiData(type) {
-    if (!isLocationValid) {
+    // Validasi GPS hanya jika bukan tipe withdrawal
+    if (type !== 'withdrawal' && !isLocationValid) {
       showCustomAlert("Akses Ditolak", "Akses lokasi gudang belum divalidasi!", "error");
       return;
     }
@@ -1743,8 +1796,8 @@
       nik: currentUser.nik,
       namaPelapor: currentUser.nama,
       noWa: currentUser.noWa,
-      lat: currentGPS.lat,
-      lng: currentGPS.lng,
+      lat: currentGPS ? currentGPS.lat : 0,
+      lng: currentGPS ? currentGPS.lng : 0,
       items: items
     };
 
