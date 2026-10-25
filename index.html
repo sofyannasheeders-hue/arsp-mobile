@@ -1138,7 +1138,8 @@
               '<div style="font-size: 11px;">Toko/Dept: <strong>' + item.kodeToko + '</strong> | SJ: ' + item.noSj + '</div>' +
               '<div class="mt-2 small text-light">' +
               '<div><strong>Barang:</strong> ' + item.namaAktiva + ' (' + item.kodeAktiva + ')</div>' +
-              '<div><strong>Kategori:</strong> ' + (item.kategoriAktiva || '-') + ' | <strong>Lokasi:</strong> ' + (item.lokasiAktiva || '-') + '</div>' +
+              '<div><strong>Kategori:</strong> ' + (item.kategoriAktiva || '-') + '</div>' +
+              '<div><strong>Lokasi Aktiva:</strong> ' + (item.lokasiAktiva || '-') + '</div>' +
               '<div><strong>Deskripsi:</strong> ' + item.deskripsi + '</div>' +
               fotoSection +
               '</div>' +
@@ -1733,9 +1734,12 @@
             '<span class="badge ' + badgeBg + '" style="font-size: 10px;">' + statusText + '</span></div>' +
             '<div style="font-size: 11px;">' + item.timestamp + ' | Toko/Dept: <strong>' + item.kodeToko + '</strong></div>' +
             '<div style="font-size: 11px;">No SJ: <strong>' + item.noSj + '</strong></div>' +
-            '<div class="mt-2 small text-light"><div><strong>No. Aktiva:</strong> ' + item.kodeAktiva + '</div>' +
+            '<div class="mt-2 small text-light">' +
+            '<div><strong>No. Aktiva:</strong> ' + item.kodeAktiva + '</div>' +
             '<div><strong>Nama Barang:</strong> ' + item.namaAktiva + '</div>' +
-            '<div><strong>Kategori:</strong> ' + (item.kategoriAktiva || '-') + ' | <strong>Lokasi:</strong> ' + (item.lokasiAktiva || '-') + '</div></div>' +
+            '<div><strong>Kategori:</strong> ' + (item.kategoriAktiva || '-') + '</div>' +
+            '<div><strong>Lokasi Aktiva:</strong> ' + (item.lokasiAktiva || '-') + '</div>' +
+            '</div>' +
             '<div class="small bg-black p-2 rounded mt-2 border border-secondary border-opacity-25" style="font-size: 11px;">' + item.deskripsi + '</div></div>';
         });
         listDiv.innerHTML = html;
