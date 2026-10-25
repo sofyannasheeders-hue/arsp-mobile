@@ -1485,6 +1485,18 @@
                     '<textarea class="form-control form-control-sm input-deskripsi" rows="2" placeholder="Jelaskan alasan detail..."></textarea></div>';
     }
 
+    // MODIFIKASI: Input foto menggunakan capture="environment" untuk Perbaikan & Pengembalian, standar untuk Penarikan
+    let fotoInputHtml = '';
+    if (type === 'withdrawal') {
+      fotoInputHtml = '<div class="mb-2"><label class="form-label small mb-1">Foto Kondisi / Fisik Barang</label>' +
+                      '<input type="file" accept="image/*" class="form-control form-control-sm mb-1 input-foto" onchange="previewCardImage(this)">' +
+                      '<img class="img-fluid rounded mt-1 preview-img border border-secondary"></div>';
+    } else {
+      fotoInputHtml = '<div class="mb-2"><label class="form-label small mb-1">Foto Kondisi / Fisik Barang (Buka Kamera Langsung)</label>' +
+                      '<input type="file" accept="image/*" capture="environment" class="form-control form-control-sm mb-1 input-foto" onchange="previewCardImage(this)">' +
+                      '<img class="img-fluid rounded mt-1 preview-img border border-secondary"></div>';
+    }
+
     const html = '<div class="item-card shadow-sm" id="' + cardId + '">' +
       '<div class="d-flex justify-content-between align-items-center mb-2 border-bottom border-secondary pb-1">' +
       '<span class="fw-bold ' + accentColor + ' small">Aktiva #' + count + '</span>' +
@@ -1540,9 +1552,7 @@
       '<option value="Barang Bekas / Kanibalisasi">Barang Bekas / Kanibalisasi</option>' +
       '</select></div>' +
 
-      '<div class="mb-2"><label class="form-label small mb-1">Foto Kondisi / Fisik Barang</label>' +
-      '<input type="file" accept="image/*" class="form-control form-control-sm mb-1 input-foto" onchange="previewCardImage(this)">' +
-      '<img class="img-fluid rounded mt-1 preview-img border border-secondary"></div>' +
+      fotoInputHtml +
 
       extraFields +
       '</div>';
