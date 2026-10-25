@@ -575,7 +575,7 @@
     </button>
   </div>
 
-  <!-- PAGE: FORM E-REQUEST PENARIKAN BARANG TOKO (TANPA GPS, DENGAN LIVE COUNTER & BATCH INPUT) -->
+  <!-- PAGE: FORM E-REQUEST PENARIKAN BARANG TOKO -->
   <div id="pageFormWithdrawal" class="page-view">
     <div class="d-flex align-items-center mb-3">
       <button onclick="navigateTo('pageHome')" class="btn btn-sm btn-dark border-secondary me-2 py-1 px-3 rounded-pill">
@@ -584,23 +584,14 @@
       <h6 class="fw-bold m-0 text-danger">E-Request Penarikan Barang Toko</h6>
     </div>
 
-    <!-- INFO CARD (TANPA VALIDASI GPS) -->
-    <div class="card p-3 mb-3 text-center bg-dark border border-secondary text-light">
-      <div class="small text-info"><i class="fa-solid fa-location-dot me-1"></i> Mode Pengajuan Toko Aktif (Tanpa Validasi Radius GPS Gudang)</div>
-    </div>
-
-    <!-- PANEL RINGKASAN TOTAL BARANG YANG DIANGKUT (LIVE COUNTER) -->
-    <div class="card p-3 mb-3 bg-dark border border-danger shadow-sm">
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <div class="small text-secondary" style="font-size: 11px;">RINGKASAN TOTAL DIANGKUT</div>
-          <div class="fw-bold text-white fs-5" id="summaryTotalItems">0 Item</div>
-        </div>
-        <div class="text-end">
-          <span class="badge bg-primary me-1" id="summaryDatCount">DAT: 0</span>
-          <span class="badge bg-warning text-dark" id="summaryNonDatCount">Non-DAT: 0</span>
-        </div>
+    <!-- KODE TOKO ASAL (TERPUSAT DI ATAS) -->
+    <div class="card p-3 mb-3 bg-dark border border-secondary">
+      <label class="form-label small fw-bold text-info mb-1">Kode Toko Asal</label>
+      <div class="input-group input-group-sm mb-1">
+        <input type="text" id="withdrawalStoreCode" class="form-control" placeholder="Contoh: TNX1">
+        <button type="button" class="btn btn-outline-primary text-white" onclick="cekWithdrawalStore(this)">Cek</button>
       </div>
+      <div id="withdrawalStoreInfo" class="alert success-result-box py-1 px-2 mt-1 mb-0 small" style="display:none; font-size: 11px;"></div>
     </div>
 
     <div id="itemListContainerWithdrawal"></div>
@@ -615,7 +606,27 @@
       </button>
     </div>
 
-    <button id="btnSubmitWithdrawal" onclick="submitMultiData('withdrawal')" class="btn btn-danger w-100 py-3 fw-bold rounded-3 shadow text-white mb-4">
+    <!-- DESKRIPSI / ALASAN PENARIKAN GLOBAL DI PALING TERAKHIR -->
+    <div class="card p-3 mb-3 bg-dark border border-secondary">
+      <label class="form-label small fw-bold text-warning mb-1"><i class="fa-solid fa-pen-to-square me-1"></i> Deskripsi / Alasan Penarikan (Global)</label>
+      <textarea id="withdrawalGlobalDesc" class="form-control form-control-sm" rows="3" placeholder="Jelaskan alasan detail penarikan untuk toko ini..."></textarea>
+    </div>
+
+    <!-- PANEL RINGKASAN TOTAL BARANG (DI BAWAH DESKRIPSI) -->
+    <div class="card p-3 mb-3 bg-dark border border-danger shadow-sm">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="small text-secondary" style="font-size: 11px;">RINGKASAN TOTAL DIANGKUT</div>
+          <div class="fw-bold text-white fs-5" id="summaryTotalItems">0 Item</div>
+        </div>
+        <div class="text-end">
+          <span class="badge bg-primary me-1" id="summaryDatCount">DAT: 0</span>
+          <span class="badge bg-warning text-dark" id="summaryNonDatCount">Non-DAT: 0</span>
+        </div>
+      </div>
+    </div>
+
+    <button id="btnSubmitWithdrawal" onclick="submitWithdrawalData()" class="btn btn-danger w-100 py-3 fw-bold rounded-3 shadow text-white mb-4">
       Kirim E-Request Penarikan
     </button>
   </div>
@@ -1318,6 +1329,11 @@
 
   function initFormWithdrawal() {
     stopAndCloseScanner();
+    document.getElementById("withdrawalStoreCode").value = "";
+    const storeInfo = document.getElementById("withdrawalStoreInfo");
+    storeInfo.style.display = 'none';
+    delete storeInfo.dataset.validKode;
+    document.getElementById("withdrawalGlobalDesc").value = "";
     document.getElementById("itemListContainerWithdrawal").innerHTML = "";
     withdrawalItemCount = 0;
     addItemCard('itemListContainerWithdrawal', 'withdrawal');
@@ -1360,7 +1376,6 @@
     }
   }
 
-  // FUNGSI BATCH INPUT (MENAMBAH BEBERAPA ITEM SEKALIGUS)
   function addMultipleItemCards(containerId, type, countToAdd) {
     for(let i = 0; i < countToAdd; i++) {
       addItemCard(containerId, type);
@@ -1394,7 +1409,7 @@
   function toggleLocationSame(radio) {
     const card = radio.closest('.item-card');
     const locForm = card.querySelector('.location-form-section');
-    locForm.style.display = radio.value === 'same' ? 'none' : 'block';
+    if(locForm) locForm.style.display = radio.value === 'same' ? 'none' : 'block';
   }
 
   function toggleSourceType(radio) {
@@ -1402,11 +1417,11 @@
     const tokoSec = card.querySelector('.toko-section');
     const nonTokoSec = card.querySelector('.nontoko-section');
     if (radio.value === 'toko') {
-      tokoSec.style.display = 'block';
-      nonTokoSec.style.display = 'none';
+      if(tokoSec) tokoSec.style.display = 'block';
+      if(nonTokoSec) nonTokoSec.style.display = 'none';
     } else {
-      tokoSec.style.display = 'none';
-      nonTokoSec.style.display = 'block';
+      if(tokoSec) tokoSec.style.display = 'none';
+      if(nonTokoSec) nonTokoSec.style.display = 'block';
       delete card.dataset.tokoKode;
       const infoBox = card.querySelector('.toko-info');
       if(infoBox) infoBox.style.display = 'none';
@@ -1449,25 +1464,53 @@
     const cardId = type + "_card_" + count;
     const readerId = "reader_" + type + "_" + count;
     
-    let locationChooserHtml = '';
-    if (count > 1) {
-      locationChooserHtml = 
-        '<div class="mb-3 p-2 bg-dark rounded border border-secondary">' +
-          '<label class="form-label small mb-1 fw-bold text-info">Apakah Kode Lokasi/Toko sama dengan Aktiva #1?</label>' +
-          '<div class="d-flex gap-4">' +
-            '<div class="form-check">' +
-              '<input class="form-check-input loc-same-radio" type="radio" name="locSame_' + type + '_' + count + '" id="locSameYes_' + type + '_' + count + '" value="same" checked onchange="toggleLocationSame(this)">' +
-              '<label class="form-check-label small text-white" for="locSameYes_' + type + '_' + count + '">Sama dengan Aktiva #1</label>' +
+    let accentColor = type === 'service' ? 'text-primary' : (type === 'return' ? 'text-warning' : 'text-danger');
+
+    // Jika tipe withdrawal, tidak ada pilihan lokasi per item karena sudah terpusat di atas
+    let itemLocationSection = '';
+    if (type !== 'withdrawal') {
+      let locationChooserHtml = '';
+      if (count > 1) {
+        locationChooserHtml = 
+          '<div class="mb-3 p-2 bg-dark rounded border border-secondary">' +
+            '<label class="form-label small mb-1 fw-bold text-info">Apakah Kode Lokasi/Toko sama dengan Aktiva #1?</label>' +
+            '<div class="d-flex gap-4">' +
+              '<div class="form-check">' +
+                '<input class="form-check-input loc-same-radio" type="radio" name="locSame_' + type + '_' + count + '" id="locSameYes_' + type + '_' + count + '" value="same" checked onchange="toggleLocationSame(this)">' +
+                '<label class="form-check-label small text-white" for="locSameYes_' + type + '_' + count + '">Sama dengan Aktiva #1</label>' +
+              '</div>' +
+              '<div class="form-check">' +
+                '<input class="form-check-input loc-same-radio" type="radio" name="locSame_' + type + '_' + count + '" id="locSameNo_' + type + '_' + count + '" value="different" onchange="toggleLocationSame(this)">' +
+                '<label class="form-check-label small text-white" for="locSameNo_' + type + '_' + count + '">Beda Lokasi / Toko</label>' +
+              '</div>' +
             '</div>' +
-            '<div class="form-check">' +
-              '<input class="form-check-input loc-same-radio" type="radio" name="locSame_' + type + '_' + count + '" id="locSameNo_' + type + '_' + count + '" value="different" onchange="toggleLocationSame(this)">' +
-              '<label class="form-check-label small text-white" for="locSameNo_' + type + '_' + count + '">Beda Lokasi / Toko</label>' +
-            '</div>' +
-          '</div>' +
+          '</div>';
+      }
+      itemLocationSection = locationChooserHtml +
+        '<div class="location-form-section" style="' + (count > 1 ? 'display:none;' : '') + '">' +
+          '<div class="mb-3"><label class="form-label small mb-1">Asal Lokasi Aktiva</label>' +
+          '<div class="d-flex gap-4"><div class="form-check">' +
+          '<input class="form-check-input source-radio" type="radio" name="sourceType_' + type + '_' + count + '" id="srcToko_' + type + '_' + count + '" value="toko" checked onchange="toggleSourceType(this)">' +
+          '<label class="form-check-label small text-white" for="srcToko_' + type + '_' + count + '">Toko</label></div>' +
+          '<div class="form-check">' +
+          '<input class="form-check-input source-radio" type="radio" name="sourceType_' + type + '_' + count + '" id="srcNonToko_' + type + '_' + count + '" value="nontoko" onchange="toggleSourceType(this)">' +
+          '<label class="form-check-label small text-white" for="srcNonToko_' + type + '_' + count + '">Non Toko</label></div></div></div>' +
+          '<div class="toko-section mb-3"><label class="form-label small mb-1">Kode Toko Asal</label>' +
+          '<div class="input-group input-group-sm mb-1"><input type="text" class="form-control input-toko" placeholder="Contoh: TNX1">' +
+          '<button type="button" class="btn btn-outline-primary text-white" onclick="cekToko(this)">Cek</button></div>' +
+          '<div class="toko-info alert success-result-box py-1 px-2 mt-1 mb-0 small" style="display:none; font-size: 11px;"></div></div>' +
+          '<div class="nontoko-section mb-3" style="display: none;"><label class="form-label small mb-1">Nama Departemen</label>' +
+          '<input type="text" class="form-control form-control-sm input-dept" placeholder="Contoh: Dept. Logistik..."></div>' +
         '</div>';
     }
 
-    let accentColor = type === 'service' ? 'text-primary' : (type === 'return' ? 'text-warning' : 'text-danger');
+    let extraFields = '';
+    if (type !== 'withdrawal') {
+      extraFields = '<div class="mb-2"><label class="form-label small mb-1">No SJ Web Tracking</label>' +
+                    '<input type="text" class="form-control form-control-sm input-nosj" placeholder="Nomor Surat Jalan..."></div>' +
+                    '<div class="mb-1"><label class="form-label small mb-1">Deskripsi / Alasan</label>' +
+                    '<textarea class="form-control form-control-sm input-deskripsi" rows="2" placeholder="Jelaskan alasan detail..."></textarea></div>';
+    }
 
     const html = '<div class="item-card shadow-sm" id="' + cardId + '">' +
       '<div class="d-flex justify-content-between align-items-center mb-2 border-bottom border-secondary pb-1">' +
@@ -1475,23 +1518,7 @@
       (count > 1 ? '<button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 rounded-pill" style="font-size:11px;" onclick="document.getElementById(\'' + cardId + '\').remove(); updateWithdrawalSummary();">Hapus</button>' : '') +
       '</div>' +
 
-      locationChooserHtml +
-
-      '<div class="location-form-section" style="' + (count > 1 ? 'display:none;' : '') + '">' +
-        '<div class="mb-3"><label class="form-label small mb-1">Asal Lokasi Aktiva</label>' +
-        '<div class="d-flex gap-4"><div class="form-check">' +
-        '<input class="form-check-input source-radio" type="radio" name="sourceType_' + type + '_' + count + '" id="srcToko_' + type + '_' + count + '" value="toko" checked onchange="toggleSourceType(this)">' +
-        '<label class="form-check-label small text-white" for="srcToko_' + type + '_' + count + '">Toko</label></div>' +
-        '<div class="form-check">' +
-        '<input class="form-check-input source-radio" type="radio" name="sourceType_' + type + '_' + count + '" id="srcNonToko_' + type + '_' + count + '" value="nontoko" onchange="toggleSourceType(this)">' +
-        '<label class="form-check-label small text-white" for="srcNonToko_' + type + '_' + count + '">Non Toko</label></div></div></div>' +
-        '<div class="toko-section mb-3"><label class="form-label small mb-1">Kode Toko Asal</label>' +
-        '<div class="input-group input-group-sm mb-1"><input type="text" class="form-control input-toko" placeholder="Contoh: TNX1">' +
-        '<button type="button" class="btn btn-outline-primary text-white" onclick="cekToko(this)">Cek</button></div>' +
-        '<div class="toko-info alert success-result-box py-1 px-2 mt-1 mb-0 small" style="display:none; font-size: 11px;"></div></div>' +
-        '<div class="nontoko-section mb-3" style="display: none;"><label class="form-label small mb-1">Nama Departemen</label>' +
-        '<input type="text" class="form-control form-control-sm input-dept" placeholder="Contoh: Dept. Logistik..."></div>' +
-      '</div>' +
+      itemLocationSection +
 
       '<div class="mb-3"><label class="form-label small mb-1">Tipe Aktiva / Barang</label>' +
       '<div class="d-flex gap-4 mb-1"><div class="form-check">' +
@@ -1540,13 +1567,12 @@
       '<option value="Barang Bekas / Kanibalisasi">Barang Bekas / Kanibalisasi</option>' +
       '</select></div>' +
 
-      '<div class="mb-2"><label class="form-label small mb-1">No SJ Web Tracking</label>' +
-      '<input type="text" class="form-control form-control-sm input-nosj" placeholder="Nomor Surat Jalan..."></div>' +
       '<div class="mb-2"><label class="form-label small mb-1">Foto Kondisi / Fisik Barang</label>' +
       '<input type="file" accept="image/*" class="form-control form-control-sm mb-1 input-foto" onchange="previewCardImage(this)">' +
       '<img class="img-fluid rounded mt-1 preview-img border border-secondary"></div>' +
-      '<div class="mb-1"><label class="form-label small mb-1">Deskripsi / Alasan Penarikan</label>' +
-      '<textarea class="form-control form-control-sm input-deskripsi" rows="2" placeholder="Jelaskan alasan detail..."></textarea></div></div>';
+
+      extraFields +
+      '</div>';
 
     container.insertAdjacentHTML('beforeend', html);
     if(type === 'withdrawal') updateWithdrawalSummary();
@@ -1681,6 +1707,25 @@
     });
   }
 
+  function cekWithdrawalStore(btn) {
+    const inputEl = document.getElementById("withdrawalStoreCode");
+    const inputToko = inputEl.value.trim();
+    const infoBox = document.getElementById("withdrawalStoreInfo");
+    if(!inputToko) return;
+
+    callApi("getTokoInfo", { kodeToko: inputToko }, function(res) {
+      if(res.success) {
+        infoBox.dataset.validKode = res.kode;
+        infoBox.innerHTML = "<strong>Toko:</strong> " + res.nama + " (" + res.kode + ")";
+        infoBox.style.display = 'block';
+      } else {
+        showCustomAlert("Perhatian", res.message, "warning");
+        infoBox.style.display = 'none';
+        delete infoBox.dataset.validKode;
+      }
+    });
+  }
+
   function previewCardImage(input) {
     const card = input.closest('.item-card');
     const preview = card.querySelector('.preview-img');
@@ -1696,15 +1741,111 @@
     }
   }
 
+  function submitWithdrawalData() {
+    const storeInfoBox = document.getElementById("withdrawalStoreInfo");
+    const validTokoKode = storeInfoBox.dataset.validKode;
+
+    if (!validTokoKode) {
+      showCustomAlert("Peringatan", "Silakan masukkan dan klik tombol 'Cek' pada Kode Toko Asal terlebih dahulu!", "warning");
+      return;
+    }
+
+    const globalDesc = document.getElementById("withdrawalGlobalDesc").value.trim();
+    if (!globalDesc) {
+      showCustomAlert("Peringatan", "Deskripsi / Alasan Penarikan wajib diisi!", "warning");
+      return;
+    }
+
+    const cards = document.querySelectorAll('#itemListContainerWithdrawal .item-card');
+    if (cards.length === 0) {
+      showCustomAlert("Peringatan", "Minimal tambahkan 1 item aktiva!", "warning");
+      return;
+    }
+
+    let items = [];
+    for (let i = 0; i < cards.length; i++) {
+      const card = cards[i];
+      const aktivaType = card.querySelector('.aktiva-radio:checked').value;
+      let aktivaKode = "", aktivaNama = "", kategoriAktiva = "-";
+
+      if (aktivaType === 'dat') {
+        aktivaKode = card.dataset.aktivaKode;
+        aktivaNama = card.dataset.aktivaNama;
+        kategoriAktiva = card.dataset.kategoriAktiva || "-";
+
+        if (!aktivaKode || !aktivaNama) {
+          showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Scan atau Parse QR Code aktiva terlebih dahulu!", "warning");
+          return;
+        }
+      } else {
+        aktivaKode = "-";
+        const nonDatNamaInput = card.querySelector('.input-nondat-nama').value.trim();
+        const categorySelect = card.querySelector('.input-nondat-kategori-select').value;
+        const categoryCustom = card.querySelector('.input-nondat-kategori-custom').value.trim();
+
+        if (!nonDatNamaInput || !categorySelect) {
+          showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Nama & Kategori Non DAT wajib diisi!", "warning");
+          return;
+        }
+        kategoriAktiva = (categorySelect === 'Lainnya') ? categoryCustom : categorySelect;
+        aktivaNama = nonDatNamaInput + " (Non DAT)";
+      }
+
+      const kondisiVal = card.querySelector('.input-kondisi').value;
+      const fotoBase64 = card.dataset.fotoBase64;
+
+      if (!fotoBase64) {
+        showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Foto kondisi fisik barang wajib diunggah!", "warning");
+        return;
+      }
+
+      items.push({
+        kodeAktiva: aktivaKode,
+        namaAktiva: aktivaNama,
+        kategoriAktiva: kategoriAktiva,
+        kondisi: kondisiVal,
+        fotoBase64: fotoBase64
+      });
+    }
+
+    const btn = document.getElementById("btnSubmitWithdrawal");
+    btn.disabled = true;
+    btn.innerText = "Mengirim...";
+
+    const payload = {
+      nik: currentUser.nik,
+      namaPelapor: currentUser.nama,
+      noWa: currentUser.noWa,
+      kodeToko: validTokoKode,
+      deskripsi: globalDesc,
+      items: items
+    };
+
+    callApi("submitWithdrawal", { form: payload }, function(res) {
+      if(res.success) {
+        showCustomAlert("Berhasil", items.length + " item penarikan berhasil diajukan.", "success");
+        fetchStats();
+        navigateTo('pageHome');
+      } else {
+        showCustomAlert("Gagal", res.message, "error");
+        btn.disabled = false;
+        btn.innerText = "Kirim E-Request Penarikan";
+      }
+    }, function(err) {
+      showCustomAlert("Koneksi Gagal", "Gagal terhubung ke server.", "error");
+      btn.disabled = false;
+      btn.innerText = "Kirim E-Request Penarikan";
+    });
+  }
+
   function submitMultiData(type) {
-    // Validasi GPS hanya jika bukan tipe withdrawal
-    if (type !== 'withdrawal' && !isLocationValid) {
+    if (!isLocationValid) {
       showCustomAlert("Akses Ditolak", "Akses lokasi gudang belum divalidasi!", "error");
       return;
     }
 
-    const containerId = type === 'service' ? 'itemListContainerService' : (type === 'return' ? 'itemListContainerReturn' : 'itemListContainerWithdrawal');
-    const btnId = type === 'service' ? 'btnSubmitService' : (type === 'return' ? 'btnSubmitReturn' : 'btnSubmitWithdrawal');
+    const containerId = type === 'service' ? 'itemListContainerService' : 'itemListContainerReturn';
+    const btnId = type === 'service' ? 'btnSubmitService' : 'btnSubmitReturn';
     const cards = document.querySelectorAll('#' + containerId + ' .item-card');
     let items = [];
     let firstCardLocationVal = "";
@@ -1820,8 +1961,7 @@
     };
 
     if (type === 'service') callApi("submitService", { form: payload }, handleSuccess, handleFailure);
-    else if (type === 'return') callApi("submitReturn", { form: payload }, handleSuccess, handleFailure);
-    else callApi("submitWithdrawal", { form: payload }, handleSuccess, handleFailure);
+    else callApi("submitReturn", { form: payload }, handleSuccess, handleFailure);
   }
 
   function switchTrackingTab(tab) {
