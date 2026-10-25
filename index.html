@@ -433,7 +433,7 @@
         <button onclick="navigateTo('pageHome')" class="btn btn-sm btn-dark border-secondary me-2 py-1 px-3 rounded-pill">
           <i class="fa-solid fa-arrow-left me-1"></i> Beranda
         </button>
-        <h6 class="fw-bold m-0 text-success"><i class="fa-solid fa-user-shield me-1"></i> Panel Admin GA</h6>
+        <h6 class="fw-bold m-0 text-success"><i class="fa-solid fa-user-shield me-1"></i> Dashboard Admin GA</h6>
       </div>
     </div>
 
@@ -1398,7 +1398,7 @@
       locationChooserHtml +
 
       '<div class="location-form-section" style="' + (count > 1 ? 'display:none;' : '') + '">' +
-        '<div class="mb-3"><label class="form-label small mb-1">Sumber Asal Lokasi</label>' +
+        '<div class="mb-3"><label class="form-label small mb-1">Asal Lokasi Aktiva</label>' +
         '<div class="d-flex gap-4"><div class="form-check">' +
         '<input class="form-check-input source-radio" type="radio" name="sourceType_' + type + '_' + count + '" id="srcToko_' + type + '_' + count + '" value="toko" checked onchange="toggleSourceType(this)">' +
         '<label class="form-check-label small text-white" for="srcToko_' + type + '_' + count + '">Toko</label></div>' +
@@ -1423,7 +1423,7 @@
       
       '<!-- SECTION DAT -->' +
       '<div class="dat-section mb-2"><label class="form-label small mb-1">No. Aktiva / Hasil Scan QR</label>' +
-      '<div class="input-group input-group-sm mb-1"><input type="text" class="form-control input-aktiva" placeholder="Scan QR atau Ketik No Aktiva...">' +
+      '<div class="input-group input-group-sm mb-1"><input type="text" class="form-control input-aktiva" placeholder="Scan Label QR Code Aktiva...">' +
       '<button type="button" class="btn btn-outline-warning text-white" onclick="openBarcodeScanner(this, \'' + readerId + '\')" title="Scan QR Code"><i class="fa-solid fa-qrcode"></i> Scan QR</button>' +
       '<button type="button" class="btn btn-outline-primary text-white" onclick="parseAndFillAktivaQR(this)">Parse</button></div>' +
       '<div class="scanner-container mt-2" style="display:none; position:relative;">' +
