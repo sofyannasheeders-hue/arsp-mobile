@@ -787,6 +787,7 @@
   let allLoadedAdminTickets = [];
   let activeHtml5QrCode = null;
   let activeCardElement = null;
+  let activeCameraStream = null;
 
   function playBeep() {
     try {
@@ -947,6 +948,7 @@
   }
 
   function navigateTo(pageId) {
+    stopActiveCameraStream();
     document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
     document.getElementById(pageId).classList.add('active');
     window.scrollTo(0, 0);
@@ -1275,6 +1277,7 @@
   }
 
   function logout() {
+    stopActiveCameraStream();
     localStorage.removeItem("user_nik");
     localStorage.removeItem("user_manual_profile");
     currentUser = null;
@@ -1287,6 +1290,7 @@
 
   function initFormService() {
     stopAndCloseScanner();
+    stopActiveCameraStream();
     document.getElementById("itemListContainerService").innerHTML = "";
     serviceItemCount = 0;
     addItemCard('itemListContainerService', 'service');
@@ -1295,6 +1299,7 @@
 
   function initFormReturn() {
     stopAndCloseScanner();
+    stopActiveCameraStream();
     document.getElementById("itemListContainerReturn").innerHTML = "";
     returnItemCount = 0;
     addItemCard('itemListContainerReturn', 'return');
@@ -1303,6 +1308,7 @@
 
   function initFormWithdrawal() {
     stopAndCloseScanner();
+    stopActiveCameraStream();
     document.getElementById("withdrawalStoreCode").value = "";
     const storeInfo = document.getElementById("withdrawalStoreInfo");
     storeInfo.style.display = 'none';
@@ -1437,6 +1443,8 @@
     const container = document.getElementById(containerId);
     const cardId = type + "_card_" + count;
     const readerId = "reader_" + type + "_" + count;
+    const camVideoId = "camVideo_" + type + "_" + count;
+    const camCanvasId = "camCanvas_" + type + "_" + count;
     
     let accentColor = type === 'service' ? 'text-primary' : (type === 'return' ? 'text-warning' : 'text-danger');
 
@@ -1485,15 +1493,40 @@
                     '<textarea class="form-control form-control-sm input-deskripsi" rows="2" placeholder="Jelaskan alasan detail..."></textarea></div>';
     }
 
-    // MODIFIKASI: Input foto menggunakan capture="environment" untuk Perbaikan & Pengembalian, standar untuk Penarikan
+    // Form Kondisi Barang (Hanya untuk Penarikan)
+    let kondisiSection = '';
+    if (type === 'withdrawal') {
+      kondisiSection = '<div class="mb-2"><label class="form-label small mb-1 fw-bold text-warning">Kondisi Barang</label>' +
+        '<select class="form-select form-select-sm input-kondisi">' +
+        '<option value="Baik / Tidak Terpakai (Idle)">Baik / Tidak Terpakai (Idle)</option>' +
+        '<option value="Rusak Perlu Perbaikan">Rusak Perlu Perbaikan</option>' +
+        '<option value="Barang Bekas / Kanibalisasi">Barang Bekas / Kanibalisasi</option>' +
+        '</select></div>';
+    }
+
+    // Section Foto: Direct Camera Stream untuk Perbaikan & Pengembalian, File Input biasa untuk Penarikan
     let fotoInputHtml = '';
     if (type === 'withdrawal') {
       fotoInputHtml = '<div class="mb-2"><label class="form-label small mb-1">Foto Kondisi / Fisik Barang</label>' +
                       '<input type="file" accept="image/*" class="form-control form-control-sm mb-1 input-foto" onchange="previewCardImage(this)">' +
                       '<img class="img-fluid rounded mt-1 preview-img border border-secondary"></div>';
     } else {
-      fotoInputHtml = '<div class="mb-2"><label class="form-label small mb-1">Foto Kondisi / Fisik Barang (Buka Kamera Langsung)</label>' +
-                      '<input type="file" accept="image/*" capture="environment" class="form-control form-control-sm mb-1 input-foto" onchange="previewCardImage(this)">' +
+      fotoInputHtml = '<div class="mb-2">' +
+                      '<label class="form-label small mb-1 fw-bold text-success"><i class="fa-solid fa-camera me-1"></i> Foto Kondisi / Fisik Barang</label>' +
+                      '<div class="d-grid gap-2 mb-2">' +
+                        '<button type="button" class="btn btn-outline-success btn-sm fw-bold py-2" onclick="startDirectCamera(this, \'' + camVideoId + '\')">' +
+                          '<i class="fa-solid fa-camera-rotate me-1"></i> Buka Kamera Langsung' +
+                        '</button>' +
+                      '</div>' +
+                      '<!-- Live Camera Stream Box -->' +
+                      '<div class="camera-stream-box border border-success rounded p-2 mb-2 bg-black text-center" style="display:none;">' +
+                        '<video id="' + camVideoId + '" autoplay playsinline style="width:100%; max-height:220px; object-fit:cover; border-radius:6px; background:#000;"></video>' +
+                        '<canvas id="' + camCanvasId + '" style="display:none;"></canvas>' +
+                        '<div class="d-flex gap-2 mt-2">' +
+                          '<button type="button" class="btn btn-success btn-sm w-50 fw-bold py-1" onclick="captureCameraPhoto(this, \'' + camVideoId + '\', \'' + camCanvasId + '\')">📸 Ambil Foto</button>' +
+                          '<button type="button" class="btn btn-outline-danger btn-sm w-50 py-1" onclick="closeDirectCamera(this)">Tutup</button>' +
+                        '</div>' +
+                      '</div>' +
                       '<img class="img-fluid rounded mt-1 preview-img border border-secondary"></div>';
     }
 
@@ -1545,12 +1578,7 @@
       '<input type="text" class="form-control form-control-sm input-nondat-kategori-custom" placeholder="Ketik jenis kategori barang..."></div>' +
       '</div>' +
 
-      '<div class="mb-2"><label class="form-label small mb-1 fw-bold text-warning">Kondisi Barang</label>' +
-      '<select class="form-select form-select-sm input-kondisi">' +
-      '<option value="Baik / Tidak Terpakai (Idle)">Baik / Tidak Terpakai (Idle)</option>' +
-      '<option value="Rusak Perlu Perbaikan">Rusak Perlu Perbaikan</option>' +
-      '<option value="Barang Bekas / Kanibalisasi">Barang Bekas / Kanibalisasi</option>' +
-      '</select></div>' +
+      kondisiSection +
 
       fotoInputHtml +
 
@@ -1559,6 +1587,62 @@
 
     container.insertAdjacentHTML('beforeend', html);
     if(type === 'withdrawal') updateWithdrawalSummary();
+  }
+
+  // --- FUNGSI DIRECT CAMERA STREAM UNTUK FOTO KONDISI ---
+  function startDirectCamera(btn, videoId) {
+    const card = btn.closest('.item-card');
+    const streamBox = card.querySelector('.camera-stream-box');
+    const videoEl = document.getElementById(videoId);
+
+    stopActiveCameraStream();
+    streamBox.style.display = 'block';
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+      .then(stream => {
+        activeCameraStream = stream;
+        videoEl.srcObject = stream;
+      })
+      .catch(err => {
+        showCustomAlert("Akses Kamera Gagal", "Tidak dapat mengakses kamera perangkat: " + err.message, "error");
+        streamBox.style.display = 'none';
+      });
+  }
+
+  function captureCameraPhoto(btn, videoId, canvasId) {
+    const card = btn.closest('.item-card');
+    const videoEl = document.getElementById(videoId);
+    const canvasEl = document.getElementById(canvasId);
+    const preview = card.querySelector('.preview-img');
+    const streamBox = card.querySelector('.camera-stream-box');
+
+    canvasEl.width = videoEl.videoWidth || 640;
+    canvasEl.height = videoEl.videoHeight || 480;
+    const ctx = canvasEl.getContext('2d');
+    ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
+
+    const dataUrl = canvasEl.toDataURL('image/jpeg', 0.85);
+    card.dataset.fotoBase64 = dataUrl;
+    preview.src = dataUrl;
+    preview.style.display = 'block';
+
+    playBeep();
+    stopActiveCameraStream();
+    streamBox.style.display = 'none';
+  }
+
+  function closeDirectCamera(btn) {
+    const card = btn.closest('.item-card');
+    const streamBox = card.querySelector('.camera-stream-box');
+    stopActiveCameraStream();
+    streamBox.style.display = 'none';
+  }
+
+  function stopActiveCameraStream() {
+    if (activeCameraStream) {
+      activeCameraStream.getTracks().forEach(track => track.stop());
+      activeCameraStream = null;
+    }
   }
 
   function openBarcodeScanner(btn, readerId) {
@@ -1889,7 +1973,6 @@
         lokasiAktiva = tokoVal;
       }
 
-      const kondisiVal = card.querySelector('.input-kondisi').value;
       const noSj = card.querySelector('.input-nosj').value.trim();
       const fotoBase64 = card.dataset.fotoBase64;
       const deskripsi = card.querySelector('.input-deskripsi').value.trim();
@@ -1905,7 +1988,7 @@
         namaAktiva: aktivaNama,
         kategoriAktiva: kategoriAktiva,
         lokasiAktiva: lokasiAktiva,
-        kondisi: kondisiVal,
+        kondisi: "-", // Default kosong untuk Perbaikan & Pengembalian
         noSj: noSj,
         deskripsi: deskripsi,
         fotoBase64: fotoBase64
