@@ -1414,12 +1414,16 @@
       '</div>' +
 
       '<div class="mb-3"><label class="form-label small mb-1">Tipe Aktiva / Barang</label>' +
-      '<div class="d-flex gap-4"><div class="form-check">' +
+      '<div class="d-flex gap-4 mb-1"><div class="form-check">' +
       '<input class="form-check-input aktiva-radio" type="radio" name="aktivaType_' + type + '_' + count + '" id="typeDat_' + type + '_' + count + '" value="dat" checked onchange="toggleAktivaType(this)">' +
       '<label class="form-check-label small text-white" for="typeDat_' + type + '_' + count + '">DAT</label></div>' +
       '<div class="form-check">' +
       '<input class="form-check-input aktiva-radio" type="radio" name="aktivaType_' + type + '_' + count + '" id="typeNonDat_' + type + '_' + count + '" value="nondat" onchange="toggleAktivaType(this)">' +
-      '<label class="form-check-label small text-white" for="typeNonDat_' + type + '_' + count + '">Non DAT</label></div></div></div>' +
+      '<label class="form-check-label small text-white" for="typeNonDat_' + type + '_' + count + '">Non DAT</label></div></div>' +
+      '<div class="text-light opacity-75" style="font-size: 10px; line-height: 1.4;">' +
+        '• <strong>DAT:</strong> Aktiva berlabel QR Code dengan Nomor DAT<br>' +
+        '• <strong>Non DAT:</strong> Aktiva / sarana tanpa label QR Code dan No DAT' +
+      '</div></div>' +
       
       '<!-- SECTION DAT -->' +
       '<div class="dat-section mb-2"><label class="form-label small mb-1">No. Aktiva / Hasil Scan QR</label>' +
@@ -1658,7 +1662,6 @@
       const card = cards[i];
       let tokoVal = "";
 
-      // PENGECEKAN OPSI LOKASI SAMA DENGAN AKTIVA #1
       const isSameLoc = (i > 0) && card.querySelector('.loc-same-radio:checked') && (card.querySelector('.loc-same-radio:checked').value === 'same');
 
       if (isSameLoc) {
