@@ -133,6 +133,7 @@
     }
     .service-card.repair { border-left: 4px solid #6366f1; }
     .service-card.return { border-left: 4px solid #f59e0b; }
+    .service-card.withdrawal { border-left: 4px solid #ef4444; } /* Warna Merah untuk Penarikan Aktiva */
     .service-card.tracking { border-left: 4px solid #0ea5e9; }
     
     .icon-box {
@@ -217,12 +218,8 @@
       border: 3px solid #0b0f19;
       cursor: pointer;
     }
-    .page-view {
-      display: none;
-    }
-    .page-view.active {
-      display: block;
-    }
+    .page-view { display: none; }
+    .page-view.active { display: block; }
     .preview-img {
       width: 100%;
       max-height: 180px;
@@ -259,9 +256,7 @@
   <!-- PAGE 1: LOGIN -->
   <div id="pageLogin" class="page-view active py-4">
     <div class="text-center mb-4">
-      <div class="app-logo-box">
-        <i class="fa-solid fa-cube"></i>
-      </div>
+      <div class="app-logo-box"><i class="fa-solid fa-cube"></i></div>
       <h4 class="fw-bold text-white m-0">ARSP Mobile</h4>
       <p class="small mt-1">Asset Repair & Service Program Portal</p>
     </div>
@@ -286,23 +281,14 @@
 
       <div id="manualLoginContainer" style="display: none;" class="mt-3 pt-3 border-top border-secondary">
         <div class="text-warning small mb-2"><i class="fa-solid fa-triangle-exclamation"></i> NIK tidak terdaftar di database. Silakan lengkapi data manual:</div>
-        <div class="mb-2">
-          <input type="text" id="inputManualNama" class="form-control form-control-sm" placeholder="Nama Lengkap Anda...">
-        </div>
-        <div class="mb-3">
-          <input type="text" id="inputManualDept" class="form-control form-control-sm" placeholder="Departemen / Unit Kerja...">
-        </div>
+        <div class="mb-2"><input type="text" id="inputManualNama" class="form-control form-control-sm" placeholder="Nama Lengkap Anda..."></div>
+        <div class="mb-3"><input type="text" id="inputManualDept" class="form-control form-control-sm" placeholder="Departemen / Unit Kerja..."></div>
         <button onclick="loginManually()" class="btn btn-warning w-100 py-2 fw-bold rounded-pill text-dark shadow">
           Masuk Manual & Daftarkan <i class="fa-solid fa-arrow-right ms-1"></i>
         </button>
       </div>
 
       <div id="loginAlert" class="mt-2 text-danger small text-center fw-bold"></div>
-    </div>
-
-    <div class="text-center mt-5" style="font-size: 11px;">
-      <i class="fa-solid fa-shield-halved text-success"></i> SSO Encrypted
-      <div class="mt-1" style="font-size: 10px;">v1.2.1 • MSN System 2026 • GA BGR2</div>
     </div>
   </div>
 
@@ -320,9 +306,7 @@
             <div class="small" id="headerDept" style="font-size: 12px;">-</div>
           </div>
         </div>
-        <div>
-          <button onclick="logout()" class="btn btn-dark border-secondary btn-sm rounded-circle text-danger" title="Keluar"><i class="fa-solid fa-power-off"></i></button>
-        </div>
+        <button onclick="logout()" class="btn btn-dark border-secondary btn-sm rounded-circle text-danger" title="Keluar"><i class="fa-solid fa-power-off"></i></button>
       </div>
     </div>
 
@@ -358,9 +342,7 @@
       <div id="adminPortalCard" onclick="navigateTo('pageAdminDashboard'); initAdminDashboard();" class="service-card shadow-sm" style="display:none; border-left: 4px solid #10b981; background: #064e3b;">
         <div class="d-flex justify-content-between align-items-center">
           <div class="d-flex align-items-center">
-            <div class="icon-box me-3 bg-success text-white">
-              <i class="fa-solid fa-chart-pie"></i>
-            </div>
+            <div class="icon-box me-3 bg-success text-white"><i class="fa-solid fa-chart-pie"></i></div>
             <div>
               <div class="fw-bold text-white">Dashboard Analisis Admin</div>
               <div class="small mt-1" style="font-size: 11px;">Analisis grafik tiket, perbandingan & eksekusi status.</div>
@@ -370,12 +352,11 @@
         </div>
       </div>
 
+      <!-- PENGAJUAN PERBAIKAN -->
       <div onclick="navigateTo('pageFormService'); initFormService();" class="service-card repair shadow-sm">
         <div class="d-flex justify-content-between align-items-center">
           <div class="d-flex align-items-center">
-            <div class="icon-box me-3" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">
-              <i class="fa-solid fa-screwdriver-wrench"></i>
-            </div>
+            <div class="icon-box me-3" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
             <div>
               <div class="fw-bold text-white">Pengajuan Perbaikan</div>
               <div class="small mt-1" style="font-size: 12px;">Laporkan kerusakan aktiva, sarana toko atau fasilitas kantor.</div>
@@ -388,12 +369,11 @@
         </div>
       </div>
 
+      <!-- PENGEMBALIAN BARANG -->
       <div onclick="navigateTo('pageFormReturn'); initFormReturn();" class="service-card return shadow-sm">
         <div class="d-flex justify-content-between align-items-center">
           <div class="d-flex align-items-center">
-            <div class="icon-box me-3" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">
-              <i class="fa-solid fa-box-archive"></i>
-            </div>
+            <div class="icon-box me-3" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;"><i class="fa-solid fa-box-archive"></i></div>
             <div>
               <div class="fw-bold text-white">Pengembalian Barang</div>
               <div class="small mt-1" style="font-size: 12px;">Kembalikan aset menganggur / idle atau barang tidak terpakai ke Gudang GA.</div>
@@ -406,27 +386,47 @@
         </div>
       </div>
 
+      <!-- E-REQUEST PENARIKAN BARANG TOKO (BERWARNA MERAH SESUAI PERMINTAAN) -->
+      <div onclick="navigateTo('pageFormWithdrawal'); initFormWithdrawal();" class="service-card withdrawal shadow-sm">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center">
+            <div class="icon-box me-3" style="background: rgba(239, 68, 68, 0.2); color: #f87171;"><i class="fa-solid fa-truck-ramp-box"></i></div>
+            <div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="fw-bold text-white">E-Request Penarikan Barang Toko</span>
+                <span class="badge bg-danger text-white" style="font-size: 8px;">NEW</span>
+              </div>
+              <div class="small mt-1" style="font-size: 11px;">Jadwalkan penarikan barang idle/tidak terpakai dari toko oleh tim GA.</div>
+            </div>
+          </div>
+          <span class="fs-5">›</span>
+        </div>
+        <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center" style="font-size: 11px; color: #fca5a5 !important;">
+          <span><i class="fa-solid fa-calendar-check me-1"></i> Form Jadwal & Penarikan Toko</span>
+          <span class="text-secondary" style="font-size: 10px;">Armada GA</span>
+        </div>
+      </div>
+
+      <!-- TRACKING & RIWAYAT -->
       <div onclick="navigateTo('pageTracking'); loadTrackingData('service');" class="service-card tracking shadow-sm">
         <div class="d-flex justify-content-between align-items-center">
           <div class="d-flex align-items-center">
-            <div class="icon-box me-3" style="background: rgba(14, 165, 233, 0.2); color: #38bdf8;">
-              <i class="fa-solid fa-chart-line"></i>
-            </div>
+            <div class="icon-box me-3" style="background: rgba(14, 165, 233, 0.2); color: #38bdf8;"><i class="fa-solid fa-chart-line"></i></div>
             <div>
               <div class="fw-bold text-white">Tracking & Riwayat</div>
-              <div class="small mt-1" style="font-size: 12px;">Pantau status pengerjaan servis dan riwayat pengembalian barang.</div>
+              <div class="small mt-1" style="font-size: 12px;">Pantau status pengerjaan servis, penarikan armada toko & retur.</div>
             </div>
           </div>
           <span class="fs-5">›</span>
         </div>
         <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center" style="font-size: 12px; color: #38bdf8 !important;">
-          <i class="fa-solid fa-bolt me-1"></i> Live Status Update
+          <i class="fa-solid fa-bolt me-1"></i> Live Status Update & Riwayat Gabungan
         </div>
       </div>
     </div>
   </div>
 
-  <!-- PAGE 2.B: DASHBOARD ADMIN ANALISIS & EKSEKUSI TIKET -->
+  <!-- DASHBOARD ADMIN ANALISIS & EKSEKUSI TIKET -->
   <div id="pageAdminDashboard" class="page-view">
     <div class="d-flex align-items-center justify-content-between mb-3">
       <div class="d-flex align-items-center">
@@ -451,28 +451,31 @@
 
     <!-- STATS RINGKASAN ADMIN -->
     <div class="row g-2 mb-3">
-      <div class="col-6">
+      <div class="col-4">
         <div class="stat-box-perbaikan-admin p-2">
-          <div style="font-size: 11px;" class="fw-bold text-white">Total Perbaikan</div>
+          <div style="font-size: 10px;" class="fw-bold text-white">Perbaikan</div>
           <div class="fw-bold fs-4 text-white" id="adminTotalPerbaikan">0</div>
-          <div style="font-size: 9px;" class="text-light opacity-75" id="adminSubPerbaikan">Selesai: 0 | Pending: 0</div>
+          <div style="font-size: 8px;" class="text-light opacity-75" id="adminSubPerbaikan">Selesai: 0 | Pend: 0</div>
         </div>
       </div>
-      <div class="col-6">
+      <div class="col-4">
         <div class="stat-box-pengembalian-admin p-2">
-          <div style="font-size: 11px;" class="fw-bold text-white">Total Pengembalian</div>
+          <div style="font-size: 10px;" class="fw-bold text-white">Pengembalian</div>
           <div class="fw-bold fs-4 text-white" id="adminTotalPengembalian">0</div>
-          <div style="font-size: 9px;" class="text-light opacity-75" id="adminSubPengembalian">Selesai: 0 | Pending: 0</div>
+          <div style="font-size: 8px;" class="text-light opacity-75" id="adminSubPengembalian">Selesai: 0 | Pend: 0</div>
         </div>
+      </div>
+      <div class="col-4" style="background: rgba(239, 68, 68, 0.18); border: 1px solid rgba(239, 68, 68, 0.6); border-radius: 14px; padding: 8px; text-align: center;">
+        <div style="font-size: 10px;" class="fw-bold text-white">Penarikan</div>
+        <div class="fw-bold fs-4 text-white" id="adminTotalPenarikan">0</div>
+        <div style="font-size: 8px;" class="text-light opacity-75" id="adminSubPenarikan">Selesai: 0 | Pend: 0</div>
       </div>
     </div>
 
     <!-- GRAFIK CHART.JS -->
     <div class="card p-3 mb-3 bg-dark border-secondary">
       <div class="small fw-bold mb-2 text-center text-white"><i class="fa-solid fa-chart-pie me-1"></i> Perbandingan Jenis Tiket</div>
-      <div style="max-height: 200px; position: relative;">
-        <canvas id="adminPieChart"></canvas>
-      </div>
+      <div style="max-height: 200px; position: relative;"><canvas id="adminPieChart"></canvas></div>
     </div>
 
     <!-- TOP 5 TOKO / DEPT -->
@@ -480,15 +483,16 @@
       <div class="d-flex justify-content-between align-items-start mb-2">
         <div>
           <div class="fw-bold text-white"><i class="fa-solid fa-building me-1"></i> Top 5 Toko / Departemen</div>
-          <div class="text-secondary" style="font-size: 11px;">Pengaju terbanyak perbaikan & pengembalian</div>
+          <div class="text-secondary" style="font-size: 11px;">Pengaju terbanyak perbaikan, pengembalian & penarikan</div>
         </div>
         <span class="badge bg-success text-white px-2 py-1 shadow-sm" style="font-size: 10px;">Ranking Top 5</span>
       </div>
 
-      <div class="d-flex gap-2 mb-3" id="topFilterPills">
-        <button type="button" class="btn btn-sm btn-success text-white fw-bold active shadow-sm" onclick="switchTopFilter('all', this)">Semua</button>
-        <button type="button" class="btn btn-sm btn-outline-primary text-white" onclick="switchTopFilter('perbaikan', this)">Perbaikan</button>
-        <button type="button" class="btn btn-sm btn-outline-warning text-white" onclick="switchTopFilter('pengembalian', this)">Pengembalian</button>
+      <div class="d-flex gap-1 mb-3 overflow-auto" id="topFilterPills">
+        <button type="button" class="btn btn-sm btn-success text-white fw-bold active shadow-sm flex-shrink-0" onclick="switchTopFilter('all', this)">Semua</button>
+        <button type="button" class="btn btn-sm btn-outline-primary text-white flex-shrink-0" onclick="switchTopFilter('perbaikan', this)">Perbaikan</button>
+        <button type="button" class="btn btn-sm btn-outline-warning text-white flex-shrink-0" onclick="switchTopFilter('pengembalian', this)">Pengembalian</button>
+        <button type="button" class="btn btn-sm btn-outline-danger text-white flex-shrink-0" onclick="switchTopFilter('penarikan', this)">Penarikan</button>
       </div>
 
       <div id="adminTopLocationsList" style="font-size: 11px;">
@@ -496,7 +500,6 @@
       </div>
     </div>
 
-    <!-- TOMBOL DOWNLOAD REPORT CSV -->
     <button type="button" onclick="openExportModal()" class="btn btn-success w-100 mb-4 fw-bold shadow-sm">
       <i class="fa-solid fa-file-csv me-2"></i> Download Report CSV
     </button>
@@ -572,7 +575,32 @@
     </button>
   </div>
 
-  <!-- PAGE 5: TRACKING PAGE -->
+  <!-- PAGE: FORM E-REQUEST PENARIKAN BARANG TOKO -->
+  <div id="pageFormWithdrawal" class="page-view">
+    <div class="d-flex align-items-center mb-3">
+      <button onclick="navigateTo('pageHome')" class="btn btn-sm btn-dark border-secondary me-2 py-1 px-3 rounded-pill">
+        <i class="fa-solid fa-arrow-left me-1"></i> Kembali
+      </button>
+      <h6 class="fw-bold m-0 text-danger">E-Request Penarikan Barang Toko</h6>
+    </div>
+
+    <div id="gpsStatusCardWithdraw" class="card p-3 mb-3 text-center bg-dark border border-secondary text-light">
+      <div id="gpsSpinnerWithdraw" class="spinner-border spinner-border-sm text-danger"></div>
+      <span id="gpsTextWithdraw" class="small ms-1" style="font-size: 12px;">Mengecek lokasi GPS gudang...</span>
+    </div>
+
+    <div id="itemListContainerWithdrawal"></div>
+
+    <button onclick="addItemCard('itemListContainerWithdrawal', 'withdrawal')" class="btn btn-outline-danger btn-sm w-100 fw-bold mb-3 py-2 rounded-3 text-white">
+      + Tambah Aktiva Penarikan Lain
+    </button>
+
+    <button id="btnSubmitWithdrawal" onclick="submitMultiData('withdrawal')" class="btn btn-danger w-100 py-3 fw-bold rounded-3 shadow text-white mb-4" disabled>
+      Kirim E-Request Penarikan
+    </button>
+  </div>
+
+  <!-- PAGE 5: TRACKING PAGE (DILENGKAPI 3 TAB: PERBAIKAN, PENGEMBALIAN, PENARIKAN) -->
   <div id="pageTracking" class="page-view">
     <div class="d-flex align-items-center justify-content-between mb-3">
       <div class="d-flex align-items-center">
@@ -584,14 +612,19 @@
     </div>
 
     <div class="row g-2 mb-3">
-      <div class="col-6">
-        <button id="btnTabService" onclick="switchTrackingTab('service')" class="btn btn-primary btn-sm w-100 py-2 fw-bold">
+      <div class="col-4">
+        <button id="btnTabService" onclick="switchTrackingTab('service')" class="btn btn-primary btn-sm w-100 py-2 fw-bold" style="font-size: 11px;">
           Perbaikan
         </button>
       </div>
-      <div class="col-6">
-        <button id="btnTabReturn" onclick="switchTrackingTab('return')" class="btn btn-outline-warning btn-sm w-100 py-2 fw-bold text-white">
+      <div class="col-4">
+        <button id="btnTabReturn" onclick="switchTrackingTab('return')" class="btn btn-outline-warning btn-sm w-100 py-2 fw-bold text-white" style="font-size: 11px;">
           Pengembalian
+        </button>
+      </div>
+      <div class="col-4">
+        <button id="btnTabWithdrawal" onclick="switchTrackingTab('withdrawal')" class="btn btn-outline-danger btn-sm w-100 py-2 fw-bold text-white" style="font-size: 11px;">
+          Penarikan
         </button>
       </div>
     </div>
@@ -637,9 +670,10 @@
         <div class="mb-3">
           <label class="form-label fw-bold">Opsi Kategori Tiket</label>
           <select id="exportCategory" class="form-select form-select-sm bg-dark text-white border-secondary">
-            <option value="all">Semua Tiket (Perbaikan & Pengembalian)</option>
+            <option value="all">Semua Tiket (Perbaikan, Pengembalian & Penarikan)</option>
             <option value="perbaikan">Report Detail Perbaikan</option>
             <option value="pengembalian">Report Detail Pengembalian Barang</option>
+            <option value="penarikan">Report Detail Penarikan Barang Toko</option>
           </select>
         </div>
         <div class="row g-2">
@@ -674,14 +708,18 @@
       <div class="modal-body" style="font-size: 13px;">
         <div class="mb-3">
           <label class="form-label fw-bold text-info">1. Pilih Kategori Eksekusi:</label>
-          <div class="row g-2">
-            <div class="col-6">
+          <div class="row g-1">
+            <div class="col-4">
               <input type="radio" class="btn-check" name="modalCategory" id="catPerbaikan" value="perbaikan" checked autocomplete="off" onchange="updateModalStatusOptions()">
-              <label class="btn btn-outline-primary w-100 fw-bold py-2" for="catPerbaikan"><i class="fa-solid fa-screwdriver-wrench me-1"></i> Perbaikan</label>
+              <label class="btn btn-outline-primary w-100 fw-bold py-2" for="catPerbaikan" style="font-size: 10px;"><i class="fa-solid fa-screwdriver-wrench me-1"></i> Perbaikan</label>
             </div>
-            <div class="col-6">
+            <div class="col-4">
               <input type="radio" class="btn-check" name="modalCategory" id="catPengembalian" value="pengembalian" autocomplete="off" onchange="updateModalStatusOptions()">
-              <label class="btn btn-outline-warning w-100 fw-bold py-2 text-white" for="catPengembalian"><i class="fa-solid fa-box-archive me-1"></i> Pengembalian</label>
+              <label class="btn btn-outline-warning w-100 fw-bold py-2 text-white" for="catPengembalian" style="font-size: 10px;"><i class="fa-solid fa-box-archive me-1"></i> Pengembalian</label>
+            </div>
+            <div class="col-4">
+              <input type="radio" class="btn-check" name="modalCategory" id="catPenarikan" value="penarikan" autocomplete="off" onchange="updateModalStatusOptions()">
+              <label class="btn btn-outline-danger w-100 fw-bold py-2 text-white" for="catPenarikan" style="font-size: 10px;"><i class="fa-solid fa-truck-ramp-box me-1"></i> Penarikan</label>
             </div>
           </div>
         </div>
@@ -746,10 +784,11 @@
   let isLocationValid = false;
   let serviceItemCount = 0;
   let returnItemCount = 0;
+  let withdrawalItemCount = 0;
   let activeTrackingTab = 'service';
   let adminSelectedPeriod = 1;
   let pieChartInstance = null;
-  let cachedTopLocations = { all: [], perbaikan: [], pengembalian: [] };
+  let cachedTopLocations = { all: [], perbaikan: [], pengembalian: [], penarikan: [] };
   let activeTopFilter = 'all';
 
   let currentExecutionCategory = null;
@@ -770,9 +809,7 @@
       gainNode.connect(audioCtx.destination);
       oscillator.start();
       oscillator.stop(audioCtx.currentTime + 0.12);
-    } catch (e) {
-      console.log("Audio beep tidak didukung browser", e);
-    }
+    } catch (e) {}
   }
 
   function showCustomAlert(title, message, type = 'info') {
@@ -791,9 +828,7 @@
     closeBtn.style.display = "block";
     footerEl.innerHTML = `<button type="button" class="btn btn-sm btn-primary px-4 fw-bold rounded-pill" data-bs-dismiss="modal">OK</button>`;
 
-    const modalEl = document.getElementById("modernAppModal");
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
+    new bootstrap.Modal(document.getElementById("modernAppModal")).show();
   }
 
   function showCustomConfirm(title, message, onConfirmCallback) {
@@ -864,8 +899,6 @@
         document.getElementById("loginAlert").innerText = "";
         document.getElementById("manualLoginContainer").style.display = "block";
       }
-    }, function(err) {
-      document.getElementById("loginAlert").innerText = "Gagal terhubung ke server.";
     });
   }
 
@@ -879,8 +912,6 @@
       return;
     }
 
-    document.getElementById("loginAlert").innerText = "Mendaftarkan data karyawan...";
-
     callApi("registerManualEmployee", { employeeData: { nik: nik, nama: nama, dept: dept } }, function(res) {
       if(res.success) {
         currentUser = { nik: nik, nama: nama, dept: dept, noWa: "-", isAdmin: false };
@@ -888,13 +919,7 @@
         localStorage.setItem("user_manual_profile", JSON.stringify(currentUser));
         document.getElementById("loginAlert").innerText = "";
         postLoginSuccess();
-      } else {
-        showCustomAlert("Gagal", "Gagal mendaftarkan karyawan: " + res.message, "error");
-        document.getElementById("loginAlert").innerText = "";
       }
-    }, function(err) {
-      showCustomAlert("Koneksi Gagal", "Gagal terhubung ke server.", "error");
-      document.getElementById("loginAlert").innerText = "";
     });
   }
 
@@ -960,14 +985,17 @@
       if(res.success) {
         const s = res.summary;
         document.getElementById("adminTotalPerbaikan").innerText = s.totalPerbaikan;
-        document.getElementById("adminSubPerbaikan").innerText = "Selesai: " + s.selesaiPerbaikan + " | Pending: " + s.menungguPerbaikan;
+        document.getElementById("adminSubPerbaikan").innerText = "Selesai: " + s.selesaiPerbaikan + " | Pend: " + s.menungguPerbaikan;
         
         document.getElementById("adminTotalPengembalian").innerText = s.totalPengembalian;
-        document.getElementById("adminSubPengembalian").innerText = "Selesai: " + s.selesaiPengembalian + " | Pending: " + s.menungguPengembalian;
+        document.getElementById("adminSubPengembalian").innerText = "Selesai: " + s.selesaiPengembalian + " | Pend: " + s.menungguPengembalian;
+
+        document.getElementById("adminTotalPenarikan").innerText = s.totalPenarikan;
+        document.getElementById("adminSubPenarikan").innerText = "Selesai: " + s.selesaiPenarikan + " | Pend: " + s.pendingPenarikan;
 
         cachedTopLocations = res.topLocations;
         renderTopLocations(cachedTopLocations[activeTopFilter]);
-        renderPieChart(s.totalPerbaikan, s.totalPengembalian);
+        renderPieChart(s.totalPerbaikan, s.totalPengembalian, s.totalPenarikan);
       }
     });
   }
@@ -977,13 +1005,15 @@
     const container = document.getElementById('topFilterPills');
     const btns = container.querySelectorAll('.btn');
     
-    btns[0].className = "btn btn-sm btn-outline-success text-white";
-    btns[1].className = "btn btn-sm btn-outline-primary text-white";
-    btns[2].className = "btn btn-sm btn-outline-warning text-white";
+    btns[0].className = "btn btn-sm btn-outline-success text-white flex-shrink-0";
+    btns[1].className = "btn btn-sm btn-outline-primary text-white flex-shrink-0";
+    btns[2].className = "btn btn-sm btn-outline-warning text-white flex-shrink-0";
+    btns[3].className = "btn btn-sm btn-outline-danger text-white flex-shrink-0";
 
-    if (filterType === 'all') btn.className = "btn btn-sm btn-success text-white fw-bold active shadow-sm";
-    else if (filterType === 'perbaikan') btn.className = "btn btn-sm btn-primary text-white fw-bold active shadow-sm";
-    else if (filterType === 'pengembalian') btn.className = "btn btn-sm btn-warning text-dark fw-bold active shadow-sm";
+    if (filterType === 'all') btn.className = "btn btn-sm btn-success text-white fw-bold active shadow-sm flex-shrink-0";
+    else if (filterType === 'perbaikan') btn.className = "btn btn-sm btn-primary text-white fw-bold active shadow-sm flex-shrink-0";
+    else if (filterType === 'pengembalian') btn.className = "btn btn-sm btn-warning text-dark fw-bold active shadow-sm flex-shrink-0";
+    else if (filterType === 'penarikan') btn.className = "btn btn-sm btn-danger text-white fw-bold active shadow-sm flex-shrink-0";
 
     renderTopLocations(cachedTopLocations[filterType]);
   }
@@ -999,6 +1029,7 @@
     let badgeTextClass = "text-success";
     if (activeTopFilter === 'perbaikan') { barColor = "#6366f1"; badgeTextClass = "text-primary"; }
     else if (activeTopFilter === 'pengembalian') { barColor = "#f59e0b"; badgeTextClass = "text-warning"; }
+    else if (activeTopFilter === 'penarikan') { barColor = "#ef4444"; badgeTextClass = "text-danger"; }
 
     let html = "";
     list.forEach(function(item, index) {
@@ -1009,24 +1040,22 @@
               '<span class="text-light" style="font-size: 11px;">' + item.jumlah + ' Request</span>' +
               '<span class="badge bg-dark border border-secondary ' + badgeTextClass + '" style="font-size: 10px;">' + item.persen + '%</span>' +
               '</div></div>' +
-              '<div class="top-progress-bg">' +
-              '<div class="top-progress-bar" style="width: ' + item.persen + '%; background-color: ' + barColor + ';"></div>' +
-              '</div></div>';
+              '<div class="top-progress-bg"><div class="top-progress-bar" style="width: ' + item.persen + '%; background-color: ' + barColor + ';"></div></div></div>';
     });
     listDiv.innerHTML = html;
   }
 
-  function renderPieChart(totalPerbaikan, totalPengembalian) {
+  function renderPieChart(totalPerbaikan, totalPengembalian, totalPenarikan) {
     const ctx = document.getElementById('adminPieChart').getContext('2d');
     if(pieChartInstance) pieChartInstance.destroy();
 
     pieChartInstance = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: ['Perbaikan', 'Pengembalian'],
+        labels: ['Perbaikan', 'Pengembalian', 'Penarikan'],
         datasets: [{
-          data: [totalPerbaikan, totalPengembalian],
-          backgroundColor: ['#6366f1', '#f59e0b'],
+          data: [totalPerbaikan, totalPengembalian, totalPenarikan],
+          backgroundColor: ['#6366f1', '#f59e0b', '#ef4444'],
           borderColor: '#111827',
           borderWidth: 2
         }]
@@ -1041,13 +1070,12 @@
 
   function openExecutionModal() {
     updateModalStatusOptions();
-    const modalEl = document.getElementById('modalExecutionConfig');
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
+    new bootstrap.Modal(document.getElementById('modalExecutionConfig')).show();
   }
 
   function updateModalStatusOptions() {
     const isPerb = document.getElementById('catPerbaikan').checked;
+    const isRet = document.getElementById('catPengembalian').checked;
     const selectEl = document.getElementById('modalStatusSelect');
     selectEl.innerHTML = "";
 
@@ -1056,30 +1084,34 @@
         <option value="all">Semua Status Perbaikan</option>
         <option value="Menunggu Perbaikan">Menunggu Perbaikan</option>
         <option value="Selesai Servis">Selesai Servis</option>
-        <option value="Menunggu Sparepart">Menunggu Sparepart / Pending</option>
       `;
-    } else {
+    } else if (isRet) {
       selectEl.innerHTML = `
         <option value="all">Semua Status Pengembalian</option>
         <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
         <option value="Selesai / Diterima">Selesai / Diterima</option>
       `;
+    } else {
+      selectEl.innerHTML = `
+        <option value="all">Semua Status Penarikan</option>
+        <option value="Pending Penarikan">Pending Penarikan</option>
+        <option value="Selesai Penarikan">Selesai Penarikan</option>
+      `;
     }
   }
 
   function applyExecutionFilter() {
-    const isPerb = document.getElementById('catPerbaikan').checked;
-    currentExecutionCategory = isPerb ? 'perbaikan' : 'pengembalian';
+    if(document.getElementById('catPerbaikan').checked) currentExecutionCategory = 'perbaikan';
+    else if(document.getElementById('catPengembalian').checked) currentExecutionCategory = 'pengembalian';
+    else currentExecutionCategory = 'penarikan';
+
     currentExecutionStatus = document.getElementById('modalStatusSelect').value;
 
-    const catName = isPerb ? 'Perbaikan' : 'Pengembalian';
+    const catName = currentExecutionCategory.toUpperCase();
     const statusText = document.getElementById('modalStatusSelect').selectedOptions[0].text;
     document.getElementById('activeFilterDesc').innerHTML = `Kategori: <strong class="text-white">${catName}</strong> | Status: <strong class="text-warning">${statusText}</strong>`;
 
-    const modalEl = document.getElementById('modalExecutionConfig');
-    const modalInstance = bootstrap.Modal.getInstance(modalEl);
-    if(modalInstance) modalInstance.hide();
-
+    bootstrap.Modal.getInstance(document.getElementById('modalExecutionConfig')).hide();
     loadAdminTicketsFiltered(currentExecutionCategory, currentExecutionStatus);
   }
 
@@ -1114,17 +1146,20 @@
 
     let html = "";
     filtered.forEach(function(item) {
-      let statusText = item.status ? item.status : (item.type === 'perbaikan' ? "Menunggu Perbaikan" : "Menunggu Verifikasi");
+      let statusText = item.status ? item.status : "Pending";
       let badgeBg = (statusText.toLowerCase().includes("selesai") || statusText.toLowerCase().includes("diterima")) ? "bg-success" : "bg-warning text-dark";
       let type = item.type;
 
       let actionButtons = '';
       if (type === 'perbaikan') {
         actionButtons = '<button class="btn btn-sm btn-success w-50 fw-bold" style="font-size:11px;" onclick="executeAdminUpdate(\'' + item.tiketId + '\', \'' + type + '\', \'Selesai Servis\')">✓ Selesai Servis</button>' +
-                        '<button class="btn btn-sm btn-outline-warning w-50 fw-bold text-white" style="font-size:11px;" onclick="executeAdminUpdate(\'' + item.tiketId + '\', \'' + type + '\', \'Menunggu Sparepart\')">⏳ Pending</button>';
-      } else {
+                        '<button class="btn btn-sm btn-outline-warning w-50 fw-bold text-white" style="font-size:11px;" onclick="executeAdminUpdate(\'' + item.tiketId + '\', \'' + type + '\', \'Menunggu Perbaikan\')">⏳ Menunggu</button>';
+      } else if (type === 'pengembalian') {
         actionButtons = '<button class="btn btn-sm btn-success w-50 fw-bold" style="font-size:11px;" onclick="executeAdminUpdate(\'' + item.tiketId + '\', \'' + type + '\', \'Selesai / Diterima\')">✓ Selesai / Diterima</button>' +
-                        '<button class="btn btn-sm btn-outline-warning w-50 fw-bold text-white" style="font-size:11px;" onclick="executeAdminUpdate(\'' + item.tiketId + '\', \'' + type + '\', \'Menunggu Verifikasi\')">⏳ Menunggu Verifikasi</button>';
+                        '<button class="btn btn-sm btn-outline-warning w-50 fw-bold text-white" style="font-size:11px;" onclick="executeAdminUpdate(\'' + item.tiketId + '\', \'' + type + '\', \'Menunggu Verifikasi\')">⏳ Menunggu</button>';
+      } else {
+        actionButtons = '<button class="btn btn-sm btn-success w-50 fw-bold" style="font-size:11px;" onclick="executeAdminUpdate(\'' + item.tiketId + '\', \'' + type + '\', \'Selesai Penarikan\')">✓ Selesai Penarikan</button>' +
+                        '<button class="btn btn-sm btn-outline-danger w-50 fw-bold text-white" style="font-size:11px;" onclick="executeAdminUpdate(\'' + item.tiketId + '\', \'' + type + '\', \'Pending Penarikan\')">⏳ Pending</button>';
       }
 
       let fotoSection = item.fotoUrl ? '<div class="mt-2"><a href="' + item.fotoUrl + '" target="_blank" class="btn btn-sm btn-outline-info py-1 px-2 text-white" style="font-size: 11px; text-decoration: none;"><i class="fa-solid fa-image me-1"></i> Lihat Foto Bukti / Fisik Barang</a></div>' : '';
@@ -1139,10 +1174,10 @@
               '<div class="mt-2 small text-light">' +
               '<div><strong>Barang:</strong> ' + item.namaAktiva + ' (' + item.kodeAktiva + ')</div>' +
               '<div><strong>Kategori:</strong> ' + (item.kategoriAktiva || '-') + '</div>' +
-              '<div><strong>Lokasi Aktiva:</strong> ' + (item.lokasiAktiva || '-') + '</div>' +
+              '<div><strong>Lokasi:</strong> ' + (item.lokasiAktiva || '-') + '</div>' +
+              (item.kondisi ? '<div><strong>Kondisi:</strong> <span class="text-warning">' + item.kondisi + '</span></div>' : '') +
               '<div><strong>Deskripsi:</strong> ' + item.deskripsi + '</div>' +
-              fotoSection +
-              '</div>' +
+              fotoSection + '</div>' +
               '<div class="mt-3 pt-2 border-top border-secondary d-flex gap-2">' + actionButtons + '</div></div>';
     });
     listDiv.innerHTML = html;
@@ -1155,8 +1190,6 @@
           showCustomAlert("Berhasil", res.message, "success");
           loadAdminTicketsFiltered(currentExecutionCategory, currentExecutionStatus);
           loadAdminAnalytics(adminSelectedPeriod);
-        } else {
-          showCustomAlert("Gagal", res.message, "error");
         }
       });
     });
@@ -1166,9 +1199,7 @@
     const today = new Date().toISOString().split('T')[0];
     document.getElementById("exportStartDate").value = today;
     document.getElementById("exportEndDate").value = today;
-    const modalEl = document.getElementById('exportExcelModal');
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
+    new bootstrap.Modal(document.getElementById('exportExcelModal')).show();
   }
 
   function generateCsvReport() {
@@ -1185,15 +1216,13 @@
     const endDate = new Date(endStr + "T23:59:59");
 
     callApi("getAllTransactionsForExport", {}, function(res) {
-      if(!res.success) {
-        showCustomAlert("Gagal", "Gagal mengambil data: " + res.message, "error");
-        return;
-      }
+      if(!res.success) return;
 
       let sourceList = [];
-      if(category === "all") sourceList = [...res.perbaikan, ...res.pengembalian];
+      if(category === "all") sourceList = [...res.perbaikan, ...res.pengembalian, ...res.penarikan];
       else if(category === "perbaikan") sourceList = res.perbaikan;
-      else sourceList = res.pengembalian;
+      else if(category === "pengembalian") sourceList = res.pengembalian;
+      else sourceList = res.penarikan;
 
       let filteredRows = [];
       sourceList.forEach(item => {
@@ -1213,14 +1242,14 @@
         return;
       }
 
-      const headers = ["ID Tiket", "Tipe Transaksi", "Waktu Pengajuan", "NIK Pelapor", "Nama Pelapor", "No WhatsApp", "Kode Aktiva", "Nama Barang", "Kategori", "Lokasi Aktiva", "Deskripsi", "Status", "Koordinat GPS", "URL Foto", "Toko / Dept", "No SJ"];
+      const headers = ["ID Tiket", "Tipe", "Waktu", "NIK", "Nama Pelapor", "No WA", "Kode Aktiva", "Nama Barang", "Kategori", "Lokasi", "Kondisi", "Deskripsi", "Status", "GPS", "Foto", "Toko/Dept", "No SJ"];
       let csvContent = "\uFEFF" + headers.join(",") + "\n";
 
       filteredRows.forEach(item => {
         const row = [
           `"${item.tiketId || ''}"`, `"${item.tipe || ''}"`, `"${item.timestamp || ''}"`, `"${item.nik || ''}"`,
           `"${item.namaPelapor || ''}"`, `"${item.noWa || ''}"`, `"${item.kodeAktiva || ''}"`, `"${item.namaAktiva || ''}"`,
-          `"${item.kategoriAktiva || ''}"`, `"${item.lokasiAktiva || ''}"`, `"${(item.deskripsi || '').replace(/"/g, '""')}"`,
+          `"${item.kategoriAktiva || ''}"`, `"${item.lokasiAktiva || ''}"`, `"${item.kondisi || ''}"`, `"${(item.deskripsi || '').replace(/"/g, '""')}"`,
           `"${item.status || ''}"`, `"${item.gps || ''}"`, `"${item.fotoUrl || ''}"`, `"${item.kodeToko || ''}"`, `"${item.noSj || ''}"`
         ];
         csvContent += row.join(",") + "\n";
@@ -1236,9 +1265,7 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      const modalEl = document.getElementById('exportExcelModal');
-      const modalInstance = bootstrap.Modal.getInstance(modalEl);
-      if(modalInstance) modalInstance.hide();
+      bootstrap.Modal.getInstance(document.getElementById('exportExcelModal')).hide();
     });
   }
 
@@ -1267,6 +1294,14 @@
     returnItemCount = 0;
     addItemCard('itemListContainerReturn', 'return');
     validateGPS("gpsStatusCardReturn", "gpsSpinnerReturn", "gpsTextReturn", "btnSubmitReturn");
+  }
+
+  function initFormWithdrawal() {
+    stopAndCloseScanner();
+    document.getElementById("itemListContainerWithdrawal").innerHTML = "";
+    withdrawalItemCount = 0;
+    addItemCard('itemListContainerWithdrawal', 'withdrawal');
+    validateGPS("gpsStatusCardWithdraw", "gpsSpinnerWithdraw", "gpsTextWithdraw", "btnSubmitWithdrawal");
   }
 
   function validateGPS(cardId, spinnerId, textId, btnId) {
@@ -1308,11 +1343,7 @@
   function toggleLocationSame(radio) {
     const card = radio.closest('.item-card');
     const locForm = card.querySelector('.location-form-section');
-    if (radio.value === 'same') {
-      locForm.style.display = 'none';
-    } else {
-      locForm.style.display = 'block';
-    }
+    locForm.style.display = radio.value === 'same' ? 'none' : 'block';
   }
 
   function toggleSourceType(radio) {
@@ -1347,26 +1378,21 @@
       delete card.dataset.aktivaNama;
       delete card.dataset.kategoriAktiva;
       delete card.dataset.lokasiAktiva;
-      const infoBox = card.querySelector('.aktiva-info');
-      const manualBox = card.querySelector('.manual-aktiva-box');
-      if(infoBox) infoBox.style.display = 'none';
-      if(manualBox) manualBox.style.display = 'none';
     }
   }
 
   function toggleCustomCategory(select) {
     const card = select.closest('.item-card');
     const customBox = card.querySelector('.custom-category-box');
-    if (select.value === 'Lainnya') {
-      customBox.style.display = 'block';
-    } else {
-      customBox.style.display = 'none';
-      card.querySelector('.input-nondat-kategori-custom').value = '';
-    }
+    customBox.style.display = select.value === 'Lainnya' ? 'block' : 'none';
   }
 
   function addItemCard(containerId, type) {
-    let count = (type === 'service') ? ++serviceItemCount : ++returnItemCount;
+    let count = 1;
+    if (type === 'service') count = ++serviceItemCount;
+    else if (type === 'return') count = ++returnItemCount;
+    else count = ++withdrawalItemCount;
+
     const container = document.getElementById(containerId);
     const cardId = type + "_card_" + count;
     const readerId = "reader_" + type + "_" + count;
@@ -1389,9 +1415,11 @@
         '</div>';
     }
 
+    let accentColor = type === 'service' ? 'text-primary' : (type === 'return' ? 'text-warning' : 'text-danger');
+
     const html = '<div class="item-card shadow-sm" id="' + cardId + '">' +
       '<div class="d-flex justify-content-between align-items-center mb-2 border-bottom border-secondary pb-1">' +
-      '<span class="fw-bold ' + (type === 'service' ? 'text-primary' : 'text-warning') + ' small">Aktiva #' + count + '</span>' +
+      '<span class="fw-bold ' + accentColor + ' small">Aktiva #' + count + '</span>' +
       (count > 1 ? '<button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 rounded-pill" style="font-size:11px;" onclick="document.getElementById(\'' + cardId + '\').remove()">Hapus</button>' : '') +
       '</div>' +
 
@@ -1410,7 +1438,7 @@
         '<button type="button" class="btn btn-outline-primary text-white" onclick="cekToko(this)">Cek</button></div>' +
         '<div class="toko-info alert success-result-box py-1 px-2 mt-1 mb-0 small" style="display:none; font-size: 11px;"></div></div>' +
         '<div class="nontoko-section mb-3" style="display: none;"><label class="form-label small mb-1">Nama Departemen</label>' +
-        '<input type="text" class="form-control form-control-sm input-dept" placeholder="Contoh: Dept. Logistik / Head Office..."></div>' +
+        '<input type="text" class="form-control form-control-sm input-dept" placeholder="Contoh: Dept. Logistik..."></div>' +
       '</div>' +
 
       '<div class="mb-3"><label class="form-label small mb-1">Tipe Aktiva / Barang</label>' +
@@ -1419,16 +1447,12 @@
       '<label class="form-check-label small text-white" for="typeDat_' + type + '_' + count + '">DAT</label></div>' +
       '<div class="form-check">' +
       '<input class="form-check-input aktiva-radio" type="radio" name="aktivaType_' + type + '_' + count + '" id="typeNonDat_' + type + '_' + count + '" value="nondat" onchange="toggleAktivaType(this)">' +
-      '<label class="form-check-label small text-white" for="typeNonDat_' + type + '_' + count + '">Non DAT</label></div></div>' +
-      '<div class="text-light opacity-75" style="font-size: 10px; line-height: 1.4;">' +
-        '• <strong>DAT:</strong> Aktiva berlabel QR Code dengan Nomor DAT<br>' +
-        '• <strong>Non DAT:</strong> Aktiva / sarana tanpa label QR Code dan No DAT' +
-      '</div></div>' +
+      '<label class="form-check-label small text-white" for="typeNonDat_' + type + '_' + count + '">Non DAT</label></div></div></div>' +
       
       '<!-- SECTION DAT -->' +
       '<div class="dat-section mb-2"><label class="form-label small mb-1">No. Aktiva / Hasil Scan QR</label>' +
       '<div class="input-group input-group-sm mb-1"><input type="text" class="form-control input-aktiva" placeholder="Scan Label QR Code Aktiva...">' +
-      '<button type="button" class="btn btn-outline-warning text-white" onclick="openBarcodeScanner(this, \'' + readerId + '\')" title="Scan QR Code"><i class="fa-solid fa-qrcode"></i> Scan QR</button>' +
+      '<button type="button" class="btn btn-outline-warning text-white" onclick="openBarcodeScanner(this, \'' + readerId + '\')"><i class="fa-solid fa-qrcode"></i> Scan QR</button>' +
       '<button type="button" class="btn btn-outline-primary text-white" onclick="parseAndFillAktivaQR(this)">Parse</button></div>' +
       '<div class="scanner-container mt-2" style="display:none; position:relative;">' +
         '<div id="' + readerId + '" style="width:100%; max-height:280px; overflow:hidden; border-radius:8px;"></div>' +
@@ -1443,7 +1467,7 @@
       '<!-- SECTION NON DAT -->' +
       '<div class="nondat-section mb-2" style="display: none;">' +
       '<div class="mb-2"><label class="form-label small mb-1">Nama & Merk Barang</label>' +
-      '<input type="text" class="form-control form-control-sm input-nondat-nama" placeholder="Contoh: AC Split 1.5 PK Panasonic"></div>' +
+      '<input type="text" class="form-control form-control-sm input-nondat-nama" placeholder="Contoh: AC Split 1.5 PK"></div>' +
       '<div class="mb-2"><label class="form-label small mb-1">Jenis Kategori Barang</label>' +
       '<select class="form-select form-select-sm input-nondat-kategori-select" onchange="toggleCustomCategory(this)">' +
       '<option value="">-- Pilih Jenis Kategori --</option>' +
@@ -1457,13 +1481,21 @@
       '<input type="text" class="form-control form-control-sm input-nondat-kategori-custom" placeholder="Ketik jenis kategori barang..."></div>' +
       '</div>' +
 
+      // Kolom Kondisi Baru khusus Penarikan atau Umum
+      '<div class="mb-2"><label class="form-label small mb-1 fw-bold text-warning">Kondisi Barang</label>' +
+      '<select class="form-select form-select-sm input-kondisi">' +
+      '<option value="Baik / Tidak Terpakai (Idle)">Baik / Tidak Terpakai (Idle)</option>' +
+      '<option value="Rusak Perlu Perbaikan">Rusak Perlu Perbaikan</option>' +
+      '<option value="Barang Bekas / Kanibalisasi">Barang Bekas / Kanibalisasi</option>' +
+      '</select></div>' +
+
       '<div class="mb-2"><label class="form-label small mb-1">No SJ Web Tracking</label>' +
       '<input type="text" class="form-control form-control-sm input-nosj" placeholder="Nomor Surat Jalan..."></div>' +
-      '<div class="mb-2"><label class="form-label small mb-1">' + (type === 'service' ? 'Foto Kerusakan' : 'Foto Kondisi Barang') + '</label>' +
+      '<div class="mb-2"><label class="form-label small mb-1">Foto Kondisi / Fisik Barang</label>' +
       '<input type="file" accept="image/*" class="form-control form-control-sm mb-1 input-foto" onchange="previewCardImage(this)">' +
       '<img class="img-fluid rounded mt-1 preview-img border border-secondary"></div>' +
-      '<div class="mb-1"><label class="form-label small mb-1">' + (type === 'service' ? 'Deskripsi Kerusakan' : 'Alasan Pengembalian') + '</label>' +
-      '<textarea class="form-control form-control-sm input-deskripsi" rows="2" placeholder="' + (type === 'service' ? 'Jelaskan kerusakan...' : 'Jelaskan alasan pengembalian...') + '"></textarea></div></div>';
+      '<div class="mb-1"><label class="form-label small mb-1">Deskripsi / Alasan Penarikan</label>' +
+      '<textarea class="form-control form-control-sm input-deskripsi" rows="2" placeholder="Jelaskan alasan detail..."></textarea></div></div>';
 
     container.insertAdjacentHTML('beforeend', html);
   }
@@ -1488,16 +1520,10 @@
     scannerContainer.style.display = 'block';
     activeHtml5QrCode = new Html5Qrcode(readerId);
     
-    const config = { 
-      fps: 25, 
-      qrbox: { width: 250, height: 250 },
-      formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] 
-    };
-
-    const cameraConstraint = { facingMode: { exact: "environment" } };
+    const config = { fps: 25, qrbox: { width: 250, height: 250 } };
     
     activeHtml5QrCode.start(
-      cameraConstraint, config,
+      { facingMode: "environment" }, config,
       (decodedText) => {
         playBeep();
         if (activeCardElement) {
@@ -1506,29 +1532,14 @@
           parseAndFillAktivaQR(activeCardElement.querySelector('.btn-outline-primary'));
         }
       },
-      (errorMessage) => {}
-    ).catch(() => {
-      activeHtml5QrCode.start(
-        { facingMode: "environment" }, config,
-        (decodedText) => {
-          playBeep();
-          if (activeCardElement) {
-            activeCardElement.querySelector('.input-aktiva').value = decodedText;
-            stopAndCloseScanner();
-            parseAndFillAktivaQR(activeCardElement.querySelector('.btn-outline-primary'));
-          }
-        },
-        () => {}
-      ).catch(err2 => {
-        showCustomAlert("Gagal Mengakses Kamera", "Browser memblokir akses kamera. Error: " + err2, "error");
-        scannerContainer.style.display = 'none';
-      });
+      () => {}
+    ).catch(err => {
+      showCustomAlert("Gagal Kamera", "Tidak dapat membuka kamera: " + err, "error");
+      scannerContainer.style.display = 'none';
     });
   }
 
-  function closeBarcodeScanner() {
-    stopAndCloseScanner();
-  }
+  function closeBarcodeScanner() { stopAndCloseScanner(); }
 
   function stopAndCloseScanner() {
     if (activeHtml5QrCode) {
@@ -1550,7 +1561,6 @@
     activeCardElement = null;
   }
 
-  // --- FUNGSI PARSING QR CODE INSTAN ---
   function parseAndFillAktivaQR(btn) {
     const card = btn.closest('.item-card');
     const rawText = card.querySelector('.input-aktiva').value.trim();
@@ -1570,14 +1580,8 @@
       card.dataset.aktivaNama = namaBarang;
       card.dataset.kategoriAktiva = kategori;
       card.dataset.lokasiAktiva = lokasiAktiva;
-      delete card.dataset.isManual;
 
-      infoBox.innerHTML = `
-        <strong>${namaBarang}</strong><br>
-        <strong>No. Aktiva:</strong> ${noAktiva}<br>
-        <strong>Kategori:</strong> ${kategori}<br>
-        <strong>Lokasi Aktiva:</strong> ${lokasiAktiva}
-      `;
+      infoBox.innerHTML = `<strong>${namaBarang}</strong><br>No: ${noAktiva}<br>Kat: ${kategori}<br>Lok: ${lokasiAktiva}`;
       infoBox.style.display = 'block';
       manualBox.style.display = 'none';
     } else {
@@ -1596,16 +1600,10 @@
     const infoBox = card.querySelector('.aktiva-info');
     const manualBox = card.querySelector('.manual-aktiva-box');
 
-    if(!inputAktiva || !namaManual) {
-      showCustomAlert("Peringatan", "Lengkapi No. Aktiva dan Nama Manual!", "warning");
-      return;
-    }
-
     card.dataset.aktivaKode = inputAktiva;
     card.dataset.aktivaNama = namaManual;
     card.dataset.kategoriAktiva = "MANUAL";
     card.dataset.lokasiAktiva = "MANUAL";
-    card.dataset.isManual = "true";
 
     infoBox.innerHTML = `<strong>${namaManual} (Manual)</strong><br>Kode: ${inputAktiva}`;
     infoBox.style.display = 'block';
@@ -1652,8 +1650,8 @@
       return;
     }
 
-    const containerId = type === 'service' ? 'itemListContainerService' : 'itemListContainerReturn';
-    const btnId = type === 'service' ? 'btnSubmitService' : 'btnSubmitReturn';
+    const containerId = type === 'service' ? 'itemListContainerService' : (type === 'return' ? 'itemListContainerReturn' : 'itemListContainerWithdrawal');
+    const btnId = type === 'service' ? 'btnSubmitService' : (type === 'return' ? 'btnSubmitReturn' : 'btnSubmitWithdrawal');
     const cards = document.querySelectorAll('#' + containerId + ' .item-card');
     let items = [];
     let firstCardLocationVal = "";
@@ -1684,15 +1682,10 @@
         }
       }
 
-      if (i === 0) {
-        firstCardLocationVal = tokoVal;
-      }
+      if (i === 0) firstCardLocationVal = tokoVal;
 
       const aktivaType = card.querySelector('.aktiva-radio:checked').value;
-      let aktivaKode = "";
-      let aktivaNama = "";
-      let kategoriAktiva = "-";
-      let lokasiAktiva = "-";
+      let aktivaKode = "", aktivaNama = "", kategoriAktiva = "-", lokasiAktiva = "-";
 
       if (aktivaType === 'dat') {
         aktivaKode = card.dataset.aktivaKode;
@@ -1710,37 +1703,24 @@
         const categorySelect = card.querySelector('.input-nondat-kategori-select').value;
         const categoryCustom = card.querySelector('.input-nondat-kategori-custom').value.trim();
 
-        if (!nonDatNamaInput) {
-          showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Nama & Merk Barang (Non DAT) wajib diisi!", "warning");
+        if (!nonDatNamaInput || !categorySelect) {
+          showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Nama & Kategori Non DAT wajib diisi!", "warning");
           return;
         }
-
-        if (!categorySelect) {
-          showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Silakan pilih Jenis Kategori Barang!", "warning");
-          return;
-        }
-
-        if (categorySelect === 'Lainnya') {
-          if (!categoryCustom) {
-            showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Tuliskan Jenis Kategori secara manual!", "warning");
-            return;
-          }
-          kategoriAktiva = categoryCustom;
-        } else {
-          kategoriAktiva = categorySelect;
-        }
-
+        kategoriAktiva = (categorySelect === 'Lainnya') ? categoryCustom : categorySelect;
         aktivaNama = nonDatNamaInput + " (Non DAT)";
         lokasiAktiva = tokoVal;
       }
 
+      const kondisiVal = card.querySelector('.input-kondisi').value;
       const noSj = card.querySelector('.input-nosj').value.trim();
       const fotoBase64 = card.dataset.fotoBase64;
       const deskripsi = card.querySelector('.input-deskripsi').value.trim();
 
-      if (!noSj) { showCustomAlert("Peringatan", "Item #" + (i + 1) + ": No SJ wajib diisi!", "warning"); return; }
-      if (!fotoBase64) { showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Foto wajib diupload!", "warning"); return; }
-      if (!deskripsi) { showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Deskripsi wajib diisi!", "warning"); return; }
+      if (!noSj || !fotoBase64 || !deskripsi) {
+        showCustomAlert("Peringatan", "Item #" + (i + 1) + ": No SJ, Foto, dan Deskripsi wajib diisi!", "warning");
+        return;
+      }
 
       items.push({
         kodeToko: tokoVal,
@@ -1748,6 +1728,7 @@
         namaAktiva: aktivaNama,
         kategoriAktiva: kategoriAktiva,
         lokasiAktiva: lokasiAktiva,
+        kondisi: kondisiVal,
         noSj: noSj,
         deskripsi: deskripsi,
         fotoBase64: fotoBase64
@@ -1756,7 +1737,7 @@
 
     const btn = document.getElementById(btnId);
     btn.disabled = true;
-    btn.innerText = "Mengirim " + items.length + " pengajuan...";
+    btn.innerText = "Mengirim...";
 
     const payload = {
       nik: currentUser.nik,
@@ -1769,38 +1750,33 @@
 
     const handleSuccess = function(res) {
       if(res.success) {
-        showCustomAlert("Berhasil", items.length + " pengajuan tiket telah dibuat.", "success");
+        showCustomAlert("Berhasil", items.length + " pengajuan berhasil dibuat.", "success");
         fetchStats();
         navigateTo('pageHome');
       } else {
         showCustomAlert("Gagal", res.message, "error");
         btn.disabled = false;
-        btn.innerText = "Kirim Pengajuan";
+        btn.innerText = "Kirim";
       }
     };
 
     const handleFailure = function() {
       showCustomAlert("Koneksi Gagal", "Gagal terhubung ke server.", "error");
       btn.disabled = false;
-      btn.innerText = "Kirim Pengajuan";
+      btn.innerText = "Kirim";
     };
 
     if (type === 'service') callApi("submitService", { form: payload }, handleSuccess, handleFailure);
-    else callApi("submitReturn", { form: payload }, handleSuccess, handleFailure);
+    else if (type === 'return') callApi("submitReturn", { form: payload }, handleSuccess, handleFailure);
+    else callApi("submitWithdrawal", { form: payload }, handleSuccess, handleFailure);
   }
 
   function switchTrackingTab(tab) {
     activeTrackingTab = tab;
-    const btnS = document.getElementById("btnTabService");
-    const btnR = document.getElementById("btnTabReturn");
-
-    if(tab === 'service') {
-      btnS.className = "btn btn-primary btn-sm w-100 py-2 fw-bold";
-      btnR.className = "btn btn-outline-warning btn-sm w-100 py-2 fw-bold text-white";
-    } else {
-      btnS.className = "btn btn-outline-primary btn-sm w-100 py-2 fw-bold text-white";
-      btnR.className = "btn btn-warning btn-sm w-100 py-2 fw-bold text-dark";
-    }
+    document.getElementById("btnTabService").className = tab === 'service' ? "btn btn-primary btn-sm w-100 py-2 fw-bold" : "btn btn-outline-primary btn-sm w-100 py-2 fw-bold text-white";
+    document.getElementById("btnTabReturn").className = tab === 'return' ? "btn btn-warning btn-sm w-100 py-2 fw-bold text-dark" : "btn btn-outline-warning btn-sm w-100 py-2 fw-bold text-white";
+    document.getElementById("btnTabWithdrawal").className = tab === 'withdrawal' ? "btn btn-danger btn-sm w-100 py-2 fw-bold text-white" : "btn btn-outline-danger btn-sm w-100 py-2 fw-bold text-white";
+    
     loadTrackingData(tab);
   }
 
@@ -1819,7 +1795,7 @@
 
         let html = "";
         res.data.forEach(function(item) {
-          let statusText = item.status ? item.status : "Menunggu";
+          let statusText = item.status ? item.status : "Pending";
           let badgeBg = (statusText.toLowerCase().includes("selesai") || statusText.toLowerCase().includes("diterima")) ? "bg-success text-white" : "bg-warning text-dark";
 
           html += '<div class="card p-3 mb-3 shadow-sm bg-dark border border-secondary text-light">' +
@@ -1832,7 +1808,8 @@
             '<div><strong>No. Aktiva:</strong> ' + item.kodeAktiva + '</div>' +
             '<div><strong>Nama Barang:</strong> ' + item.namaAktiva + '</div>' +
             '<div><strong>Kategori:</strong> ' + (item.kategoriAktiva || '-') + '</div>' +
-            '<div><strong>Lokasi Aktiva:</strong> ' + (item.lokasiAktiva || '-') + '</div>' +
+            '<div><strong>Lokasi:</strong> ' + (item.lokasiAktiva || '-') + '</div>' +
+            (item.kondisi ? '<div><strong>Kondisi:</strong> <span class="text-warning">' + item.kondisi + '</span></div>' : '') +
             '</div>' +
             '<div class="small bg-black p-2 rounded mt-2 border border-secondary border-opacity-25" style="font-size: 11px;">' + item.deskripsi + '</div></div>';
         });
@@ -1841,7 +1818,8 @@
     };
 
     if (tab === 'service') callApi("getServiceHistory", { nik: currentUser.nik }, handleHistorySuccess);
-    else callApi("getReturnHistory", { nik: currentUser.nik }, handleHistorySuccess);
+    else if (tab === 'return') callApi("getReturnHistory", { nik: currentUser.nik }, handleHistorySuccess);
+    else callApi("getWithdrawalHistory", { nik: currentUser.nik }, handleHistorySuccess);
   }
 </script>
 </body>
