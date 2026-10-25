@@ -176,7 +176,6 @@
       margin-bottom: 14px;
     }
 
-    /* Floating Bottom Nav ala iOS / Modern Android */
     .bottom-nav {
       position: fixed;
       bottom: 12px;
@@ -251,7 +250,6 @@
       border-radius: 10px !important;
     }
 
-    /* Tombol Gradasi Modern */
     .btn-primary { background: var(--primary-gradient) !important; border: none !important; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35); }
     .btn-success { background: var(--success-gradient) !important; border: none !important; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35); }
     .btn-warning { background: var(--warning-gradient) !important; border: none !important; color: #fff !important; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35); }
@@ -344,7 +342,6 @@
 
     <!-- KONTEN KHUSUS USER -->
     <div id="userHomeContent">
-      <!-- STATS CARDS (Perbaikan, Pengembalian, Penarikan) -->
       <div class="row g-2 mb-4">
         <div class="col-4">
           <div class="stat-box-perbaikan-admin p-2">
@@ -373,7 +370,6 @@
       </div>
 
       <div class="d-grid gap-3 mb-4">
-        <!-- PENGAJUAN PERBAIKAN -->
         <div onclick="navigateTo('pageFormService'); initFormService();" class="service-card repair shadow-sm">
           <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
@@ -390,7 +386,6 @@
           </div>
         </div>
 
-        <!-- PENGEMBALIAN BARANG -->
         <div onclick="navigateTo('pageFormReturn'); initFormReturn();" class="service-card return shadow-sm">
           <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
@@ -407,7 +402,6 @@
           </div>
         </div>
 
-        <!-- E-REQUEST PENARIKAN BARANG TOKO -->
         <div onclick="navigateTo('pageFormWithdrawal'); initFormWithdrawal();" class="service-card withdrawal shadow-sm">
           <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
@@ -428,7 +422,6 @@
           </div>
         </div>
 
-        <!-- TRACKING & RIWAYAT -->
         <div onclick="navigateTo('pageTracking'); loadTrackingData('service');" class="service-card tracking shadow-sm">
           <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
@@ -447,9 +440,8 @@
       </div>
     </div>
 
-    <!-- KONTEN KHUSUS ADMIN (DASHBOARD ADMIN LANGSUNG DI BERANDA) -->
+    <!-- KONTEN KHUSUS ADMIN -->
     <div id="adminHomeContent" style="display: none;">
-      <!-- FILTER WAKTU -->
       <div class="card p-3 mb-3">
         <div class="small fw-bold mb-2 text-info"><i class="fa-solid fa-filter me-1"></i> Filter Rentang Analisis:</div>
         <div class="btn-group w-100 filter-btn-group" role="group">
@@ -461,7 +453,6 @@
         </div>
       </div>
 
-      <!-- STATS RINGKASAN ADMIN -->
       <div class="row g-2 mb-3">
         <div class="col-4">
           <div class="stat-box-perbaikan-admin p-2">
@@ -484,13 +475,11 @@
         </div>
       </div>
 
-      <!-- GRAFIK CHART.JS -->
       <div class="card p-3 mb-3">
         <div class="small fw-bold mb-2 text-center text-white"><i class="fa-solid fa-chart-pie me-1"></i> Perbandingan Jenis Tiket</div>
         <div style="max-height: 200px; position: relative;"><canvas id="adminPieChart"></canvas></div>
       </div>
 
-      <!-- TOP 5 TOKO / DEPT -->
       <div class="card p-3 mb-3">
         <div class="d-flex justify-content-between align-items-start mb-2">
           <div>
@@ -516,7 +505,6 @@
         <i class="fa-solid fa-file-csv me-2"></i> Download Report CSV
       </button>
 
-      <!-- SINGLE MENU EKSEKUSI TIKET MASUK -->
       <div class="card p-3 mb-3 shadow-sm">
         <div class="d-flex justify-content-between align-items-center">
           <div>
@@ -597,7 +585,6 @@
       <h6 class="fw-bold m-0 text-danger">E-Request Penarikan Barang Toko</h6>
     </div>
 
-    <!-- KODE TOKO ASAL (TERPUSAT DI ATAS) -->
     <div class="card p-3 mb-3">
       <label class="form-label small fw-bold text-info mb-1">Kode Toko Asal</label>
       <div class="input-group input-group-sm mb-1">
@@ -609,7 +596,6 @@
 
     <div id="itemListContainerWithdrawal"></div>
 
-    <!-- TOMBOL TAMBAH SATUAN & BATCH INPUT 5 SEKALIGUS -->
     <div class="d-grid gap-2 mb-3">
       <button onclick="addItemCard('itemListContainerWithdrawal', 'withdrawal')" class="btn btn-outline-danger btn-sm fw-bold py-2.5 rounded-3 text-white">
         + Tambah Item Aktiva Lain
@@ -619,13 +605,11 @@
       </button>
     </div>
 
-    <!-- DESKRIPSI / ALASAN PENARIKAN GLOBAL DI PALING TERAKHIR -->
     <div class="card p-3 mb-3">
       <label class="form-label small fw-bold text-warning mb-1"><i class="fa-solid fa-pen-to-square me-1"></i> Deskripsi / Alasan Penarikan (Global)</label>
       <textarea id="withdrawalGlobalDesc" class="form-control form-control-sm" rows="3" placeholder="Jelaskan alasan detail penarikan untuk toko ini..."></textarea>
     </div>
 
-    <!-- PANEL RINGKASAN TOTAL BARANG -->
     <div class="card p-3 mb-3 shadow-sm">
       <div class="d-flex justify-content-between align-items-center">
         <div>
@@ -2105,46 +2089,63 @@
     loadTrackingData(tab);
   }
 
+  // --- PERBAIKAN UTAMA DI SINI (OPTIMASI & ERROR HANDLING TRACKING) ---
   function loadTrackingData(tab) {
     const listDiv = document.getElementById("trackingList");
-    document.getElementById("trackingLoading").style.display = "block";
+    const loadingEl = document.getElementById("trackingLoading");
+
+    if (!currentUser || !currentUser.nik) {
+      loadingEl.style.display = "none";
+      listDiv.innerHTML = '<div class="card p-3 text-center text-muted small">Sesi pegawai tidak ditemukan. Silakan login ulang.</div>';
+      return;
+    }
+
+    loadingEl.style.display = "block";
     listDiv.innerHTML = "";
 
     const handleHistorySuccess = function(res) {
-      document.getElementById("trackingLoading").style.display = "none";
-      if(res.success) {
-        if(res.data.length === 0) {
+      loadingEl.style.display = "none"; // Spinner PASTI dimatikan
+      if(res && res.success) {
+        if(!res.data || res.data.length === 0) {
           listDiv.innerHTML = '<div class="card p-3 text-center text-muted small">Belum ada riwayat pengajuan.</div>';
           return;
         }
 
-        let html = "";
-        res.data.forEach(function(item) {
+        // Render menggunakan .map().join('') agar jauh lebih cepat dan ringan
+        const htmlItems = res.data.map(function(item) {
           let statusText = item.status ? item.status : "Pending";
           let badgeBg = (statusText.toLowerCase().includes("selesai") || statusText.toLowerCase().includes("diterima")) ? "bg-success text-white" : "bg-warning text-dark";
 
-          html += '<div class="card p-3 mb-3 shadow-sm text-light">' +
+          return '<div class="card p-3 mb-3 shadow-sm text-light">' +
             '<div class="d-flex justify-content-between align-items-center mb-1">' +
-            '<span class="fw-bold text-info" style="font-size: 12px;">' + item.tiketId + '</span>' +
+            '<span class="fw-bold text-info" style="font-size: 12px;">' + (item.tiketId || '-') + '</span>' +
             '<span class="badge ' + badgeBg + '" style="font-size: 10px;">' + statusText + '</span></div>' +
-            '<div style="font-size: 11px;" class="text-muted">' + item.timestamp + ' | Toko/Dept: <strong class="text-white">' + item.kodeToko + '</strong></div>' +
-            '<div style="font-size: 11px;" class="text-muted">No SJ: <strong class="text-white">' + item.noSj + '</strong></div>' +
+            '<div style="font-size: 11px;" class="text-muted">' + (item.timestamp || '-') + ' | Toko/Dept: <strong class="text-white">' + (item.kodeToko || '-') + '</strong></div>' +
+            '<div style="font-size: 11px;" class="text-muted">No SJ: <strong class="text-white">' + (item.noSj || '-') + '</strong></div>' +
             '<div class="mt-2 small text-light">' +
-            '<div><strong>No. Aktiva:</strong> ' + item.kodeAktiva + '</div>' +
-            '<div><strong>Nama Barang:</strong> ' + item.namaAktiva + '</div>' +
+            '<div><strong>No. Aktiva:</strong> ' + (item.kodeAktiva || '-') + '</div>' +
+            '<div><strong>Nama Barang:</strong> ' + (item.namaAktiva || '-') + '</div>' +
             '<div><strong>Kategori:</strong> ' + (item.kategoriAktiva || '-') + '</div>' +
             '<div><strong>Lokasi:</strong> ' + (item.lokasiAktiva || '-') + '</div>' +
             (item.kondisi ? '<div><strong>Kondisi:</strong> <span class="text-warning">' + item.kondisi + '</span></div>' : '') +
             '</div>' +
-            '<div class="small bg-black bg-opacity-50 p-2 rounded mt-2 border border-secondary border-opacity-25 text-muted" style="font-size: 11px;">' + item.deskripsi + '</div></div>';
+            '<div class="small bg-black bg-opacity-50 p-2 rounded mt-2 border border-secondary border-opacity-25 text-muted" style="font-size: 11px;">' + (item.deskripsi || '-') + '</div></div>';
         });
-        listDiv.innerHTML = html;
+
+        listDiv.innerHTML = htmlItems.join('');
+      } else {
+        listDiv.innerHTML = '<div class="card p-3 text-center text-danger small">Gagal memuat data riwayat dari server.</div>';
       }
     };
 
-    if (tab === 'service') callApi("getServiceHistory", { nik: currentUser.nik }, handleHistorySuccess);
-    else if (tab === 'return') callApi("getReturnHistory", { nik: currentUser.nik }, handleHistorySuccess);
-    else callApi("getWithdrawalHistory", { nik: currentUser.nik }, handleHistorySuccess);
+    const handleHistoryError = function(err) {
+      loadingEl.style.display = "none"; // Spinner PASTI dimatikan saat gagal koneksi
+      listDiv.innerHTML = '<div class="card p-3 text-center text-danger small">Terjadi kesalahan koneksi internet atau server timeout.</div>';
+    };
+
+    if (tab === 'service') callApi("getServiceHistory", { nik: currentUser.nik }, handleHistorySuccess, handleHistoryError);
+    else if (tab === 'return') callApi("getReturnHistory", { nik: currentUser.nik }, handleHistorySuccess, handleHistoryError);
+    else callApi("getWithdrawalHistory", { nik: currentUser.nik }, handleHistorySuccess, handleHistoryError);
   }
 </script>
 </body>
