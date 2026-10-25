@@ -559,7 +559,7 @@
     <!-- TOMBOL TAMBAH SATUAN & BATCH INPUT 5 SEKALIGUS -->
     <div class="d-grid gap-2 mb-3">
       <button onclick="addItemCard('itemListContainerWithdrawal', 'withdrawal')" class="btn btn-outline-danger btn-sm fw-bold py-2 rounded-3 text-white">
-        + Tambah 1 Item Aktiva Lagi
+        + Tambah Item Aktiva Lain
       </button>
       <button onclick="addMultipleItemCards('itemListContainerWithdrawal', 'withdrawal', 5)" class="btn btn-dark border-secondary btn-sm fw-bold py-2 rounded-3 text-light" style="font-size: 11px;">
         ⚡ Tambah 5 Item Sekaligus (Batch Input)
@@ -576,7 +576,7 @@
     <div class="card p-3 mb-3 bg-dark border border-danger shadow-sm">
       <div class="d-flex justify-content-between align-items-center">
         <div>
-          <div class="small text-secondary" style="font-size: 11px;">RINGKASAN TOTAL DIANGKUT</div>
+          <div class="small text-secondary" style="font-size: 11px;">Total Barang</div>
           <div class="fw-bold text-white fs-5" id="summaryTotalItems">0 Item</div>
         </div>
         <div class="text-end">
@@ -1504,31 +1504,24 @@
         '</select></div>';
     }
 
-    // Section Foto: Direct Camera Stream untuk Perbaikan & Pengembalian, File Input biasa untuk Penarikan
-    let fotoInputHtml = '';
-    if (type === 'withdrawal') {
-      fotoInputHtml = '<div class="mb-2"><label class="form-label small mb-1">Foto Kondisi / Fisik Barang</label>' +
-                      '<input type="file" accept="image/*" class="form-control form-control-sm mb-1 input-foto" onchange="previewCardImage(this)">' +
-                      '<img class="img-fluid rounded mt-1 preview-img border border-secondary"></div>';
-    } else {
-      fotoInputHtml = '<div class="mb-2">' +
-                      '<label class="form-label small mb-1 fw-bold text-success"><i class="fa-solid fa-camera me-1"></i> Foto Kondisi / Fisik Barang</label>' +
-                      '<div class="d-grid gap-2 mb-2">' +
-                        '<button type="button" class="btn btn-outline-success btn-sm fw-bold py-2" onclick="startDirectCamera(this, \'' + camVideoId + '\')">' +
-                          '<i class="fa-solid fa-camera-rotate me-1"></i> Buka Kamera Langsung' +
-                        '</button>' +
+    // Section Foto: Direct Camera Stream untuk Semua Menu (Perbaikan, Pengembalian, & Penarikan)
+    let fotoInputHtml = '<div class="mb-2">' +
+                    '<label class="form-label small mb-1 fw-bold text-success"><i class="fa-solid fa-camera me-1"></i> Foto Kondisi / Fisik Barang</label>' +
+                    '<div class="d-grid gap-2 mb-2">' +
+                      '<button type="button" class="btn btn-outline-success btn-sm fw-bold py-2" onclick="startDirectCamera(this, \'' + camVideoId + '\')">' +
+                        '<i class="fa-solid fa-camera-rotate me-1"></i> Buka Kamera Langsung' +
+                      '</button>' +
+                    '</div>' +
+                    '<!-- Live Camera Stream Box -->' +
+                    '<div class="camera-stream-box border border-success rounded p-2 mb-2 bg-black text-center" style="display:none;">' +
+                      '<video id="' + camVideoId + '" autoplay playsinline style="width:100%; max-height:220px; object-fit:cover; border-radius:6px; background:#000;"></video>' +
+                      '<canvas id="' + camCanvasId + '" style="display:none;"></canvas>' +
+                      '<div class="d-flex gap-2 mt-2">' +
+                        '<button type="button" class="btn btn-success btn-sm w-50 fw-bold py-1" onclick="captureCameraPhoto(this, \'' + camVideoId + '\', \'' + camCanvasId + '\')">📸 Ambil Foto</button>' +
+                        '<button type="button" class="btn btn-outline-danger btn-sm w-50 py-1" onclick="closeDirectCamera(this)">Tutup</button>' +
                       '</div>' +
-                      '<!-- Live Camera Stream Box -->' +
-                      '<div class="camera-stream-box border border-success rounded p-2 mb-2 bg-black text-center" style="display:none;">' +
-                        '<video id="' + camVideoId + '" autoplay playsinline style="width:100%; max-height:220px; object-fit:cover; border-radius:6px; background:#000;"></video>' +
-                        '<canvas id="' + camCanvasId + '" style="display:none;"></canvas>' +
-                        '<div class="d-flex gap-2 mt-2">' +
-                          '<button type="button" class="btn btn-success btn-sm w-50 fw-bold py-1" onclick="captureCameraPhoto(this, \'' + camVideoId + '\', \'' + camCanvasId + '\')">📸 Ambil Foto</button>' +
-                          '<button type="button" class="btn btn-outline-danger btn-sm w-50 py-1" onclick="closeDirectCamera(this)">Tutup</button>' +
-                        '</div>' +
-                      '</div>' +
-                      '<img class="img-fluid rounded mt-1 preview-img border border-secondary"></div>';
-    }
+                    '</div>' +
+                    '<img class="img-fluid rounded mt-1 preview-img border border-secondary"></div>';
 
     const html = '<div class="item-card shadow-sm" id="' + cardId + '">' +
       '<div class="d-flex justify-content-between align-items-center mb-2 border-bottom border-secondary pb-1">' +
@@ -1862,7 +1855,7 @@
       const fotoBase64 = card.dataset.fotoBase64;
 
       if (!fotoBase64) {
-        showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Foto kondisi fisik barang wajib diunggah!", "warning");
+        showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Foto kondisi fisik barang wajib diunggah/diambil!", "warning");
         return;
       }
 
