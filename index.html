@@ -74,31 +74,6 @@
       right: 2px;
     }
 
-    .stat-box-menunggu {
-      background: rgba(245, 158, 11, 0.18) !important;
-      border: 1px solid rgba(245, 158, 11, 0.5) !important;
-      border-radius: 14px;
-      padding: 12px 8px;
-      text-align: center;
-      color: #ffffff !important;
-    }
-    .stat-box-selesai {
-      background: rgba(16, 185, 129, 0.18) !important;
-      border: 1px solid rgba(16, 185, 129, 0.5) !important;
-      border-radius: 14px;
-      padding: 12px 8px;
-      text-align: center;
-      color: #ffffff !important;
-    }
-    .stat-box-pengembalian {
-      background: rgba(14, 165, 233, 0.18) !important;
-      border: 1px solid rgba(14, 165, 233, 0.5) !important;
-      border-radius: 14px;
-      padding: 12px 8px;
-      text-align: center;
-      color: #ffffff !important;
-    }
-
     .stat-box-perbaikan-admin {
       background: rgba(99, 102, 241, 0.18) !important;
       border: 1px solid rgba(99, 102, 241, 0.6) !important;
@@ -296,7 +271,7 @@
     </div>
   </div>
 
-  <!-- PAGE 2: BERANDA (DASHBOARD USER) -->
+  <!-- PAGE 2: BERANDA (DASHBOARD USER & ADMIN) -->
   <div id="pageHome" class="page-view">
     <div class="profile-card mb-3">
       <div class="d-flex justify-content-between align-items-center">
@@ -314,219 +289,200 @@
       </div>
     </div>
 
-    <!-- STATS CARDS -->
-    <div class="row g-2 mb-4">
-      <div class="col-4">
-        <div class="stat-box-menunggu">
-          <div style="font-size: 10px; color: #ffffff;">Menunggu Perbaikan</div>
-          <div class="fw-bold fs-4 text-white" id="statMenunggu">0</div>
-        </div>
-      </div>
-      <div class="col-4">
-        <div class="stat-box-selesai">
-          <div style="font-size: 10px; color: #ffffff;">Selesai Servis</div>
-          <div class="fw-bold fs-4 text-white" id="statSelesai">0</div>
-        </div>
-      </div>
-      <div class="col-4">
-        <div class="stat-box-pengembalian">
-          <div style="font-size: 10px; color: #ffffff;">Pengembalian</div>
-          <div class="fw-bold fs-4 text-white" id="statPengembalian">0</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="d-flex justify-content-between align-items-center mb-2 px-1">
-      <span class="small fw-bold" style="font-size: 11px;">LAYANAN ASET UTAMA</span>
-      <span class="text-primary small fw-bold" style="font-size: 11px;">ARSP Hub</span>
-    </div>
-
-    <div class="d-grid gap-3 mb-4">
-      <!-- PORTAL ADMIN -->
-      <div id="adminPortalCard" onclick="navigateTo('pageAdminDashboard'); initAdminDashboard();" class="service-card shadow-sm" style="display:none; border-left: 4px solid #10b981; background: #064e3b;">
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="d-flex align-items-center">
-            <div class="icon-box me-3 bg-success text-white"><i class="fa-solid fa-chart-pie"></i></div>
-            <div>
-              <div class="fw-bold text-white">Dashboard Analisis Admin</div>
-              <div class="small mt-1" style="font-size: 11px;">Analisis grafik tiket, perbandingan & eksekusi status.</div>
-            </div>
+    <!-- KONTEN KHUSUS USER -->
+    <div id="userHomeContent">
+      <!-- STATS CARDS (Perbaikan, Pengembalian, Penarikan) -->
+      <div class="row g-2 mb-4">
+        <div class="col-4">
+          <div class="stat-box-perbaikan-admin p-2">
+            <div style="font-size: 10px;" class="fw-bold text-white">Perbaikan</div>
+            <div class="fw-bold fs-4 text-white" id="statPerbaikanTotal">0</div>
+            <div style="font-size: 8px;" class="text-light opacity-75" id="statPerbaikanSub">Selesai: 0 | Pend: 0</div>
           </div>
-          <span class="fs-5">›</span>
         </div>
-      </div>
-
-      <!-- PENGAJUAN PERBAIKAN -->
-      <div onclick="navigateTo('pageFormService'); initFormService();" class="service-card repair shadow-sm">
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="d-flex align-items-center">
-            <div class="icon-box me-3" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-            <div>
-              <div class="fw-bold text-white">Pengajuan Perbaikan</div>
-              <div class="small mt-1" style="font-size: 12px;">Laporkan kerusakan aktiva, sarana toko atau fasilitas kantor.</div>
-            </div>
+        <div class="col-4">
+          <div class="stat-box-pengembalian-admin p-2">
+            <div style="font-size: 10px;" class="fw-bold text-white">Pengembalian</div>
+            <div class="fw-bold fs-4 text-white" id="statPengembalianTotal">0</div>
+            <div style="font-size: 8px;" class="text-light opacity-75" id="statPengembalianSub">Selesai: 0 | Pend: 0</div>
           </div>
-          <span class="fs-5">›</span>
         </div>
-        <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center" style="font-size: 12px; color: #818cf8 !important;">
-          <i class="fa-solid fa-circle-plus me-1"></i> Buat Form Servis Baru
-        </div>
-      </div>
-
-      <!-- PENGEMBALIAN BARANG -->
-      <div onclick="navigateTo('pageFormReturn'); initFormReturn();" class="service-card return shadow-sm">
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="d-flex align-items-center">
-            <div class="icon-box me-3" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;"><i class="fa-solid fa-box-archive"></i></div>
-            <div>
-              <div class="fw-bold text-white">Pengembalian Barang</div>
-              <div class="small mt-1" style="font-size: 12px;">Kembalikan aset menganggur / idle atau barang tidak terpakai ke Gudang GA.</div>
-            </div>
-          </div>
-          <span class="fs-5">›</span>
-        </div>
-        <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center" style="font-size: 12px; color: #fbbf24 !important;">
-          <i class="fa-solid fa-box-open me-1"></i> Form Restock / Retur Gudang
+        <div class="col-4" style="background: rgba(239, 68, 68, 0.18); border: 1px solid rgba(239, 68, 68, 0.6); border-radius: 14px; padding: 8px; text-align: center;">
+          <div style="font-size: 10px;" class="fw-bold text-white">Penarikan</div>
+          <div class="fw-bold fs-4 text-white" id="statPenarikanTotal">0</div>
+          <div style="font-size: 8px;" class="text-light opacity-75" id="statPenarikanSub">Selesai: 0 | Pend: 0</div>
         </div>
       </div>
 
-      <!-- E-REQUEST PENARIKAN BARANG TOKO (BERWARNA MERAH) -->
-      <div onclick="navigateTo('pageFormWithdrawal'); initFormWithdrawal();" class="service-card withdrawal shadow-sm">
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="d-flex align-items-center">
-            <div class="icon-box me-3" style="background: rgba(239, 68, 68, 0.2); color: #f87171;"><i class="fa-solid fa-truck-ramp-box"></i></div>
-            <div>
-              <div class="d-flex align-items-center gap-2">
-                <span class="fw-bold text-white">E-Request Penarikan Barang Toko</span>
-                <span class="badge bg-danger text-white" style="font-size: 8px;">NEW</span>
+      <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+        <span class="small fw-bold" style="font-size: 11px;">LAYANAN ASET UTAMA</span>
+        <span class="text-primary small fw-bold" style="font-size: 11px;">ARSP Hub</span>
+      </div>
+
+      <div class="d-grid gap-3 mb-4">
+        <!-- PENGAJUAN PERBAIKAN -->
+        <div onclick="navigateTo('pageFormService'); initFormService();" class="service-card repair shadow-sm">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="icon-box me-3" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+              <div>
+                <div class="fw-bold text-white">Pengajuan Perbaikan</div>
+                <div class="small mt-1" style="font-size: 12px;">Laporkan kerusakan aktiva, sarana toko atau fasilitas kantor.</div>
               </div>
-              <div class="small mt-1" style="font-size: 11px;">Jadwalkan penarikan barang idle/tidak terpakai dari toko oleh tim GA.</div>
             </div>
+            <span class="fs-5">›</span>
           </div>
-          <span class="fs-5">›</span>
+          <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center" style="font-size: 12px; color: #818cf8 !important;">
+            <i class="fa-solid fa-circle-plus me-1"></i> Buat Form Servis Baru
+          </div>
         </div>
-        <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center" style="font-size: 11px; color: #fca5a5 !important;">
-          <span><i class="fa-solid fa-calendar-check me-1"></i> Form Jadwal & Penarikan Toko</span>
-          <span class="text-secondary" style="font-size: 10px;">Armada GA</span>
+
+        <!-- PENGEMBALIAN BARANG -->
+        <div onclick="navigateTo('pageFormReturn'); initFormReturn();" class="service-card return shadow-sm">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="icon-box me-3" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;"><i class="fa-solid fa-box-archive"></i></div>
+              <div>
+                <div class="fw-bold text-white">Pengembalian Barang</div>
+                <div class="small mt-1" style="font-size: 12px;">Kembalikan aset menganggur / idle atau barang tidak terpakai ke Gudang GA.</div>
+              </div>
+            </div>
+            <span class="fs-5">›</span>
+          </div>
+          <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center" style="font-size: 12px; color: #fbbf24 !important;">
+            <i class="fa-solid fa-box-open me-1"></i> Form Restock / Retur Gudang
+          </div>
+        </div>
+
+        <!-- E-REQUEST PENARIKAN BARANG TOKO -->
+        <div onclick="navigateTo('pageFormWithdrawal'); initFormWithdrawal();" class="service-card withdrawal shadow-sm">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="icon-box me-3" style="background: rgba(239, 68, 68, 0.2); color: #f87171;"><i class="fa-solid fa-truck-ramp-box"></i></div>
+              <div>
+                <div class="d-flex align-items-center gap-2">
+                  <span class="fw-bold text-white">E-Request Penarikan Barang Toko</span>
+                  <span class="badge bg-danger text-white" style="font-size: 8px;">NEW</span>
+                </div>
+                <div class="small mt-1" style="font-size: 11px;">Jadwalkan penarikan barang idle/tidak terpakai dari toko oleh tim GA.</div>
+              </div>
+            </div>
+            <span class="fs-5">›</span>
+          </div>
+          <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center" style="font-size: 11px; color: #fca5a5 !important;">
+            <span><i class="fa-solid fa-calendar-check me-1"></i> Form Jadwal & Penarikan Toko</span>
+            <span class="text-secondary" style="font-size: 10px;">Armada GA</span>
+          </div>
+        </div>
+
+        <!-- TRACKING & RIWAYAT -->
+        <div onclick="navigateTo('pageTracking'); loadTrackingData('service');" class="service-card tracking shadow-sm">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="icon-box me-3" style="background: rgba(14, 165, 233, 0.2); color: #38bdf8;"><i class="fa-solid fa-chart-line"></i></div>
+              <div>
+                <div class="fw-bold text-white">Tracking & Riwayat</div>
+                <div class="small mt-1" style="font-size: 12px;">Pantau status pengerjaan servis, penarikan armada toko & retur.</div>
+              </div>
+            </div>
+            <span class="fs-5">›</span>
+          </div>
+          <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center" style="font-size: 12px; color: #38bdf8 !important;">
+            <i class="fa-solid fa-bolt me-1"></i> Live Status Update & Riwayat Gabungan
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KONTEN KHUSUS ADMIN (DASHBOARD ADMIN LANGSUNG DI BERANDA) -->
+    <div id="adminHomeContent" style="display: none;">
+      <!-- FILTER WAKTU -->
+      <div class="card p-3 mb-3 bg-dark border-secondary">
+        <div class="small fw-bold mb-2 text-info"><i class="fa-solid fa-filter me-1"></i> Filter Rentang Analisis:</div>
+        <div class="btn-group w-100 filter-btn-group" role="group">
+          <button type="button" class="btn btn-outline-info active" onclick="setAdminFilter(1, this)">1 Hari</button>
+          <button type="button" class="btn btn-outline-info" onclick="setAdminFilter(7, this)">1 Mgg</button>
+          <button type="button" class="btn btn-outline-info" onclick="setAdminFilter(30, this)">1 Bln</button>
+          <button type="button" class="btn btn-outline-info" onclick="setAdminFilter(90, this)">3 Bln</button>
+          <button type="button" class="btn btn-outline-info" onclick="setAdminFilter(365, this)">1 Thn</button>
         </div>
       </div>
 
-      <!-- TRACKING & RIWAYAT -->
-      <div onclick="navigateTo('pageTracking'); loadTrackingData('service');" class="service-card tracking shadow-sm">
+      <!-- STATS RINGKASAN ADMIN -->
+      <div class="row g-2 mb-3">
+        <div class="col-4">
+          <div class="stat-box-perbaikan-admin p-2">
+            <div style="font-size: 10px;" class="fw-bold text-white">Perbaikan</div>
+            <div class="fw-bold fs-4 text-white" id="adminTotalPerbaikan">0</div>
+            <div style="font-size: 8px;" class="text-light opacity-75" id="adminSubPerbaikan">Selesai: 0 | Pend: 0</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="stat-box-pengembalian-admin p-2">
+            <div style="font-size: 10px;" class="fw-bold text-white">Pengembalian</div>
+            <div class="fw-bold fs-4 text-white" id="adminTotalPengembalian">0</div>
+            <div style="font-size: 8px;" class="text-light opacity-75" id="adminSubPengembalian">Selesai: 0 | Pend: 0</div>
+          </div>
+        </div>
+        <div class="col-4" style="background: rgba(239, 68, 68, 0.18); border: 1px solid rgba(239, 68, 68, 0.6); border-radius: 14px; padding: 8px; text-align: center;">
+          <div style="font-size: 10px;" class="fw-bold text-white">Penarikan</div>
+          <div class="fw-bold fs-4 text-white" id="adminTotalPenarikan">0</div>
+          <div style="font-size: 8px;" class="text-light opacity-75" id="adminSubPenarikan">Selesai: 0 | Pend: 0</div>
+        </div>
+      </div>
+
+      <!-- GRAFIK CHART.JS -->
+      <div class="card p-3 mb-3 bg-dark border-secondary">
+        <div class="small fw-bold mb-2 text-center text-white"><i class="fa-solid fa-chart-pie me-1"></i> Perbandingan Jenis Tiket</div>
+        <div style="max-height: 200px; position: relative;"><canvas id="adminPieChart"></canvas></div>
+      </div>
+
+      <!-- TOP 5 TOKO / DEPT -->
+      <div class="card p-3 mb-3 bg-dark border-secondary">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div>
+            <div class="fw-bold text-white"><i class="fa-solid fa-building me-1"></i> Top 5 Toko / Departemen</div>
+            <div class="text-secondary" style="font-size: 11px;">Pengaju terbanyak perbaikan, pengembalian & penarikan</div>
+          </div>
+          <span class="badge bg-success text-white px-2 py-1 shadow-sm" style="font-size: 10px;">Ranking Top 5</span>
+        </div>
+
+        <div class="d-flex gap-1 mb-3 overflow-auto" id="topFilterPills">
+          <button type="button" class="btn btn-sm btn-success text-white fw-bold active shadow-sm flex-shrink-0" onclick="switchTopFilter('all', this)">Semua</button>
+          <button type="button" class="btn btn-sm btn-outline-primary text-white flex-shrink-0" onclick="switchTopFilter('perbaikan', this)">Perbaikan</button>
+          <button type="button" class="btn btn-sm btn-outline-warning text-white flex-shrink-0" onclick="switchTopFilter('pengembalian', this)">Pengembalian</button>
+          <button type="button" class="btn btn-sm btn-outline-danger text-white flex-shrink-0" onclick="switchTopFilter('penarikan', this)">Penarikan</button>
+        </div>
+
+        <div id="adminTopLocationsList" style="font-size: 11px;">
+          <div class="text-center text-secondary py-2">Memuat data lokasi...</div>
+        </div>
+      </div>
+
+      <button type="button" onclick="openExportModal()" class="btn btn-success w-100 mb-4 fw-bold shadow-sm">
+        <i class="fa-solid fa-file-csv me-2"></i> Download Report CSV
+      </button>
+
+      <!-- SINGLE MENU EKSEKUSI TIKET MASUK -->
+      <div class="card p-3 mb-3 bg-dark border-secondary shadow-sm">
         <div class="d-flex justify-content-between align-items-center">
-          <div class="d-flex align-items-center">
-            <div class="icon-box me-3" style="background: rgba(14, 165, 233, 0.2); color: #38bdf8;"><i class="fa-solid fa-chart-line"></i></div>
-            <div>
-              <div class="fw-bold text-white">Tracking & Riwayat</div>
-              <div class="small mt-1" style="font-size: 12px;">Pantau status pengerjaan servis, penarikan armada toko & retur.</div>
-            </div>
+          <div>
+            <div class="fw-bold text-success" style="font-size: 13px;"><i class="fa-solid fa-list-check me-2"></i>EKSEKUSI TIKET MASUK</div>
+            <div class="text-secondary small mt-1" id="activeFilterDesc" style="font-size: 11px;">Belum ada kategori & status dipilih</div>
           </div>
-          <span class="fs-5">›</span>
-        </div>
-        <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center" style="font-size: 12px; color: #38bdf8 !important;">
-          <i class="fa-solid fa-bolt me-1"></i> Live Status Update & Riwayat Gabungan
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- DASHBOARD ADMIN ANALISIS & EKSEKUSI TIKET -->
-  <div id="pageAdminDashboard" class="page-view">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-      <div class="d-flex align-items-center">
-        <button onclick="navigateTo('pageHome')" class="btn btn-sm btn-dark border-secondary me-2 py-1 px-3 rounded-pill">
-          <i class="fa-solid fa-arrow-left me-1"></i> Beranda
-        </button>
-        <h6 class="fw-bold m-0 text-success"><i class="fa-solid fa-user-shield me-1"></i> Dashboard Admin GA</h6>
-      </div>
-    </div>
-
-    <!-- FILTER WAKTU -->
-    <div class="card p-3 mb-3 bg-dark border-secondary">
-      <div class="small fw-bold mb-2 text-info"><i class="fa-solid fa-filter me-1"></i> Filter Rentang Analisis:</div>
-      <div class="btn-group w-100 filter-btn-group" role="group">
-        <button type="button" class="btn btn-outline-info active" onclick="setAdminFilter(1, this)">1 Hari</button>
-        <button type="button" class="btn btn-outline-info" onclick="setAdminFilter(7, this)">1 Mgg</button>
-        <button type="button" class="btn btn-outline-info" onclick="setAdminFilter(30, this)">1 Bln</button>
-        <button type="button" class="btn btn-outline-info" onclick="setAdminFilter(90, this)">3 Bln</button>
-        <button type="button" class="btn btn-outline-info" onclick="setAdminFilter(365, this)">1 Thn</button>
-      </div>
-    </div>
-
-    <!-- STATS RINGKASAN ADMIN -->
-    <div class="row g-2 mb-3">
-      <div class="col-4">
-        <div class="stat-box-perbaikan-admin p-2">
-          <div style="font-size: 10px;" class="fw-bold text-white">Perbaikan</div>
-          <div class="fw-bold fs-4 text-white" id="adminTotalPerbaikan">0</div>
-          <div style="font-size: 8px;" class="text-light opacity-75" id="adminSubPerbaikan">Selesai: 0 | Pend: 0</div>
+          <button type="button" class="btn btn-success btn-sm fw-bold px-3 py-2 shadow-sm" onclick="openExecutionModal()">
+            <i class="fa-solid fa-filter me-1"></i> Pilih Eksekusi
+          </button>
         </div>
       </div>
-      <div class="col-4">
-        <div class="stat-box-pengembalian-admin p-2">
-          <div style="font-size: 10px;" class="fw-bold text-white">Pengembalian</div>
-          <div class="fw-bold fs-4 text-white" id="adminTotalPengembalian">0</div>
-          <div style="font-size: 8px;" class="text-light opacity-75" id="adminSubPengembalian">Selesai: 0 | Pend: 0</div>
-        </div>
+
+      <div id="adminTicketLoading" class="text-center py-3" style="display:none;">
+        <div class="spinner-border spinner-border-sm text-success"></div>
+        <span class="small ms-2">Memuat daftar tiket admin...</span>
       </div>
-      <div class="col-4" style="background: rgba(239, 68, 68, 0.18); border: 1px solid rgba(239, 68, 68, 0.6); border-radius: 14px; padding: 8px; text-align: center;">
-        <div style="font-size: 10px;" class="fw-bold text-white">Penarikan</div>
-        <div class="fw-bold fs-4 text-white" id="adminTotalPenarikan">0</div>
-        <div style="font-size: 8px;" class="text-light opacity-75" id="adminSubPenarikan">Selesai: 0 | Pend: 0</div>
-      </div>
+
+      <div id="adminTicketList"></div>
     </div>
-
-    <!-- GRAFIK CHART.JS -->
-    <div class="card p-3 mb-3 bg-dark border-secondary">
-      <div class="small fw-bold mb-2 text-center text-white"><i class="fa-solid fa-chart-pie me-1"></i> Perbandingan Jenis Tiket</div>
-      <div style="max-height: 200px; position: relative;"><canvas id="adminPieChart"></canvas></div>
-    </div>
-
-    <!-- TOP 5 TOKO / DEPT -->
-    <div class="card p-3 mb-3 bg-dark border-secondary">
-      <div class="d-flex justify-content-between align-items-start mb-2">
-        <div>
-          <div class="fw-bold text-white"><i class="fa-solid fa-building me-1"></i> Top 5 Toko / Departemen</div>
-          <div class="text-secondary" style="font-size: 11px;">Pengaju terbanyak perbaikan, pengembalian & penarikan</div>
-        </div>
-        <span class="badge bg-success text-white px-2 py-1 shadow-sm" style="font-size: 10px;">Ranking Top 5</span>
-      </div>
-
-      <div class="d-flex gap-1 mb-3 overflow-auto" id="topFilterPills">
-        <button type="button" class="btn btn-sm btn-success text-white fw-bold active shadow-sm flex-shrink-0" onclick="switchTopFilter('all', this)">Semua</button>
-        <button type="button" class="btn btn-sm btn-outline-primary text-white flex-shrink-0" onclick="switchTopFilter('perbaikan', this)">Perbaikan</button>
-        <button type="button" class="btn btn-sm btn-outline-warning text-white flex-shrink-0" onclick="switchTopFilter('pengembalian', this)">Pengembalian</button>
-        <button type="button" class="btn btn-sm btn-outline-danger text-white flex-shrink-0" onclick="switchTopFilter('penarikan', this)">Penarikan</button>
-      </div>
-
-      <div id="adminTopLocationsList" style="font-size: 11px;">
-        <div class="text-center text-secondary py-2">Memuat data lokasi...</div>
-      </div>
-    </div>
-
-    <button type="button" onclick="openExportModal()" class="btn btn-success w-100 mb-4 fw-bold shadow-sm">
-      <i class="fa-solid fa-file-csv me-2"></i> Download Report CSV
-    </button>
-
-    <!-- SINGLE MENU EKSEKUSI TIKET MASUK -->
-    <div class="card p-3 mb-3 bg-dark border-secondary shadow-sm">
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <div class="fw-bold text-success" style="font-size: 13px;"><i class="fa-solid fa-list-check me-2"></i>EKSEKUSI TIKET MASUK</div>
-          <div class="text-secondary small mt-1" id="activeFilterDesc" style="font-size: 11px;">Belum ada kategori & status dipilih</div>
-        </div>
-        <button type="button" class="btn btn-success btn-sm fw-bold px-3 py-2 shadow-sm" onclick="openExecutionModal()">
-          <i class="fa-solid fa-filter me-1"></i> Pilih Eksekusi
-        </button>
-      </div>
-    </div>
-
-    <div id="adminTicketLoading" class="text-center py-3" style="display:none;">
-      <div class="spinner-border spinner-border-sm text-success"></div>
-      <span class="small ms-2">Memuat daftar tiket admin...</span>
-    </div>
-
-    <div id="adminTicketList"></div>
   </div>
 
   <!-- PAGE 3: FORM PENGAJUAN PERBAIKAN -->
@@ -616,7 +572,7 @@
       <textarea id="withdrawalGlobalDesc" class="form-control form-control-sm" rows="3" placeholder="Jelaskan alasan detail penarikan untuk toko ini..."></textarea>
     </div>
 
-    <!-- PANEL RINGKASAN TOTAL BARANG (DI BAWAH DESKRIPSI) -->
+    <!-- PANEL RINGKASAN TOTAL BARANG -->
     <div class="card p-3 mb-3 bg-dark border border-danger shadow-sm">
       <div class="d-flex justify-content-between align-items-center">
         <div>
@@ -635,7 +591,7 @@
     </button>
   </div>
 
-  <!-- PAGE 5: TRACKING PAGE (DILENGKAPI 3 TAB) -->
+  <!-- PAGE 5: TRACKING PAGE -->
   <div id="pageTracking" class="page-view">
     <div class="d-flex align-items-center justify-content-between mb-3">
       <div class="d-flex align-items-center">
@@ -677,13 +633,13 @@
     <a href="#" onclick="navigateTo('pageHome'); return false;" class="nav-item active" id="navHome">
       <i class="fa-solid fa-house"></i> Beranda
     </a>
-    <a href="#" onclick="navigateTo('pageTracking'); switchTrackingTab('service'); return false;" class="nav-item" id="navTracking">
+    <a href="#" id="navTrackingItem" onclick="navigateTo('pageTracking'); switchTrackingTab('service'); return false;" class="nav-item">
       <i class="fa-solid fa-compass"></i> Tracking
     </a>
-    <div class="floating-center-btn" onclick="navigateTo('pageFormService'); initFormService();" title="Tambah Servis">
+    <div class="floating-center-btn" id="floatingAddBtn" onclick="navigateTo('pageFormService'); initFormService();" title="Tambah Servis">
       <i class="fa-solid fa-plus text-white"></i>
     </div>
-    <a href="#" onclick="navigateTo('pageTracking'); switchTrackingTab('return'); return false;" class="nav-item" id="navHistory">
+    <a href="#" id="navHistoryItem" onclick="navigateTo('pageTracking'); switchTrackingTab('return'); return false;" class="nav-item">
       <i class="fa-solid fa-box-archive"></i> Retur
     </a>
     <a href="#" onclick="showCustomAlert('Profil Pegawai', (currentUser ? currentUser.nama + ' (' + currentUser.nik + ')\nDept: ' + currentUser.dept : '-'), 'info'); return false;" class="nav-item">
@@ -965,11 +921,21 @@
     if (currentUser.isAdmin) {
       document.getElementById("headerRoleBadge").innerText = "ADMIN";
       document.getElementById("headerRoleBadge").className = "badge bg-success text-white";
-      document.getElementById("adminPortalCard").style.display = "block";
+      document.getElementById("userHomeContent").style.display = "none";
+      document.getElementById("adminHomeContent").style.display = "block";
+      document.getElementById("navTrackingItem").style.display = "none";
+      document.getElementById("navHistoryItem").style.display = "none";
+      document.getElementById("floatingAddBtn").style.display = "none";
+      initAdminDashboard();
     } else {
       document.getElementById("headerRoleBadge").innerText = "USER";
       document.getElementById("headerRoleBadge").className = "badge bg-primary text-white";
-      document.getElementById("adminPortalCard").style.display = "none";
+      document.getElementById("userHomeContent").style.display = "block";
+      document.getElementById("adminHomeContent").style.display = "none";
+      document.getElementById("navTrackingItem").style.display = "block";
+      document.getElementById("navHistoryItem").style.display = "block";
+      document.getElementById("floatingAddBtn").style.display = "flex";
+      fetchStats();
     }
 
     const names = currentUser.nama.split(" ");
@@ -978,7 +944,6 @@
 
     document.getElementById("bottomNav").style.display = "flex";
     navigateTo("pageHome");
-    fetchStats();
   }
 
   function navigateTo(pageId) {
@@ -995,9 +960,14 @@
     if(!currentUser) return;
     callApi("getDashboardStats", { nik: currentUser.nik }, function(res) {
       if(res.success) {
-        document.getElementById("statMenunggu").innerText = res.menunggu;
-        document.getElementById("statSelesai").innerText = res.selesai;
-        document.getElementById("statPengembalian").innerText = res.pengembalian;
+        document.getElementById("statPerbaikanTotal").innerText = res.perbaikan.total;
+        document.getElementById("statPerbaikanSub").innerText = "Selesai: " + res.perbaikan.selesai + " | Pend: " + res.perbaikan.pend;
+        
+        document.getElementById("statPengembalianTotal").innerText = res.pengembalian.total;
+        document.getElementById("statPengembalianSub").innerText = "Selesai: " + res.pengembalian.selesai + " | Pend: " + res.pengembalian.pend;
+
+        document.getElementById("statPenarikanTotal").innerText = res.penarikan.total;
+        document.getElementById("statPenarikanSub").innerText = "Selesai: " + res.penarikan.selesai + " | Pend: " + res.penarikan.pend;
       }
     });
   }
@@ -1470,7 +1440,6 @@
     
     let accentColor = type === 'service' ? 'text-primary' : (type === 'return' ? 'text-warning' : 'text-danger');
 
-    // Jika tipe withdrawal, tidak ada pilihan lokasi per item karena sudah terpusat di atas
     let itemLocationSection = '';
     if (type !== 'withdrawal') {
       let locationChooserHtml = '';
