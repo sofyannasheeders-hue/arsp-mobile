@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ARSP Mobile - Portal Service Aktiva</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Pustaka Barcode Scanner html5-qrcode -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    body { 
+      background-color: #0b0f19; 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      color: #ffffff !important; 
+      padding-bottom: 75px; 
+    }
+    .text-muted, label, .form-label, .small, small, span, div, p {
+      color: #ffffff !important;
+    }
+    .app-container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    .login-card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+    .app-logo-box {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px auto;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+      color: white;
+      font-size: 28px;
+    }
+    .profile-card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .avatar-circle {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+      font-size: 18px;
+      position: relative;
+    }
+    .online-dot {
+      width: 12px;
+      height: 12px;
+      background-color: #10b981;
+      border: 2px solid #111827;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+    }
+
+    .stat-box-menunggu {
+      background: rgba(245, 158, 11, 0.18) !important;
+      border: 1px solid rgba(245, 158, 11, 0.5) !important;
+      border-radius: 14px;
+      padding: 12px 8px;
+      text-align: center;
+      color: #ffffff !important;
+    }
+    .stat-box-selesai {
+      background: rgba(16, 185, 129, 0.18) !important;
+      border: 1px solid rgba(16, 185, 129, 0.5) !important;
+      border-radius: 14px;
+      padding: 12px 8px;
+      text-align: center;
+      color: #ffffff !important;
+    }
+    .stat-box-pengembalian {
+      background: rgba(14, 165, 233, 0.18) !important;
+      border: 1px solid rgba(14, 165, 233, 0.5) !important;
+      border-radius: 14px;
+      padding: 12px 8px;
+      text-align: center;
+      color: #ffffff !important;
+    }
+
+    .stat-box-perbaikan-admin {
+      background: rgba(99, 102, 241, 0.18) !important;
+      border: 1px solid rgba(99, 102, 241, 0.6) !important;
+      border-radius: 14px;
+      padding: 12px 8px;
+      text-align: center;
+      color: #ffffff !important;
+    }
+    .stat-box-pengembalian-admin {
+      background: rgba(245, 158, 11, 0.18) !important;
+      border: 1px solid rgba(245, 158, 11, 0.6) !important;
+      border-radius: 14px;
+      padding: 12px 8px;
+      text-align: center;
+      color: #ffffff !important;
+    }
+
+    .service-card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 16px;
+      padding: 16px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+      color: #ffffff !important;
+    }
+    .service-card:hover {
+      border-color: #3b82f6;
+      background: #161e31;
+    }
+    .service-card.repair { border-left: 4px solid #6366f1; }
+    .service-card.return { border-left: 4px solid #f59e0b; }
+    .service-card.tracking { border-left: 4px solid #0ea5e9; }
+    
+    .icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    
+    .form-control, .form-select, textarea {
+      background-color: #111827 !important;
+      border: 1px solid #374151 !important;
+      color: #ffffff !important;
+    }
+    .form-control::placeholder, textarea::placeholder {
+      color: rgba(255, 255, 255, 0.7) !important;
+      opacity: 1;
+    }
+    .form-control:focus, textarea:focus {
+      border-color: #3b82f6 !important;
+      box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25) !important;
+      color: #ffffff !important;
+    }
+
+    .success-result-box {
+      background-color: #198754 !important;
+      color: #ffffff !important;
+      border: none !important;
+    }
+    .success-result-box * {
+      color: #ffffff !important;
+    }
+
+    .item-card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #111827;
+      border-top: 1px solid #1f2937;
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 1000;
+    }
+    .nav-item {
+      text-align: center;
+      color: #ffffff !important;
+      text-decoration: none;
+      font-size: 11px;
+    }
+    .nav-item.active {
+      color: #3b82f6 !important;
+    }
+    .nav-item i {
+      font-size: 18px;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .floating-center-btn {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #f59e0b 0%, #3b82f6 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.5);
+      margin-top: -24px;
+      border: 3px solid #0b0f19;
+      cursor: pointer;
+    }
+    .page-view {
+      display: none;
+    }
+    .page-view.active {
+      display: block;
+    }
+    .preview-img {
+      width: 100%;
+      max-height: 180px;
+      object-fit: contain;
+      background: #0f172a;
+      border-radius: 8px;
+      display: none;
+    }
+    .filter-btn-group .btn {
+      font-size: 10px;
+      padding: 4px 8px;
+    }
+
+    /* Progress bar Top 5 */
+    .top-progress-bg {
+      background-color: #1f2937;
+      border-radius: 4px;
+      height: 6px;
+      width: 100%;
+      overflow: hidden;
+      margin-top: 6px;
+      margin-bottom: 12px;
+    }
+    .top-progress-bar {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.4s ease, background-color 0.4s ease;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  
+  <!-- PAGE 1: LOGIN -->
+  <div id="pageLogin" class="page-view active py-4">
+    <div class="text-center mb-4">
+      <div class="app-logo-box">
+        <i class="fa-solid fa-cube"></i>
+      </div>
+      <h4 class="fw-bold text-white m-0">ARSP Mobile</h4>
+      <p class="small mt-1">Asset Repair & Service Program Portal</p>
+    </div>
+
+    <div class="login-card p-4 mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <label class="form-label small fw-bold m-0">NIK / ID Karyawan</label>
+        <span class="text-primary small" style="font-size: 11px;">Passwordless Sync</span>
+      </div>
+      <div class="mb-3">
+        <div class="input-group">
+          <span class="input-group-text bg-dark border-secondary text-white"><i class="fa-regular fa-id-card"></i></span>
+          <input type="number" id="inputNik" class="form-control" placeholder="Masukkan NIK Karyawan Anda...">
+        </div>
+      </div>
+
+      <div id="standardLoginContainer">
+        <button onclick="checkAndLogin()" class="btn btn-primary w-100 py-2 fw-bold rounded-pill shadow">
+          Masuk Tanpa Password <i class="fa-solid fa-arrow-right ms-1"></i>
+        </button>
+      </div>
+
+      <div id="manualLoginContainer" style="display: none;" class="mt-3 pt-3 border-top border-secondary">
+        <div class="text-warning small mb-2"><i class="fa-solid fa-triangle-exclamation"></i> NIK tidak terdaftar di database. Silakan lengkapi data manual:</div>
+        <div class="mb-2">
+          <input type="text" id="inputManualNama" class="form-control form-control-sm" placeholder="Nama Lengkap Anda...">
+        </div>
+        <div class="mb-3">
+          <input type="text" id="inputManualDept" class="form-control form-control-sm" placeholder="Departemen / Unit Kerja...">
+        </div>
+        <button onclick="loginManually()" class="btn btn-warning w-100 py-2 fw-bold rounded-pill text-dark shadow">
+          Masuk Manual & Daftarkan <i class="fa-solid fa-arrow-right ms-1"></i>
+        </button>
+      </div>
+
+      <div id="loginAlert" class="mt-2 text-danger small text-center fw-bold"></div>
+    </div>
+
+    <div class="text-center mt-5" style="font-size: 11px;">
+      <i class="fa-solid fa-shield-halved text-success"></i> SSO Encrypted
+      <div class="mt-1" style="font-size: 10px;">v1.2.0 • MSN System 2026 • GA BGR2</div>
+    </div>
+  </div>
+
+  <!-- PAGE 2: BERANDA (DASHBOARD USER) -->
+  <div id="pageHome" class="page-view">
+    <div class="profile-card mb-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <div class="avatar-circle me-3" id="avatarInitials">MS<div class="online-dot"></div></div>
+          <div>
+            <div class="d-flex align-items-center">
+              <span class="fw-bold text-white me-2" id="headerNama" style="font-size: 15px;">-</span>
+              <span class="badge bg-primary text-white" id="headerRoleBadge" style="font-size: 9px;">USER</span>
+            </div>
+            <div class="small" id="headerDept" style="font-size: 12px;">-</div>
+          </div>
+        </div>
+        <div>
+          <button onclick="logout()" class="btn btn-dark border-secondary btn-sm rounded-circle text-danger" title="Keluar"><i class="fa-solid fa-power-off"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS CARDS -->
+    <div class="row g-2 mb-4">
+      <div class="col-4">
+        <div class="stat-box-menunggu">
+          <div style="font-size: 10px; color: #ffffff;">Menunggu Perbaikan</div>
+          <div class="fw-bold fs-4 text-white" id="statMenunggu">0</div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="stat-box-selesai">
+          <div style="font-size: 10px; color: #ffffff;">Selesai Servis</div>
+          <div class="fw-bold fs-4 text-white" id="statSelesai">0</div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="stat-box-pengembalian">
+          <div style="font-size: 10px; color: #ffffff;">Pengembalian</div>
+          <div class="fw-bold fs-4 text-white" id="statPengembalian">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+      <span class="small fw-bold" style="font-size: 11px;">LAYANAN ASET UTAMA</span>
+      <span class="text-primary small fw-bold" style="font-size: 11px;">ARSP Hub</span>
+    </div>
+
+    <div class="d-grid gap-3 mb-4">
+      <!-- PORTAL ADMIN -->
+      <div id="adminPortalCard" onclick="navigateTo('pageAdminDashboard'); initAdminDashboard();" class="service-card shadow-sm" style="display:none; border-left: 4px solid #10b981; background: #064e3b;">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center">
+            <div class="icon-box me-3 bg-success text-white">
+              <i class="fa-solid fa-chart-pie"></i>
+            </div>
+            <div>
+              <div class="fw-bold text-white">Dashboard Analisis Admin</div>
+              <div class="small mt-1" style="font-size: 11px;">Analisis grafik tiket, perbandingan & eksekusi status.</div>
+            </div>
+          </div>
+          <span class="fs-5">›</span>
+        </div>
+      </div>
+
+      <div onclick="navigateTo('pageFormService'); initFormService();" class="service-card repair shadow-sm">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center">
+            <div class="icon-box me-3" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">
+              <i class="fa-solid fa-screwdriver-wrench"></i>
+            </div>
+            <div>
+              <div class="fw-bold text-white">Pengajuan Perbaikan</div>
+              <div class="small mt-1" style="font-size: 12px;">Laporkan kerusakan aktiva, sarana toko atau fasilitas kantor.</div>
+            </div>
+          </div>
+          <span class="fs-5">›</span>
+        </div>
+        <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center" style="font-size: 12px; color: #818cf8 !important;">
+          <i class="fa-solid fa-circle-plus me-1"></i> Buat Form Servis Baru
+        </div>
+      </div>
+
+      <div onclick="navigateTo('pageFormReturn'); initFormReturn();" class="service-card return shadow-sm">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center">
+            <div class="icon-box me-3" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">
+              <i class="fa-solid fa-box-archive"></i>
+            </div>
+            <div>
+              <div class="fw-bold text-white">Pengembalian Barang</div>
+              <div class="small mt-1" style="font-size: 12px;">Kembalikan aset menganggur / idle atau barang tidak terpakai ke Gudang GA.</div>
+            </div>
+          </div>
+          <span class="fs-5">›</span>
+        </div>
+        <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center" style="font-size: 12px; color: #fbbf24 !important;">
+          <i class="fa-solid fa-box-open me-1"></i> Form Restock / Retur Gudang
+        </div>
+      </div>
+
+      <div onclick="navigateTo('pageTracking'); loadTrackingData('service');" class="service-card tracking shadow-sm">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center">
+            <div class="icon-box me-3" style="background: rgba(14, 165, 233, 0.2); color: #38bdf8;">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div>
+              <div class="fw-bold text-white">Tracking & Riwayat</div>
+              <div class="small mt-1" style="font-size: 12px;">Pantau status pengerjaan servis dan riwayat pengembalian barang.</div>
+            </div>
+          </div>
+          <span class="fs-5">›</span>
+        </div>
+        <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center" style="font-size: 12px; color: #38bdf8 !important;">
+          <i class="fa-solid fa-bolt me-1"></i> Live Status Update
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 2.B: DASHBOARD ADMIN ANALISIS & EKSEKUSI TIKET -->
+  <div id="pageAdminDashboard" class="page-view">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <div class="d-flex align-items-center">
+        <button onclick="navigateTo('pageHome')" class="btn btn-sm btn-dark border-secondary me-2 py-1 px-3 rounded-pill">
+          <i class="fa-solid fa-arrow-left me-1"></i> Beranda
+        </button>
+        <h6 class="fw-bold m-0 text-success"><i class="fa-solid fa-user-shield me-1"></i> Panel Admin GA</h6>
+      </div>
+    </div>
+
+    <!-- FILTER WAKTU -->
+    <div class="card p-3 mb-3 bg-dark border-secondary">
+      <div class="small fw-bold mb-2 text-info"><i class="fa-solid fa-filter me-1"></i> Filter Rentang Analisis:</div>
+      <div class="btn-group w-100 filter-btn-group" role="group">
+        <button type="button" class="btn btn-outline-info active" onclick="setAdminFilter(1, this)">1 Hari</button>
+        <button type="button" class="btn btn-outline-info" onclick="setAdminFilter(7, this)">1 Mgg</button>
+        <button type="button" class="btn btn-outline-info" onclick="setAdminFilter(30, this)">1 Bln</button>
+        <button type="button" class="btn btn-outline-info" onclick="setAdminFilter(90, this)">3 Bln</button>
+        <button type="button" class="btn btn-outline-info" onclick="setAdminFilter(365, this)">1 Thn</button>
+      </div>
+    </div>
+
+    <!-- STATS RINGKASAN ADMIN -->
+    <div class="row g-2 mb-3">
+      <div class="col-6">
+        <div class="stat-box-perbaikan-admin p-2">
+          <div style="font-size: 11px;" class="fw-bold text-white">Total Perbaikan</div>
+          <div class="fw-bold fs-4 text-white" id="adminTotalPerbaikan">0</div>
+          <div style="font-size: 9px;" class="text-light opacity-75" id="adminSubPerbaikan">Selesai: 0 | Pending: 0</div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="stat-box-pengembalian-admin p-2">
+          <div style="font-size: 11px;" class="fw-bold text-white">Total Pengembalian</div>
+          <div class="fw-bold fs-4 text-white" id="adminTotalPengembalian">0</div>
+          <div style="font-size: 9px;" class="text-light opacity-75" id="adminSubPengembalian">Selesai: 0 | Pending: 0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRAFIK CHART.JS -->
+    <div class="card p-3 mb-3 bg-dark border-secondary">
+      <div class="small fw-bold mb-2 text-center text-white"><i class="fa-solid fa-chart-pie me-1"></i> Perbandingan Jenis Tiket</div>
+      <div style="max-height: 200px; position: relative;">
+        <canvas id="adminPieChart"></canvas>
+      </div>
+    </div>
+
+    <!-- TOP 5 TOKO / DEPT -->
+    <div class="card p-3 mb-3 bg-dark border-secondary">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+          <div class="fw-bold text-white"><i class="fa-solid fa-building me-1"></i> Top 5 Toko / Departemen</div>
+          <div class="text-secondary" style="font-size: 11px;">Pengaju terbanyak perbaikan & pengembalian</div>
+        </div>
+        <span class="badge bg-success text-white px-2 py-1 shadow-sm" style="font-size: 10px;">Ranking Top 5</span>
+      </div>
+
+      <!-- FILTER PILLS -->
+      <div class="d-flex gap-2 mb-3" id="topFilterPills">
+        <button type="button" class="btn btn-sm btn-success text-white fw-bold active shadow-sm" onclick="switchTopFilter('all', this)">Semua</button>
+        <button type="button" class="btn btn-sm btn-outline-primary text-white" onclick="switchTopFilter('perbaikan', this)">Perbaikan</button>
+        <button type="button" class="btn btn-sm btn-outline-warning text-white" onclick="switchTopFilter('pengembalian', this)">Pengembalian</button>
+      </div>
+
+      <div id="adminTopLocationsList" style="font-size: 11px;">
+        <div class="text-center text-secondary py-2">Memuat data lokasi...</div>
+      </div>
+    </div>
+
+    <!-- TOMBOL DOWNLOAD REPORT CSV -->
+    <button type="button" onclick="openExportModal()" class="btn btn-success w-100 mb-4 fw-bold shadow-sm">
+      <i class="fa-solid fa-file-csv me-2"></i> Download Report CSV
+    </button>
+
+    <!-- SINGLE MENU EKSEKUSI TIKET MASUK -->
+    <div class="card p-3 mb-3 bg-dark border-secondary shadow-sm">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="fw-bold text-success" style="font-size: 13px;"><i class="fa-solid fa-list-check me-2"></i>EKSEKUSI TIKET MASUK</div>
+          <div class="text-secondary small mt-1" id="activeFilterDesc" style="font-size: 11px;">Belum ada kategori & status dipilih</div>
+        </div>
+        <button type="button" class="btn btn-success btn-sm fw-bold px-3 py-2 shadow-sm" onclick="openExecutionModal()">
+          <i class="fa-solid fa-filter me-1"></i> Pilih Eksekusi
+        </button>
+      </div>
+    </div>
+
+    <div id="adminTicketLoading" class="text-center py-3" style="display:none;">
+      <div class="spinner-border spinner-border-sm text-success"></div>
+      <span class="small ms-2">Memuat daftar tiket admin...</span>
+    </div>
+
+    <div id="adminTicketList"></div>
+  </div>
+
+  <!-- PAGE 3: FORM PENGAJUAN PERBAIKAN -->
+  <div id="pageFormService" class="page-view">
+    <div class="d-flex align-items-center mb-3">
+      <button onclick="navigateTo('pageHome')" class="btn btn-sm btn-dark border-secondary me-2 py-1 px-3 rounded-pill">
+        <i class="fa-solid fa-arrow-left me-1"></i> Kembali
+      </button>
+      <h6 class="fw-bold m-0 text-white">Form Pengajuan Perbaikan</h6>
+    </div>
+
+    <div id="gpsStatusCardService" class="card p-3 mb-3 text-center bg-dark border border-secondary text-light">
+      <div id="gpsSpinnerService" class="spinner-border spinner-border-sm text-primary"></div>
+      <span id="gpsTextService" class="small ms-1" style="font-size: 12px;">Mengecek lokasi GPS gudang...</span>
+    </div>
+
+    <div id="itemListContainerService"></div>
+
+    <button onclick="addItemCard('itemListContainerService', 'service')" class="btn btn-outline-primary btn-sm w-100 fw-bold mb-3 py-2 rounded-3">
+      + Tambah Aktiva Lain
+    </button>
+
+    <button id="btnSubmitService" onclick="submitMultiData('service')" class="btn btn-success w-100 py-3 fw-bold rounded-3 shadow" disabled>
+      Kirim Pengajuan Perbaikan
+    </button>
+  </div>
+
+  <!-- PAGE 4: FORM PENGEMBALIAN BARANG -->
+  <div id="pageFormReturn" class="page-view">
+    <div class="d-flex align-items-center mb-3">
+      <button onclick="navigateTo('pageHome')" class="btn btn-sm btn-dark border-secondary me-2 py-1 px-3 rounded-pill">
+        <i class="fa-solid fa-arrow-left me-1"></i> Kembali
+      </button>
+      <h6 class="fw-bold m-0 text-warning">Form Pengembalian Barang</h6>
+    </div>
+
+    <div id="gpsStatusCardReturn" class="card p-3 mb-3 text-center bg-dark border border-secondary text-light">
+      <div id="gpsSpinnerReturn" class="spinner-border spinner-border-sm text-warning"></div>
+      <span id="gpsTextReturn" class="small ms-1" style="font-size: 12px;">Mengecek lokasi GPS gudang...</span>
+    </div>
+
+    <div id="itemListContainerReturn"></div>
+
+    <button onclick="addItemCard('itemListContainerReturn', 'return')" class="btn btn-outline-warning btn-sm w-100 fw-bold mb-3 py-2 rounded-3 text-white">
+      + Tambah Barang Retur Lain
+    </button>
+
+    <button id="btnSubmitReturn" onclick="submitMultiData('return')" class="btn btn-warning w-100 py-3 fw-bold rounded-3 shadow text-dark" disabled>
+      Kirim Pengembalian Barang
+    </button>
+  </div>
+
+  <!-- PAGE 5: TRACKING PAGE -->
+  <div id="pageTracking" class="page-view">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <div class="d-flex align-items-center">
+        <button onclick="navigateTo('pageHome')" class="btn btn-sm btn-dark border-secondary me-2 py-1 px-3 rounded-pill">
+          <i class="fa-solid fa-arrow-left me-1"></i> Kembali
+        </button>
+        <h6 class="fw-bold m-0 text-info">Riwayat & Tracking</h6>
+      </div>
+    </div>
+
+    <div class="row g-2 mb-3">
+      <div class="col-6">
+        <button id="btnTabService" onclick="switchTrackingTab('service')" class="btn btn-primary btn-sm w-100 py-2 fw-bold">
+          Perbaikan
+        </button>
+      </div>
+      <div class="col-6">
+        <button id="btnTabReturn" onclick="switchTrackingTab('return')" class="btn btn-outline-warning btn-sm w-100 py-2 fw-bold text-white">
+          Pengembalian
+        </button>
+      </div>
+    </div>
+
+    <div id="trackingLoading" class="text-center py-4">
+      <div class="spinner-border spinner-border-sm text-info" role="status"></div>
+      <span class="small ms-2">Memuat data dari server...</span>
+    </div>
+
+    <div id="trackingList"></div>
+  </div>
+
+  <!-- BOTTOM NAVBAR -->
+  <div id="bottomNav" class="bottom-nav" style="display: none;">
+    <a href="#" onclick="navigateTo('pageHome'); return false;" class="nav-item active" id="navHome">
+      <i class="fa-solid fa-house"></i> Beranda
+    </a>
+    <a href="#" onclick="navigateTo('pageTracking'); switchTrackingTab('service'); return false;" class="nav-item" id="navTracking">
+      <i class="fa-solid fa-compass"></i> Tracking
+    </a>
+    <div class="floating-center-btn" onclick="navigateTo('pageFormService'); initFormService();" title="Tambah Servis">
+      <i class="fa-solid fa-plus text-white"></i>
+    </div>
+    <a href="#" onclick="navigateTo('pageTracking'); switchTrackingTab('return'); return false;" class="nav-item" id="navHistory">
+      <i class="fa-solid fa-box-archive"></i> Retur
+    </a>
+    <a href="#" onclick="showCustomAlert('Profil Pegawai', (currentUser ? currentUser.nama + ' (' + currentUser.nik + ')\nDept: ' + currentUser.dept : '-'), 'info'); return false;" class="nav-item">
+      <i class="fa-solid fa-user"></i> Profil
+    </a>
+  </div>
+
+</div>
+
+<!-- MODAL FILTER DOWNLOAD CSV -->
+<div class="modal fade" id="exportExcelModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark border-secondary text-white">
+      <div class="modal-header border-secondary">
+        <h6 class="modal-title fw-bold text-success"><i class="fa-solid fa-file-csv me-2"></i>Download Report CSV</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="font-size: 12px;">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Opsi Kategori Tiket</label>
+          <select id="exportCategory" class="form-select form-select-sm bg-dark text-white border-secondary">
+            <option value="all">Semua Tiket (Perbaikan & Pengembalian)</option>
+            <option value="perbaikan">Report Detail Perbaikan</option>
+            <option value="pengembalian">Report Detail Pengembalian Barang</option>
+          </select>
+        </div>
+        <div class="row g-2">
+          <div class="col-6">
+            <label class="form-label fw-bold">Tanggal Mulai</label>
+            <input type="date" id="exportStartDate" class="form-control form-control-sm bg-dark text-white border-secondary">
+          </div>
+          <div class="col-6">
+            <label class="form-label fw-bold">Tanggal Selesai</label>
+            <input type="date" id="exportEndDate" class="form-control form-control-sm bg-dark text-white border-secondary">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-secondary">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-sm btn-success fw-bold" onclick="generateCsvReport()">
+          <i class="fa-solid fa-download me-1"></i> Unduh (.csv)
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DIALOG POP-UP EKSEKUSI TIKET MASUK -->
+<div class="modal fade" id="modalExecutionConfig" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark border-secondary text-white">
+      <div class="modal-header border-secondary">
+        <h6 class="modal-title fw-bold text-success"><i class="fa-solid fa-list-check me-2"></i>Filter Eksekusi Tiket Masuk</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="font-size: 13px;">
+        <div class="mb-3">
+          <label class="form-label fw-bold text-info">1. Pilih Kategori Eksekusi:</label>
+          <div class="row g-2">
+            <div class="col-6">
+              <input type="radio" class="btn-check" name="modalCategory" id="catPerbaikan" value="perbaikan" checked autocomplete="off" onchange="updateModalStatusOptions()">
+              <label class="btn btn-outline-primary w-100 fw-bold py-2" for="catPerbaikan"><i class="fa-solid fa-screwdriver-wrench me-1"></i> Perbaikan</label>
+            </div>
+            <div class="col-6">
+              <input type="radio" class="btn-check" name="modalCategory" id="catPengembalian" value="pengembalian" autocomplete="off" onchange="updateModalStatusOptions()">
+              <label class="btn btn-outline-warning w-100 fw-bold py-2 text-white" for="catPengembalian"><i class="fa-solid fa-box-archive me-1"></i> Pengembalian</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label fw-bold text-info">2. Pilih Status Tiket:</label>
+          <select id="modalStatusSelect" class="form-select bg-dark text-white border-secondary">
+            <!-- Dynamic options -->
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer border-secondary">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-sm btn-success fw-bold px-3" onclick="applyExecutionFilter()">
+          <i class="fa-solid fa-check me-1"></i> Tampilkan Tiket
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOTIFIKASI & KONFIRMASI MODERN (PENGGANTI ALERT/CONFIRM) -->
+<div class="modal fade" id="modernAppModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark border-secondary text-white shadow-lg" style="border-radius: 16px;">
+      <div class="modal-header border-secondary py-3">
+        <h6 class="modal-title fw-bold" id="modernModalTitle"><i class="fa-solid fa-circle-info me-2 text-primary"></i>Informasi Sistem</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" id="modernModalCloseBtn" style="display:none;"></button>
+      </div>
+      <div class="modal-body py-4" style="font-size: 14px; line-height: 1.5;" id="modernModalBody">
+        <!-- Dynamic message -->
+      </div>
+      <div class="modal-footer border-secondary py-2" id="modernModalFooter">
+        <!-- Dynamic buttons -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- KONFIGURASI API BACKEND GOOGLE APPS SCRIPT ---
+  const GAS_API_URL = "https://script.google.com/macros/s/AKfycbztqDrwkcYzuboa2gZ5XPim4PrgIZ9TqnqYfH97xxOHHElN1GwUF9uxgRlUzbFFBS_s6A/exec";
+
+  function callApi(action, dataObj, successCallback, failureCallback) {
+    const payload = Object.assign({ action: action }, dataObj || {});
+
+    fetch(GAS_API_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(res => {
+      if (typeof successCallback === 'function') successCallback(res);
+    })
+    .catch(err => {
+      console.error("API Error:", err);
+      if (typeof failureCallback === 'function') {
+        failureCallback(err);
+      } else {
+        showCustomAlert("Koneksi Gagal", "Gagal terhubung ke server API: " + err, "error");
+      }
+    });
+  }
+
+  let currentUser = null;
+  let currentGPS = null;
+  let isLocationValid = false;
+  let serviceItemCount = 0;
+  let returnItemCount = 0;
+  let activeTrackingTab = 'service';
+  let adminSelectedPeriod = 1;
+  let pieChartInstance = null;
+  let cachedTopLocations = { all: [], perbaikan: [], pengembalian: [] };
+  let activeTopFilter = 'all';
+
+  let currentExecutionCategory = null;
+  let currentExecutionStatus = null;
+  let allLoadedAdminTickets = [];
+  let activeHtml5QrCode = null;
+  let activeCardElement = null;
+
+  // --- MODAL KUSTOM MODERN (MENGGANTIKAN ALERT & CONFIRM BAWAAN BROWSER) ---
+  function showCustomAlert(title, message, type = 'info') {
+    const titleEl = document.getElementById("modernModalTitle");
+    const bodyEl = document.getElementById("modernModalBody");
+    const footerEl = document.getElementById("modernModalFooter");
+    const closeBtn = document.getElementById("modernModalCloseBtn");
+
+    let iconClass = "fa-circle-info text-primary";
+    if (type === 'success') iconClass = "fa-circle-check text-success";
+    if (type === 'error' || type === 'danger') iconClass = "fa-triangle-exclamation text-danger";
+    if (type === 'warning') iconClass = "fa-triangle-exclamation text-warning";
+
+    titleEl.innerHTML = `<i class="fa-solid ${iconClass} me-2"></i>${title}`;
+    bodyEl.innerText = message;
+    closeBtn.style.display = "block";
+
+    footerEl.innerHTML = `<button type="button" class="btn btn-sm btn-primary px-4 fw-bold rounded-pill" data-bs-dismiss="modal">OK</button>`;
+
+    const modalEl = document.getElementById("modernAppModal");
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+  }
+
+  function showCustomConfirm(title, message, onConfirmCallback) {
+    const titleEl = document.getElementById("modernModalTitle");
+    const bodyEl = document.getElementById("modernModalBody");
+    const footerEl = document.getElementById("modernModalFooter");
+    const closeBtn = document.getElementById("modernModalCloseBtn");
+
+    titleEl.innerHTML = `<i class="fa-solid fa-circle-question text-warning me-2"></i>${title}`;
+    bodyEl.innerText = message;
+    closeBtn.style.display = "none";
+
+    footerEl.innerHTML = `
+      <button type="button" class="btn btn-sm btn-outline-secondary px-3 rounded-pill" data-bs-dismiss="modal">Batal</button>
+      <button type="button" class="btn btn-sm btn-success px-4 fw-bold rounded-pill shadow-sm" id="modernConfirmBtn">Ya, Lanjutkan</button>
+    `;
+
+    const modalEl = document.getElementById("modernAppModal");
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+
+    document.getElementById("modernConfirmBtn").onclick = function() {
+      modal.hide();
+      if (typeof onConfirmCallback === 'function') {
+        onConfirmCallback();
+      }
+    };
+  }
+
+  window.onload = function() {
+    const savedNik = localStorage.getItem("user_nik");
+    if(savedNik) {
+      document.getElementById("inputNik").value = savedNik;
+      callApi("checkNIK", { nik: savedNik }, function(res) {
+        if(res.success) {
+          currentUser = res;
+          postLoginSuccess();
+        } else {
+          const savedManual = localStorage.getItem("user_manual_profile");
+          if(savedManual) {
+            const manualUser = JSON.parse(savedManual);
+            if(manualUser.nik === savedNik) {
+              currentUser = manualUser;
+              postLoginSuccess();
+            }
+          }
+        }
+      });
+    }
+  };
+
+  function checkAndLogin() {
+    const nik = document.getElementById("inputNik").value.trim();
+    if(!nik) {
+      document.getElementById("loginAlert").innerText = "NIK wajib diisi.";
+      return;
+    }
+
+    document.getElementById("loginAlert").innerText = "Memeriksa NIK...";
+    document.getElementById("manualLoginContainer").style.display = "none";
+
+    callApi("checkNIK", { nik: nik }, function(res) {
+      if(res.success) {
+        currentUser = res;
+        localStorage.setItem("user_nik", res.nik);
+        localStorage.removeItem("user_manual_profile");
+        document.getElementById("loginAlert").innerText = "";
+        postLoginSuccess();
+      } else {
+        document.getElementById("loginAlert").innerText = "";
+        document.getElementById("manualLoginContainer").style.display = "block";
+      }
+    }, function(err) {
+      document.getElementById("loginAlert").innerText = "Gagal terhubung ke server.";
+    });
+  }
+
+  function loginManually() {
+    const nik = document.getElementById("inputNik").value.trim();
+    const nama = document.getElementById("inputManualNama").value.trim();
+    const dept = document.getElementById("inputManualDept").value.trim();
+
+    if(!nik || !nama || !dept) {
+      showCustomAlert("Peringatan", "NIK, Nama Lengkap, dan Departemen wajib diisi!", "warning");
+      return;
+    }
+
+    document.getElementById("loginAlert").innerText = "Mendaftarkan data karyawan...";
+
+    callApi("registerManualEmployee", { employeeData: { nik: nik, nama: nama, dept: dept } }, function(res) {
+      if(res.success) {
+        currentUser = {
+          nik: nik,
+          nama: nama,
+          dept: dept,
+          noWa: "-",
+          isAdmin: false
+        };
+        localStorage.setItem("user_nik", nik);
+        localStorage.setItem("user_manual_profile", JSON.stringify(currentUser));
+        document.getElementById("loginAlert").innerText = "";
+        postLoginSuccess();
+      } else {
+        showCustomAlert("Gagal", "Gagal mendaftarkan karyawan: " + res.message, "error");
+        document.getElementById("loginAlert").innerText = "";
+      }
+    }, function(err) {
+      showCustomAlert("Koneksi Gagal", "Gagal terhubung ke server.", "error");
+      document.getElementById("loginAlert").innerText = "";
+    });
+  }
+
+  function postLoginSuccess() {
+    document.getElementById("headerNama").innerText = currentUser.nama;
+    document.getElementById("headerDept").innerText = "Dept. " + currentUser.dept;
+
+    if (currentUser.isAdmin) {
+      document.getElementById("headerRoleBadge").innerText = "ADMIN";
+      document.getElementById("headerRoleBadge").className = "badge bg-success text-white";
+      document.getElementById("adminPortalCard").style.display = "block";
+    } else {
+      document.getElementById("headerRoleBadge").innerText = "USER";
+      document.getElementById("headerRoleBadge").className = "badge bg-primary text-white";
+      document.getElementById("adminPortalCard").style.display = "none";
+    }
+
+    const names = currentUser.nama.split(" ");
+    const initials = names.length > 1 ? names[0][0] + names[1][0] : names[0].substring(0, 2);
+    document.getElementById("avatarInitials").innerHTML = initials.toUpperCase() + '<div class="online-dot"></div>';
+
+    document.getElementById("bottomNav").style.display = "flex";
+    navigateTo("pageHome");
+    fetchStats();
+  }
+
+  function navigateTo(pageId) {
+    document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    window.scrollTo(0, 0);
+
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    if(pageId === 'pageHome') document.getElementById('navHome').classList.add('active');
+    else if(pageId === 'pageTracking') document.getElementById('navTracking').classList.add('active');
+  }
+
+  function fetchStats() {
+    if(!currentUser) return;
+    callApi("getDashboardStats", { nik: currentUser.nik }, function(res) {
+      if(res.success) {
+        document.getElementById("statMenunggu").innerText = res.menunggu;
+        document.getElementById("statSelesai").innerText = res.selesai;
+        document.getElementById("statPengembalian").innerText = res.pengembalian;
+      }
+    });
+  }
+
+  // ================= ADMIN DASHBOARD FUNCTIONS =================
+  function initAdminDashboard() {
+    loadAdminAnalytics(adminSelectedPeriod);
+    document.getElementById("adminTicketList").innerHTML = '<div class="card p-3 text-center text-secondary small bg-dark border border-secondary">Silakan klik tombol <strong>"Pilih Eksekusi"</strong> di atas untuk menampilkan daftar tiket masuk.</div>';
+    document.getElementById("activeFilterDesc").innerHTML = 'Belum ada kategori & status dipilih';
+  }
+
+  function setAdminFilter(days, btn) {
+    adminSelectedPeriod = days;
+    document.querySelectorAll('.filter-btn-group .btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    loadAdminAnalytics(days);
+  }
+
+  function loadAdminAnalytics(days) {
+    callApi("getAdminAnalyticsData", { periodDays: days }, function(res) {
+      if(res.success) {
+        const s = res.summary;
+        document.getElementById("adminTotalPerbaikan").innerText = s.totalPerbaikan;
+        document.getElementById("adminSubPerbaikan").innerText = "Selesai: " + s.selesaiPerbaikan + " | Pending: " + s.menungguPerbaikan;
+        
+        document.getElementById("adminTotalPengembalian").innerText = s.totalPengembalian;
+        document.getElementById("adminSubPengembalian").innerText = "Selesai: " + s.selesaiPengembalian + " | Pending: " + s.menungguPengembalian;
+
+        cachedTopLocations = res.topLocations;
+        renderTopLocations(cachedTopLocations[activeTopFilter]);
+
+        renderPieChart(s.totalPerbaikan, s.totalPengembalian);
+      }
+    });
+  }
+
+  function switchTopFilter(filterType, btn) {
+    activeTopFilter = filterType;
+    const container = document.getElementById('topFilterPills');
+    const btns = container.querySelectorAll('.btn');
+    
+    btns[0].className = "btn btn-sm btn-outline-success text-white";
+    btns[1].className = "btn btn-sm btn-outline-primary text-white";
+    btns[2].className = "btn btn-sm btn-outline-warning text-white";
+
+    if (filterType === 'all') {
+      btn.className = "btn btn-sm btn-success text-white fw-bold active shadow-sm";
+    } else if (filterType === 'perbaikan') {
+      btn.className = "btn btn-sm btn-primary text-white fw-bold active shadow-sm";
+    } else if (filterType === 'pengembalian') {
+      btn.className = "btn btn-sm btn-warning text-dark fw-bold active shadow-sm";
+    }
+
+    renderTopLocations(cachedTopLocations[filterType]);
+  }
+
+  function renderTopLocations(list) {
+    const listDiv = document.getElementById("adminTopLocationsList");
+    if(!list || list.length === 0) {
+      listDiv.innerHTML = '<div class="text-center text-secondary py-2">Belum ada data pengajuan.</div>';
+      return;
+    }
+
+    let barColor = "#10b981";
+    let badgeTextClass = "text-success";
+    
+    if (activeTopFilter === 'perbaikan') {
+      barColor = "#6366f1";
+      badgeTextClass = "text-primary";
+    } else if (activeTopFilter === 'pengembalian') {
+      barColor = "#f59e0b";
+      badgeTextClass = "text-warning";
+    }
+
+    let html = "";
+    list.forEach(function(item, index) {
+      html += '<div class="mb-2">' +
+              '<div class="d-flex justify-content-between align-items-center">' +
+              '<div><span class="text-warning fw-bold">#' + (index + 1) + '</span> <span class="text-white fw-bold ms-1">' + item.lokasi + '</span></div>' +
+              '<div class="d-flex align-items-center gap-2">' +
+              '<span class="text-light" style="font-size: 11px;">' + item.jumlah + ' Request</span>' +
+              '<span class="badge bg-dark border border-secondary ' + badgeTextClass + '" style="font-size: 10px;">' + item.persen + '%</span>' +
+              '</div></div>' +
+              '<div class="top-progress-bg">' +
+              '<div class="top-progress-bar" style="width: ' + item.persen + '%; background-color: ' + barColor + ';"></div>' +
+              '</div></div>';
+    });
+    listDiv.innerHTML = html;
+  }
+
+  function renderPieChart(totalPerbaikan, totalPengembalian) {
+    const ctx = document.getElementById('adminPieChart').getContext('2d');
+    if(pieChartInstance) pieChartInstance.destroy();
+
+    pieChartInstance = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Perbaikan', 'Pengembalian'],
+        datasets: [{
+          data: [totalPerbaikan, totalPengembalian],
+          backgroundColor: ['#6366f1', '#f59e0b'],
+          borderColor: '#111827',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: { color: '#ffffff', font: { size: 11 } }
+          }
+        }
+      }
+    });
+  }
+
+  // --- MODAL EKSEKUSI TIKET MASUK WORKFLOW ---
+  function openExecutionModal() {
+    updateModalStatusOptions();
+    const modalEl = document.getElementById('modalExecutionConfig');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+  }
+
+  function updateModalStatusOptions() {
+    const isPerb = document.getElementById('catPerbaikan').checked;
+    const selectEl = document.getElementById('modalStatusSelect');
+    selectEl.innerHTML = "";
+
+    if (isPerb) {
+      selectEl.innerHTML = `
+        <option value="all">Semua Status Perbaikan</option>
+        <option value="Menunggu Perbaikan">Menunggu Perbaikan</option>
+        <option value="Selesai Servis">Selesai Servis</option>
+        <option value="Menunggu Sparepart">Menunggu Sparepart / Pending</option>
+      `;
+    } else {
+      selectEl.innerHTML = `
+        <option value="all">Semua Status Pengembalian</option>
+        <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
+        <option value="Selesai / Diterima">Selesai / Diterima</option>
+      `;
+    }
+  }
+
+  function applyExecutionFilter() {
+    const isPerb = document.getElementById('catPerbaikan').checked;
+    currentExecutionCategory = isPerb ? 'perbaikan' : 'pengembalian';
+    currentExecutionStatus = document.getElementById('modalStatusSelect').value;
+
+    const catName = isPerb ? 'Perbaikan' : 'Pengembalian';
+    const statusText = document.getElementById('modalStatusSelect').selectedOptions[0].text;
+    document.getElementById('activeFilterDesc').innerHTML = `Kategori: <strong class="text-white">${catName}</strong> | Status: <strong class="text-warning">${statusText}</strong>`;
+
+    const modalEl = document.getElementById('modalExecutionConfig');
+    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+    if(modalInstance) modalInstance.hide();
+
+    loadAdminTicketsFiltered(currentExecutionCategory, currentExecutionStatus);
+  }
+
+  function loadAdminTicketsFiltered(category, statusFilter) {
+    document.getElementById("adminTicketLoading").style.display = "block";
+    document.getElementById("adminTicketList").innerHTML = "";
+
+    callApi("getAdminTicketList", { category: category }, function(res) {
+      document.getElementById("adminTicketLoading").style.display = "none";
+      if(res.success) {
+        allLoadedAdminTickets = res.data;
+        renderFilteredTickets(statusFilter);
+      }
+    });
+  }
+
+  function renderFilteredTickets(statusFilter) {
+    let filtered = allLoadedAdminTickets;
+    if(statusFilter && statusFilter !== 'all') {
+      filtered = allLoadedAdminTickets.filter(item => {
+        const itemStatus = (item.status || "").toLowerCase();
+        const targetStatus = statusFilter.toLowerCase();
+        return itemStatus.includes(targetStatus) || targetStatus.includes(itemStatus);
+      });
+    }
+
+    const listDiv = document.getElementById("adminTicketList");
+    if(filtered.length === 0) {
+      listDiv.innerHTML = '<div class="card p-3 text-center text-white small bg-dark border border-secondary">Tidak ada tiket yang sesuai dengan filter.</div>';
+      return;
+    }
+
+    let html = "";
+    filtered.forEach(function(item) {
+      let statusText = item.status ? item.status : (item.type === 'perbaikan' ? "Menunggu Perbaikan" : "Menunggu Verifikasi");
+      let badgeBg = (statusText.toLowerCase().includes("selesai") || statusText.toLowerCase().includes("diterima")) ? "bg-success" : "bg-warning text-dark";
+      let type = item.type;
+
+      let actionButtons = '';
+      if (type === 'perbaikan') {
+        actionButtons = '<button class="btn btn-sm btn-success w-50 fw-bold" style="font-size:11px;" onclick="executeAdminUpdate(\'' + item.tiketId + '\', \'' + type + '\', \'Selesai Servis\')">✓ Selesai Servis</button>' +
+                        '<button class="btn btn-sm btn-outline-warning w-50 fw-bold text-white" style="font-size:11px;" onclick="executeAdminUpdate(\'' + item.tiketId + '\', \'' + type + '\', \'Menunggu Sparepart\')">⏳ Pending</button>';
+      } else {
+        actionButtons = '<button class="btn btn-sm btn-success w-50 fw-bold" style="font-size:11px;" onclick="executeAdminUpdate(\'' + item.tiketId + '\', \'' + type + '\', \'Selesai / Diterima\')">✓ Selesai / Diterima</button>' +
+                        '<button class="btn btn-sm btn-outline-warning w-50 fw-bold text-white" style="font-size:11px;" onclick="executeAdminUpdate(\'' + item.tiketId + '\', \'' + type + '\', \'Menunggu Verifikasi\')">⏳ Menunggu Verifikasi</button>';
+      }
+
+      let fotoSection = '';
+      if (item.fotoUrl) {
+        fotoSection = '<div class="mt-2">' +
+                      '<a href="' + item.fotoUrl + '" target="_blank" class="btn btn-sm btn-outline-info py-1 px-2 text-white" style="font-size: 11px; text-decoration: none;">' +
+                      '<i class="fa-solid fa-image me-1"></i> Lihat Foto Bukti / Fisik Barang</a>' +
+                      '</div>';
+      }
+
+      html += '<div class="card p-3 mb-3 bg-dark border border-secondary text-light">' +
+              '<div class="d-flex justify-content-between align-items-center mb-1">' +
+              '<span class="fw-bold text-info" style="font-size: 12px;">' + item.tiketId + '</span>' +
+              '<span class="badge ' + badgeBg + '" style="font-size: 10px;">' + statusText + '</span></div>' +
+              '<div style="font-size: 11px;">Waktu: <strong>' + item.timestamp + '</strong></div>' +
+              '<div style="font-size: 11px;">Pelapor: <strong>' + item.namaPelapor + '</strong> (' + item.nik + ')</div>' +
+              '<div style="font-size: 11px;">Toko/Dept: <strong>' + item.kodeToko + '</strong> | SJ: ' + item.noSj + '</div>' +
+              '<div class="mt-2 small text-light">' +
+              '<div><strong>Barang:</strong> ' + item.namaAktiva + ' (' + item.kodeAktiva + ')</div>' +
+              '<div><strong>Deskripsi:</strong> ' + item.deskripsi + '</div>' +
+              fotoSection +
+              '</div>' +
+              '<div class="mt-3 pt-2 border-top border-secondary d-flex gap-2">' +
+              actionButtons +
+              '</div></div>';
+    });
+    listDiv.innerHTML = html;
+  }
+
+  function executeAdminUpdate(tiketId, category, newStatus) {
+    showCustomConfirm("Konfirmasi Eksekusi", `Konfirmasi update status tiket ${tiketId} menjadi '${newStatus}'?`, function() {
+      callApi("updateTicketStatusByAdmin", { payload: { tiketId: tiketId, category: category, newStatus: newStatus } }, function(res) {
+        if(res.success) {
+          showCustomAlert("Berhasil", res.message, "success");
+          loadAdminTicketsFiltered(currentExecutionCategory, currentExecutionStatus);
+          loadAdminAnalytics(adminSelectedPeriod);
+        } else {
+          showCustomAlert("Gagal", res.message, "error");
+        }
+      });
+    });
+  }
+
+  function openExportModal() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById("exportStartDate").value = today;
+    document.getElementById("exportEndDate").value = today;
+    const modalEl = document.getElementById('exportExcelModal');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+  }
+
+  function generateCsvReport() {
+    const category = document.getElementById("exportCategory").value;
+    const startStr = document.getElementById("exportStartDate").value;
+    const endStr = document.getElementById("exportEndDate").value;
+
+    if(!startStr || !endStr) {
+      showCustomAlert("Peringatan", "Silakan pilih tanggal periode laporan!", "warning");
+      return;
+    }
+
+    const startDate = new Date(startStr + "T00:00:00");
+    const endDate = new Date(endStr + "T23:59:59");
+
+    callApi("getAllTransactionsForExport", {}, function(res) {
+      if(!res.success) {
+        showCustomAlert("Gagal", "Gagal mengambil data: " + res.message, "error");
+        return;
+      }
+
+      let sourceList = [];
+      if(category === "all") {
+        sourceList = [...res.perbaikan, ...res.pengembalian];
+      } else if(category === "perbaikan") {
+        sourceList = res.perbaikan;
+      } else {
+        sourceList = res.pengembalian;
+      }
+
+      let filteredRows = [];
+      sourceList.forEach(item => {
+        let itemDate = new Date(item.timestamp);
+        if(isNaN(itemDate.getTime())) {
+          const parts = item.timestamp.split(" ");
+          if(parts.length >= 1) {
+            const dateParts = parts[0].split("/");
+            if(dateParts.length === 3) {
+              itemDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+            }
+          }
+        }
+
+        if(itemDate >= startDate && itemDate <= endDate) {
+          filteredRows.push(item);
+        }
+      });
+
+      if(filteredRows.length === 0) {
+        showCustomAlert("Informasi", "Tidak ada data transaksi pada rentang tanggal yang dipilih.", "warning");
+        return;
+      }
+
+      const headers = ["ID Tiket", "Tipe Transaksi", "Waktu Pengajuan", "NIK Pelapor", "Nama Pelapor", "No WhatsApp", "Toko / Departemen", "No SJ", "Kode Aktiva", "Nama Aktiva / Barang", "Deskripsi", "Status", "Koordinat GPS", "URL Foto"];
+      let csvContent = "\uFEFF" + headers.join(",") + "\n";
+
+      filteredRows.forEach(item => {
+        const row = [
+          `"${item.tiketId || ''}"`,
+          `"${item.tipe || ''}"`,
+          `"${item.timestamp || ''}"`,
+          `"${item.nik || ''}"`,
+          `"${item.namaPelapor || ''}"`,
+          `"${item.noWa || ''}"`,
+          `"${item.kodeToko || ''}"`,
+          `"${item.noSj || ''}"`,
+          `"${item.kodeAktiva || ''}"`,
+          `"${item.namaAktiva || ''}"`,
+          `"${(item.deskripsi || '').replace(/"/g, '""')}"`,
+          `"${item.status || ''}"`,
+          `"${item.gps || ''}"`,
+          `"${item.fotoUrl || ''}"`
+        ];
+        csvContent += row.join(",") + "\n";
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Report_ARSP_${category}_${startStr}_sd_${endStr}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      const modalEl = document.getElementById('exportExcelModal');
+      const modalInstance = bootstrap.Modal.getInstance(modalEl);
+      if(modalInstance) modalInstance.hide();
+    });
+  }
+
+  function logout() {
+    localStorage.removeItem("user_nik");
+    localStorage.removeItem("user_manual_profile");
+    currentUser = null;
+    document.getElementById("bottomNav").style.display = "none";
+    navigateTo("pageLogin");
+    document.getElementById("inputNik").value = "";
+    document.getElementById("loginAlert").innerText = "";
+    document.getElementById("manualLoginContainer").style.display = "none";
+  }
+
+  function initFormService() {
+    document.getElementById("itemListContainerService").innerHTML = "";
+    serviceItemCount = 0;
+    addItemCard('itemListContainerService', 'service');
+    validateGPS("gpsStatusCardService", "gpsSpinnerService", "gpsTextService", "btnSubmitService");
+  }
+
+  function initFormReturn() {
+    document.getElementById("itemListContainerReturn").innerHTML = "";
+    returnItemCount = 0;
+    addItemCard('itemListContainerReturn', 'return');
+    validateGPS("gpsStatusCardReturn", "gpsSpinnerReturn", "gpsTextReturn", "btnSubmitReturn");
+  }
+
+  function validateGPS(cardId, spinnerId, textId, btnId) {
+    const card = document.getElementById(cardId);
+    card.className = "card p-3 mb-3 text-center bg-dark border border-secondary text-light";
+    document.getElementById(spinnerId).style.display = "inline-block";
+    document.getElementById(textId).innerText = "Mengecek lokasi GPS gudang...";
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(pos) {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        currentGPS = { lat: lat, lng: lng };
+
+        callApi("validateLocation", { lat: lat, lng: lng }, function(res) {
+          document.getElementById(spinnerId).style.display = "none";
+          if(res.valid) {
+            isLocationValid = true;
+            card.className = "card p-3 mb-3 text-center bg-success text-white border-0 shadow-sm";
+            document.getElementById(textId).innerText = "✓ Valid di area Gudang (" + res.distance + "m)";
+            document.getElementById(btnId).disabled = false;
+          } else {
+            isLocationValid = false;
+            card.className = "card p-3 mb-3 text-center bg-danger text-white border-0 shadow-sm";
+            document.getElementById(textId).innerText = "❌ Di luar area gudang (" + res.distance + "m)";
+            showCustomAlert("Akses Ditolak", res.message, "error");
+            navigateTo('pageHome');
+          }
+        });
+
+      }, function(err) {
+        document.getElementById(spinnerId).style.display = "none";
+        card.className = "card p-3 mb-3 text-center bg-warning text-dark border-0 shadow-sm";
+        document.getElementById(textId).innerText = "GPS tidak aktif / izin ditolak.";
+      }, { enableHighAccuracy: true, timeout: 10000 });
+    }
+  }
+
+  function toggleSourceType(radio) {
+    const card = radio.closest('.item-card');
+    const tokoSec = card.querySelector('.toko-section');
+    const nonTokoSec = card.querySelector('.nontoko-section');
+    if (radio.value === 'toko') {
+      tokoSec.style.display = 'block';
+      nonTokoSec.style.display = 'none';
+    } else {
+      tokoSec.style.display = 'none';
+      nonTokoSec.style.display = 'block';
+      delete card.dataset.tokoKode;
+      const infoBox = card.querySelector('.toko-info');
+      if(infoBox) infoBox.style.display = 'none';
+    }
+  }
+
+  function toggleAktivaType(radio) {
+    const card = radio.closest('.item-card');
+    const datSec = card.querySelector('.dat-section');
+    const nonDatSec = card.querySelector('.nondat-section');
+    if (radio.value === 'dat') {
+      datSec.style.display = 'block';
+      nonDatSec.style.display = 'none';
+      delete card.dataset.isNonDat;
+    } else {
+      datSec.style.display = 'none';
+      nonDatSec.style.display = 'block';
+      card.dataset.isNonDat = "true";
+      delete card.dataset.aktivaKode;
+      delete card.dataset.aktivaNama;
+      const infoBox = card.querySelector('.aktiva-info');
+      const manualBox = card.querySelector('.manual-aktiva-box');
+      if(infoBox) infoBox.style.display = 'none';
+      if(manualBox) manualBox.style.display = 'none';
+    }
+  }
+
+  function addItemCard(containerId, type) {
+    let count = (type === 'service') ? ++serviceItemCount : ++returnItemCount;
+    const container = document.getElementById(containerId);
+    const cardId = type + "_card_" + count;
+    
+    const html = '<div class="item-card shadow-sm" id="' + cardId + '">' +
+      '<div class="d-flex justify-content-between align-items-center mb-2 border-bottom border-secondary pb-1">' +
+      '<span class="fw-bold ' + (type === 'service' ? 'text-primary' : 'text-warning') + ' small">Aktiva #' + count + '</span>' +
+      (count > 1 ? '<button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 rounded-pill" style="font-size:11px;" onclick="document.getElementById(\'' + cardId + '\').remove()">Hapus</button>' : '') +
+      '</div>' +
+      '<div class="mb-3"><label class="form-label small mb-1">Sumber Asal Lokasi</label>' +
+      '<div class="d-flex gap-4"><div class="form-check">' +
+      '<input class="form-check-input source-radio" type="radio" name="sourceType_' + type + '_' + count + '" id="srcToko_' + type + '_' + count + '" value="toko" checked onchange="toggleSourceType(this)">' +
+      '<label class="form-check-label small text-white" for="srcToko_' + type + '_' + count + '">Toko</label></div>' +
+      '<div class="form-check">' +
+      '<input class="form-check-input source-radio" type="radio" name="sourceType_' + type + '_' + count + '" id="srcNonToko_' + type + '_' + count + '" value="nontoko" onchange="toggleSourceType(this)">' +
+      '<label class="form-check-label small text-white" for="srcNonToko_' + type + '_' + count + '">Non Toko</label></div></div></div>' +
+      '<div class="toko-section mb-3"><label class="form-label small mb-1">Kode Toko Asal</label>' +
+      '<div class="input-group input-group-sm mb-1"><input type="text" class="form-control input-toko" placeholder="Contoh: TNX1">' +
+      '<button type="button" class="btn btn-outline-primary text-white" onclick="cekToko(this)">Cek</button></div>' +
+      '<div class="toko-info alert success-result-box py-1 px-2 mt-1 mb-0 small" style="display:none; font-size: 11px;"></div></div>' +
+      '<div class="nontoko-section mb-3" style="display: none;"><label class="form-label small mb-1">Nama Departemen</label>' +
+      '<input type="text" class="form-control form-control-sm input-dept" placeholder="Contoh: Dept. Logistik / Head Office..."></div>' +
+      '<div class="mb-3"><label class="form-label small mb-1">Tipe Aktiva / Barang</label>' +
+      '<div class="d-flex gap-4"><div class="form-check">' +
+      '<input class="form-check-input aktiva-radio" type="radio" name="aktivaType_' + type + '_' + count + '" id="typeDat_' + type + '_' + count + '" value="dat" checked onchange="toggleAktivaType(this)">' +
+      '<label class="form-check-label small text-white" for="typeDat_' + type + '_' + count + '">DAT</label></div>' +
+      '<div class="form-check">' +
+      '<input class="form-check-input aktiva-radio" type="radio" name="aktivaType_' + type + '_' + count + '" id="typeNonDat_' + type + '_' + count + '" value="nondat" onchange="toggleAktivaType(this)">' +
+      '<label class="form-check-label small text-white" for="typeNonDat_' + type + '_' + count + '">Non DAT</label></div></div></div>' +
+      '<div class="dat-section mb-2"><label class="form-label small mb-1">No. Aktiva / Barang</label>' +
+      '<div class="input-group input-group-sm mb-1"><input type="text" class="form-control input-aktiva" placeholder="Contoh: E00.012345">' +
+      '<button type="button" class="btn btn-outline-warning text-white" onclick="openBarcodeScanner(this)" title="Scan Barcode"><i class="fa-solid fa-barcode"></i> Scan</button>' +
+      '<button type="button" class="btn btn-outline-primary text-white" onclick="cekAktiva(this)">Cek</button></div>' +
+      // Wadah kamera scanner barcode dengan ID Statis "reader"
+      '<div class="scanner-container mt-2" style="display:none; position:relative;">' +
+        '<div id="reader" style="width:100%; max-height:250px; overflow:hidden; border-radius:8px;"></div>' +
+        '<button type="button" class="btn btn-sm btn-danger w-100 mt-1" onclick="closeBarcodeScanner(this)"><i class="fa-solid fa-xmark"></i> Tutup Kamera</button>' +
+      '</div>' +
+      '<div class="aktiva-info alert success-result-box py-1 px-2 mt-1 mb-0 small" style="display:none; font-size: 11px;"></div>' +
+      '<div class="manual-aktiva-box border border-warning bg-dark p-2 rounded mt-1" style="display:none;">' +
+      '<small class="text-warning fw-bold d-block mb-1">⚠️ Tidak terdaftar. Input nama dan merk barang:</small>' +
+      '<input type="text" class="form-control form-control-sm input-manual-nama mb-1" placeholder="Nama Barang...">' +
+      '<button type="button" class="btn btn-warning btn-sm w-100 fw-bold text-dark" style="font-size: 11px;" onclick="simpanManual(this)">Gunakan Manual</button></div></div>' +
+      '<div class="nondat-section mb-2" style="display: none;"><div class="mb-2"><label class="form-label small mb-1">Kode / No. Barang (Opsional)</label>' +
+      '<input type="text" class="form-control form-control-sm input-nondat-kode" placeholder="Contoh: NON-DAT-001"></div>' +
+      '<div class="mb-1"><label class="form-label small mb-1">Nama & Merk Barang</label>' +
+      '<input type="text" class="form-control form-control-sm input-nondat-nama" placeholder="Contoh: AC Split 1.5 PK Panasonic"></div></div>' +
+      '<div class="mb-2"><label class="form-label small mb-1">No SJ Web Tracking</label>' +
+      '<input type="text" class="form-control form-control-sm input-nosj" placeholder="Nomor Surat Jalan..."></div>' +
+      '<div class="mb-2"><label class="form-label small mb-1">' + (type === 'service' ? 'Foto Kerusakan' : 'Foto Kondisi Barang') + '</label>' +
+      '<input type="file" accept="image/*" class="form-control form-control-sm mb-1 input-foto" onchange="previewCardImage(this)">' +
+      '<img class="img-fluid rounded mt-1 preview-img border border-secondary"></div>' +
+      '<div class="mb-1"><label class="form-label small mb-1">' + (type === 'service' ? 'Deskripsi Kerusakan' : 'Alasan Pengembalian') + '</label>' +
+      '<textarea class="form-control form-control-sm input-deskripsi" rows="2" placeholder="' + (type === 'service' ? 'Jelaskan kerusakan...' : 'Jelaskan alasan pengembalian...') + '"></textarea></div></div>';
+
+    container.insertAdjacentHTML('beforeend', html);
+  }
+
+  // --- FUNGSI BARCODE SCANNER KAMERA (MENGGUNAKAN ELEMEN STATIS #reader) ---
+  function openBarcodeScanner(btn) {
+    const card = btn.closest('.item-card');
+    const scannerContainer = card.querySelector('.scanner-container');
+    activeCardElement = card;
+
+    if (activeHtml5QrCode) {
+      activeHtml5QrCode.stop().then(() => {
+        startScannerInstance(scannerContainer);
+      }).catch(() => {
+        startScannerInstance(scannerContainer);
+      });
+    } else {
+      startScannerInstance(scannerContainer);
+    }
+  }
+
+  function startScannerInstance(scannerContainer) {
+    scannerContainer.style.display = 'block';
+    
+    activeHtml5QrCode = new Html5Qrcode("reader");
+    
+    const config = { fps: 10, qrbox: { width: 250, height: 150 } };
+    
+    activeHtml5QrCode.start(
+      { facingMode: "environment" }, 
+      config,
+      (decodedText, decodedResult) => {
+        if (activeCardElement) {
+          const inputAktiva = activeCardElement.querySelector('.input-aktiva');
+          inputAktiva.value = decodedText;
+          stopAndCloseScanner();
+          cekAktiva(activeCardElement.querySelector('.btn-outline-primary'));
+        }
+      },
+      (errorMessage) => {
+        // Silent error saat mencari frame barcode
+      }
+    ).catch(err => {
+      showCustomAlert("Gagal Mengakses Kamera", "Browser memblokir akses kamera. Pastikan izin kamera pada browser sudah di-izinkan (Allow). Error: " + err, "error");
+      scannerContainer.style.display = 'none';
+    });
+  }
+
+  function closeBarcodeScanner() {
+    stopAndCloseScanner();
+  }
+
+  function stopAndCloseScanner() {
+    if (activeHtml5QrCode) {
+      activeHtml5QrCode.stop().then(() => {
+        activeHtml5QrCode.clear();
+        activeHtml5QrCode = null;
+        hideAllScanners();
+      }).catch(() => {
+        activeHtml5QrCode = null;
+        hideAllScanners();
+      });
+    } else {
+      hideAllScanners();
+    }
+  }
+
+  function hideAllScanners() {
+    document.querySelectorAll('.scanner-container').forEach(el => {
+      el.style.display = 'none';
+    });
+    activeCardElement = null;
+  }
+
+  function cekToko(btn) {
+    const card = btn.closest('.item-card');
+    const inputToko = card.querySelector('.input-toko').value.trim();
+    const infoBox = card.querySelector('.toko-info');
+    if(!inputToko) return;
+
+    callApi("getTokoInfo", { kodeToko: inputToko }, function(res) {
+      if(res.success) {
+        card.dataset.tokoKode = res.kode;
+        infoBox.innerHTML = "<strong>Toko:</strong> " + res.nama + " (" + res.kode + ")";
+        infoBox.style.display = 'block';
+      } else {
+        showCustomAlert("Perhatian", res.message, "warning");
+        infoBox.style.display = 'none';
+        delete card.dataset.tokoKode;
+      }
+    });
+  }
+
+  function cekAktiva(btn) {
+    const card = btn.closest('.item-card');
+    const inputAktiva = card.querySelector('.input-aktiva').value.trim();
+    const infoBox = card.querySelector('.aktiva-info');
+    const manualBox = card.querySelector('.manual-aktiva-box');
+    if(!inputAktiva) return;
+
+    infoBox.style.display = 'none';
+    manualBox.style.display = 'none';
+
+    callApi("getAktivaInfo", { kodeAktiva: inputAktiva }, function(res) {
+      if(res.success) {
+        card.dataset.aktivaKode = res.kode;
+        card.dataset.aktivaNama = res.nama;
+        infoBox.innerHTML = "<strong>" + res.nama + "</strong><br>Kode: " + res.kode + " | Lokasi: " + res.lokasi;
+        infoBox.style.display = 'block';
+        delete card.dataset.isManual;
+      } else {
+        manualBox.style.display = 'block';
+      }
+    });
+  }
+
+  function simpanManual(btn) {
+    const card = btn.closest('.item-card');
+    const inputAktiva = card.querySelector('.input-aktiva').value.trim();
+    const namaManual = card.querySelector('.input-manual-nama').value.trim();
+    const infoBox = card.querySelector('.aktiva-info');
+    const manualBox = card.querySelector('.manual-aktiva-box');
+
+    if(!inputAktiva || !namaManual) {
+      showCustomAlert("Peringatan", "Lengkapi No. Aktiva dan Nama Manual!", "warning");
+      return;
+    }
+
+    card.dataset.aktivaKode = inputAktiva;
+    card.dataset.aktivaNama = namaManual;
+    card.dataset.isManual = "true";
+
+    infoBox.innerHTML = "<strong>" + namaManual + " (Manual)</strong><br>Kode: " + inputAktiva;
+    infoBox.style.display = 'block';
+    manualBox.style.display = 'none';
+  }
+
+  function previewCardImage(input) {
+    const card = input.closest('.item-card');
+    const preview = card.querySelector('.preview-img');
+    const file = input.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        card.dataset.fotoBase64 = e.target.result;
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function submitMultiData(type) {
+    if (!isLocationValid) {
+      showCustomAlert("Akses Ditolak", "Akses lokasi gudang belum divalidasi!", "error");
+      return;
+    }
+
+    const containerId = type === 'service' ? 'itemListContainerService' : 'itemListContainerReturn';
+    const btnId = type === 'service' ? 'btnSubmitService' : 'btnSubmitReturn';
+    const cards = document.querySelectorAll('#' + containerId + ' .item-card');
+    let items = [];
+
+    for (let i = 0; i < cards.length; i++) {
+      const card = cards[i];
+      const sourceType = card.querySelector('.source-radio:checked').value;
+      let tokoVal = "";
+
+      if (sourceType === 'toko') {
+        tokoVal = card.dataset.tokoKode;
+        if (!tokoVal) {
+          showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Kode Toko belum divalidasi (klik Cek Toko)!", "warning");
+          return;
+        }
+      } else {
+        const deptVal = card.querySelector('.input-dept').value.trim();
+        if (!deptVal) {
+          showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Nama Departemen wajib diisi!", "warning");
+          return;
+        }
+        tokoVal = "DEPT: " + deptVal;
+      }
+
+      const aktivaType = card.querySelector('.aktiva-radio:checked').value;
+      let aktivaKode = "";
+      let aktivaNama = "";
+
+      if (aktivaType === 'dat') {
+        aktivaKode = card.dataset.aktivaKode;
+        aktivaNama = card.dataset.aktivaNama;
+        if (!aktivaKode || !aktivaNama) {
+          showCustomAlert("Peringatan", "Item #" + (i + 1) + ": No. Aktiva belum divalidasi atau diisi manual!", "warning");
+          return;
+        }
+      } else {
+        const nonDatKodeInput = card.querySelector('.input-nondat-kode').value.trim();
+        const nonDatNamaInput = card.querySelector('.input-nondat-nama').value.trim();
+        if (!nonDatNamaInput) {
+          showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Nama & Merk Barang (Non DAT) wajib diisi!", "warning");
+          return;
+        }
+        aktivaKode = nonDatKodeInput ? nonDatKodeInput : "NON-DAT";
+        aktivaNama = nonDatNamaInput + " (Non DAT)";
+      }
+
+      const noSj = card.querySelector('.input-nosj').value.trim();
+      const fotoBase64 = card.dataset.fotoBase64;
+      const deskripsi = card.querySelector('.input-deskripsi').value.trim();
+
+      if (!noSj) {
+        showCustomAlert("Peringatan", "Item #" + (i + 1) + ": No SJ Web Tracking wajib diisi!", "warning");
+        return;
+      }
+      if (!fotoBase64) {
+        showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Foto wajib diupload!", "warning");
+        return;
+      }
+      if (!deskripsi) {
+        showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Deskripsi wajib diisi!", "warning");
+        return;
+      }
+
+      items.push({
+        kodeToko: tokoVal,
+        kodeAktiva: aktivaKode,
+        namaAktiva: aktivaNama,
+        noSj: noSj,
+        deskripsi: deskripsi,
+        fotoBase64: fotoBase64
+      });
+    }
+
+    const btn = document.getElementById(btnId);
+    btn.disabled = true;
+    btn.innerText = "Mengirim " + items.length + " pengajuan...";
+
+    const payload = {
+      nik: currentUser.nik,
+      namaPelapor: currentUser.nama,
+      noWa: currentUser.noWa,
+      lat: currentGPS.lat,
+      lng: currentGPS.lng,
+      items: items
+    };
+
+    const handleSuccess = function(res) {
+      if(res.success) {
+        showCustomAlert("Berhasil", items.length + " pengajuan tiket telah dibuat.", "success");
+        fetchStats();
+        navigateTo('pageHome');
+      } else {
+        showCustomAlert("Gagal", res.message, "error");
+        btn.disabled = false;
+        btn.innerText = "Kirim Pengajuan";
+      }
+    };
+
+    const handleFailure = function(err) {
+      showCustomAlert("Koneksi Gagal", "Gagal terhubung ke server.", "error");
+      btn.disabled = false;
+      btn.innerText = "Kirim Pengajuan";
+    };
+
+    if (type === 'service') {
+      callApi("submitService", { form: payload }, handleSuccess, handleFailure);
+    } else {
+      callApi("submitReturn", { form: payload }, handleSuccess, handleFailure);
+    }
+  }
+
+  function switchTrackingTab(tab) {
+    activeTrackingTab = tab;
+    const btnS = document.getElementById("btnTabService");
+    const btnR = document.getElementById("btnTabReturn");
+
+    if(tab === 'service') {
+      btnS.className = "btn btn-primary btn-sm w-100 py-2 fw-bold";
+      btnR.className = "btn btn-outline-warning btn-sm w-100 py-2 fw-bold text-white";
+    } else {
+      btnS.className = "btn btn-outline-primary btn-sm w-100 py-2 fw-bold text-white";
+      btnR.className = "btn btn-warning btn-sm w-100 py-2 fw-bold text-dark";
+    }
+    loadTrackingData(tab);
+  }
+
+  function loadTrackingData(tab) {
+    const listDiv = document.getElementById("trackingList");
+    document.getElementById("trackingLoading").style.display = "block";
+    listDiv.innerHTML = "";
+
+    const handleHistorySuccess = function(res) {
+      document.getElementById("trackingLoading").style.display = "none";
+      if(res.success) {
+        if(res.data.length === 0) {
+          listDiv.innerHTML = '<div class="card p-3 text-center text-white small bg-dark border border-secondary">Belum ada riwayat pengajuan.</div>';
+          return;
+        }
+
+        let html = "";
+        res.data.forEach(function(item) {
+          let badgeBg = "bg-secondary";
+          let statusText = item.status ? item.status : "Menunggu";
+          
+          if(statusText.toLowerCase().includes("selesai") || statusText.toLowerCase().includes("diterima")) badgeBg = "bg-success text-white";
+          else if(statusText.toLowerCase().includes("proses")) badgeBg = "bg-primary text-white";
+          else badgeBg = "bg-warning text-dark";
+
+          html += '<div class="card p-3 mb-3 shadow-sm bg-dark border border-secondary text-light">' +
+            '<div class="d-flex justify-content-between align-items-center mb-1">' +
+            '<span class="fw-bold text-info" style="font-size: 12px;">' + item.tiketId + '</span>' +
+            '<span class="badge ' + badgeBg + '" style="font-size: 10px;">' + statusText + '</span></div>' +
+            '<div style="font-size: 11px;">' + item.timestamp + ' | Toko/Dept: <strong>' + item.kodeToko + '</strong></div>' +
+            '<div style="font-size: 11px;">No SJ: <strong>' + item.noSj + '</strong></div>' +
+            '<div class="mt-2 small text-light"><div><strong>No. Aktiva:</strong> ' + item.kodeAktiva + '</div>' +
+            '<div><strong>Nama Barang:</strong> ' + item.namaAktiva + '</div></div>' +
+            '<div class="small bg-black p-2 rounded mt-2 border border-secondary border-opacity-25" style="font-size: 11px;">' + item.deskripsi + '</div></div>';
+        });
+        listDiv.innerHTML = html;
+      } else {
+        listDiv.innerHTML = '<div class="alert alert-danger small">Gagal: ' + res.message + '</div>';
+      }
+    };
+
+    if (tab === 'service') {
+      callApi("getServiceHistory", { nik: currentUser.nik }, handleHistorySuccess);
+    } else {
+      callApi("getReturnHistory", { nik: currentUser.nik }, handleHistorySuccess);
+    }
+  }
+</script>
+
+</body>
+</html>
