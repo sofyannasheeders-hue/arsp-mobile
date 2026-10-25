@@ -1342,6 +1342,17 @@
     }
   }
 
+  function toggleCustomCategory(select) {
+    const card = select.closest('.item-card');
+    const customBox = card.querySelector('.custom-category-box');
+    if (select.value === 'Lainnya') {
+      customBox.style.display = 'block';
+    } else {
+      customBox.style.display = 'none';
+      card.querySelector('.input-nondat-kategori-custom').value = '';
+    }
+  }
+
   function addItemCard(containerId, type) {
     let count = (type === 'service') ? ++serviceItemCount : ++returnItemCount;
     const container = document.getElementById(containerId);
@@ -1372,6 +1383,8 @@
       '<div class="form-check">' +
       '<input class="form-check-input aktiva-radio" type="radio" name="aktivaType_' + type + '_' + count + '" id="typeNonDat_' + type + '_' + count + '" value="nondat" onchange="toggleAktivaType(this)">' +
       '<label class="form-check-label small text-white" for="typeNonDat_' + type + '_' + count + '">Non DAT</label></div></div></div>' +
+      
+      '<!-- SECTION DAT -->' +
       '<div class="dat-section mb-2"><label class="form-label small mb-1">No. Aktiva / Hasil Scan QR</label>' +
       '<div class="input-group input-group-sm mb-1"><input type="text" class="form-control input-aktiva" placeholder="Scan QR atau Ketik No Aktiva...">' +
       '<button type="button" class="btn btn-outline-warning text-white" onclick="openBarcodeScanner(this)" title="Scan QR Code"><i class="fa-solid fa-qrcode"></i> Scan QR</button>' +
@@ -1385,10 +1398,24 @@
       '<small class="text-warning fw-bold d-block mb-1">⚠️ Input manual nama aktiva:</small>' +
       '<input type="text" class="form-control form-control-sm input-manual-nama mb-1" placeholder="Nama Barang...">' +
       '<button type="button" class="btn btn-warning btn-sm w-100 fw-bold text-dark" style="font-size: 11px;" onclick="simpanManual(this)">Gunakan Manual</button></div></div>' +
-      '<div class="nondat-section mb-2" style="display: none;"><div class="mb-2"><label class="form-label small mb-1">Kode / No. Barang (Opsional)</label>' +
-      '<input type="text" class="form-control form-control-sm input-nondat-kode" placeholder="Contoh: NON-DAT-001"></div>' +
-      '<div class="mb-1"><label class="form-label small mb-1">Nama & Merk Barang</label>' +
-      '<input type="text" class="form-control form-control-sm input-nondat-nama" placeholder="Contoh: AC Split 1.5 PK Panasonic"></div></div>' +
+      
+      '<!-- SECTION NON DAT (TANPA NO AKTIVA, MODIFIKASI KATEGORI DROPDOWN & INPUT CUSTOM) -->' +
+      '<div class="nondat-section mb-2" style="display: none;">' +
+      '<div class="mb-2"><label class="form-label small mb-1">Nama & Merk Barang</label>' +
+      '<input type="text" class="form-control form-control-sm input-nondat-nama" placeholder="Contoh: AC Split 1.5 PK Panasonic"></div>' +
+      '<div class="mb-2"><label class="form-label small mb-1">Jenis Kategori Barang</label>' +
+      '<select class="form-select form-select-sm input-nondat-kategori-select" onchange="toggleCustomCategory(this)">' +
+      '<option value="">-- Pilih Jenis Kategori --</option>' +
+      '<option value="Peralatan Komputer / EDP">Peralatan Komputer / EDP</option>' +
+      '<option value="Peralatan Elektronik">Peralatan Elektronik</option>' +
+      '<option value="Peralatan Non Elektronik">Peralatan Non Elektronik</option>' +
+      '<option value="Lainnya">Lainnya</option>' +
+      '</select></div>' +
+      '<div class="mb-2 custom-category-box" style="display: none;">' +
+      '<label class="form-label small mb-1 text-warning">Tulis Kategori Lainnya</label>' +
+      '<input type="text" class="form-control form-control-sm input-nondat-kategori-custom" placeholder="Ketik jenis kategori barang..."></div>' +
+      '</div>' +
+
       '<div class="mb-2"><label class="form-label small mb-1">No SJ Web Tracking</label>' +
       '<input type="text" class="form-control form-control-sm input-nosj" placeholder="Nomor Surat Jalan..."></div>' +
       '<div class="mb-2"><label class="form-label small mb-1">' + (type === 'service' ? 'Foto Kerusakan' : 'Foto Kondisi Barang') + '</label>' +
@@ -1628,15 +1655,34 @@
           return;
         }
       } else {
-        const nonDatKodeInput = card.querySelector('.input-nondat-kode').value.trim();
+        // --- NON DAT MODIFIKASI ---
+        aktivaKode = "-"; // Sesuai instruksi, No Aktiva tidak perlu ditampilkan & diisi '-'
         const nonDatNamaInput = card.querySelector('.input-nondat-nama').value.trim();
+        const categorySelect = card.querySelector('.input-nondat-kategori-select').value;
+        const categoryCustom = card.querySelector('.input-nondat-kategori-custom').value.trim();
+
         if (!nonDatNamaInput) {
           showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Nama & Merk Barang (Non DAT) wajib diisi!", "warning");
           return;
         }
-        aktivaKode = nonDatKodeInput ? nonDatKodeInput : "NON-DAT";
+
+        if (!categorySelect) {
+          showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Silakan pilih Jenis Kategori Barang!", "warning");
+          return;
+        }
+
+        if (categorySelect === 'Lainnya') {
+          if (!categoryCustom) {
+            showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Tuliskan Jenis Kategori secara manual!", "warning");
+            return;
+          }
+          kategoriAktiva = categoryCustom;
+        } else {
+          kategoriAktiva = categorySelect;
+        }
+
         aktivaNama = nonDatNamaInput + " (Non DAT)";
-        kategoriAktiva = "NON-DAT";
+        // Lokasi otomatis diambil dari pilihan Toko atau Non Toko (Departemen)
         lokasiAktiva = tokoVal;
       }
 
