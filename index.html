@@ -1504,24 +1504,51 @@
         '</select></div>';
     }
 
-    // Section Foto: Direct Camera Stream untuk Semua Menu (Perbaikan, Pengembalian, & Penarikan)
-    let fotoInputHtml = '<div class="mb-2">' +
-                    '<label class="form-label small mb-1 fw-bold text-success"><i class="fa-solid fa-camera me-1"></i> Foto Kondisi / Fisik Barang</label>' +
-                    '<div class="d-grid gap-2 mb-2">' +
-                      '<button type="button" class="btn btn-outline-success btn-sm fw-bold py-2" onclick="startDirectCamera(this, \'' + camVideoId + '\')">' +
-                        '<i class="fa-solid fa-camera-rotate me-1"></i> Buka Kamera Langsung' +
-                      '</button>' +
-                    '</div>' +
-                    '<!-- Live Camera Stream Box -->' +
-                    '<div class="camera-stream-box border border-success rounded p-2 mb-2 bg-black text-center" style="display:none;">' +
-                      '<video id="' + camVideoId + '" autoplay playsinline style="width:100%; max-height:220px; object-fit:cover; border-radius:6px; background:#000;"></video>' +
-                      '<canvas id="' + camCanvasId + '" style="display:none;"></canvas>' +
-                      '<div class="d-flex gap-2 mt-2">' +
-                        '<button type="button" class="btn btn-success btn-sm w-50 fw-bold py-1" onclick="captureCameraPhoto(this, \'' + camVideoId + '\', \'' + camCanvasId + '\')">📸 Ambil Foto</button>' +
-                        '<button type="button" class="btn btn-outline-danger btn-sm w-50 py-1" onclick="closeDirectCamera(this)">Tutup</button>' +
+    // Section Foto: 2 Alternatif (Direct Camera & Upload Galeri) untuk Penarikan, atau Direct Camera untuk lainnya
+    let fotoInputHtml = '';
+    if (type === 'withdrawal') {
+      fotoInputHtml = '<div class="mb-2">' +
+                      '<label class="form-label small mb-1 fw-bold text-success"><i class="fa-solid fa-camera me-1"></i> Foto Kondisi / Fisik Barang (Pilih Alternatif)</label>' +
+                      '<!-- Alternatif 1: Kamera Langsung -->' +
+                      '<div class="d-grid gap-2 mb-2">' +
+                        '<button type="button" class="btn btn-outline-success btn-sm fw-bold py-2" onclick="startDirectCamera(this, \'' + camVideoId + '\')">' +
+                          '<i class="fa-solid fa-camera-rotate me-1"></i> 1. Buka Kamera Langsung' +
+                        '</button>' +
                       '</div>' +
-                    '</div>' +
-                    '<img class="img-fluid rounded mt-1 preview-img border border-secondary"></div>';
+                      '<!-- Live Camera Stream Box -->' +
+                      '<div class="camera-stream-box border border-success rounded p-2 mb-2 bg-black text-center" style="display:none;">' +
+                        '<video id="' + camVideoId + '" autoplay playsinline style="width:100%; max-height:220px; object-fit:cover; border-radius:6px; background:#000;"></video>' +
+                        '<canvas id="' + camCanvasId + '" style="display:none;"></canvas>' +
+                        '<div class="d-flex gap-2 mt-2">' +
+                          '<button type="button" class="btn btn-success btn-sm w-50 fw-bold py-1" onclick="captureCameraPhoto(this, \'' + camVideoId + '\', \'' + camCanvasId + '\')">📸 Ambil Foto</button>' +
+                          '<button type="button" class="btn btn-outline-danger btn-sm w-50 py-1" onclick="closeDirectCamera(this)">Tutup</button>' +
+                        '</div>' +
+                      '</div>' +
+                      '<!-- Alternatif 2: Upload dari Galeri / File -->' +
+                      '<div class="mb-2">' +
+                        '<label class="form-label small mb-1 text-info" style="font-size:11px;">Atau 2. Upload dari Galeri Perangkat:</label>' +
+                        '<input type="file" accept="image/*" class="form-control form-control-sm mb-1 input-foto" onchange="previewCardImage(this)">' +
+                      '</div>' +
+                      '<img class="img-fluid rounded mt-1 preview-img border border-secondary"></div>';
+    } else {
+      fotoInputHtml = '<div class="mb-2">' +
+                      '<label class="form-label small mb-1 fw-bold text-success"><i class="fa-solid fa-camera me-1"></i> Foto Kondisi / Fisik Barang</label>' +
+                      '<div class="d-grid gap-2 mb-2">' +
+                        '<button type="button" class="btn btn-outline-success btn-sm fw-bold py-2" onclick="startDirectCamera(this, \'' + camVideoId + '\')">' +
+                          '<i class="fa-solid fa-camera-rotate me-1"></i> Buka Kamera Langsung' +
+                        '</button>' +
+                      '</div>' +
+                      '<!-- Live Camera Stream Box -->' +
+                      '<div class="camera-stream-box border border-success rounded p-2 mb-2 bg-black text-center" style="display:none;">' +
+                        '<video id="' + camVideoId + '" autoplay playsinline style="width:100%; max-height:220px; object-fit:cover; border-radius:6px; background:#000;"></video>' +
+                        '<canvas id="' + camCanvasId + '" style="display:none;"></canvas>' +
+                        '<div class="d-flex gap-2 mt-2">' +
+                          '<button type="button" class="btn btn-success btn-sm w-50 fw-bold py-1" onclick="captureCameraPhoto(this, \'' + camVideoId + '\', \'' + camCanvasId + '\')">📸 Ambil Foto</button>' +
+                          '<button type="button" class="btn btn-outline-danger btn-sm w-50 py-1" onclick="closeDirectCamera(this)">Tutup</button>' +
+                        '</div>' +
+                      '</div>' +
+                      '<img class="img-fluid rounded mt-1 preview-img border border-secondary"></div>';
+    }
 
     const html = '<div class="item-card shadow-sm" id="' + cardId + '">' +
       '<div class="d-flex justify-content-between align-items-center mb-2 border-bottom border-secondary pb-1">' +
