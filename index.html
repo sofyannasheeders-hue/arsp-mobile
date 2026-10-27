@@ -39,7 +39,6 @@
       padding: 16px;
     }
 
-    /* Sticky Header dibuat Transparan / Semi-Transparan dengan Efek Blur */
     .sticky-header {
       position: sticky;
       top: 0;
@@ -52,7 +51,6 @@
       margin-bottom: 10px;
     }
 
-    /* Efek Glassmorphism pada Card & Login */
     .login-card, .profile-card, .service-card, .item-card, .card {
       background: var(--card-glass) !important;
       backdrop-filter: blur(16px);
@@ -127,7 +125,6 @@
       color: #ffffff !important;
     }
 
-    /* Kartu Layanan dengan Aksen Warna Warni & Gradasi Khas */
     .service-card {
       border-radius: 20px;
       padding: 18px;
@@ -300,7 +297,7 @@
       transition: width 0.4s ease, background-color 0.4s ease;
     }
 
-    /* STYLING SCANNER VIEWFINDER MODERN ALA SMARTPHONE */
+    /* STYLING SCANNER VIEWFINDER MODERN */
     .scanner-container {
       position: relative;
       background: #000;
@@ -388,7 +385,6 @@
 
   <!-- PAGE 2: BERANDA (DASHBOARD USER & ADMIN) -->
   <div id="pageHome" class="page-view">
-    <!-- STICKY HEADER PROFIL -->
     <div class="sticky-header">
       <div class="profile-card m-0">
         <div class="d-flex justify-content-between align-items-center">
@@ -407,7 +403,6 @@
       </div>
     </div>
 
-    <!-- KONTEN KHUSUS USER -->
     <div id="userHomeContent">
       <div class="row g-2 mb-4">
         <div class="col-4">
@@ -507,7 +502,6 @@
       </div>
     </div>
 
-    <!-- KONTEN KHUSUS ADMIN -->
     <div id="adminHomeContent" style="display: none;">
       <div class="card p-3 mb-3">
         <div class="small fw-bold mb-2 text-info"><i class="fa-solid fa-filter me-1"></i> Filter Rentang Analisis:</div>
@@ -732,7 +726,6 @@
       </div>
     </div>
 
-    <!-- Spinner loading dihapus agar langsung tampil instan tanpa jeda -->
     <div id="trackingList"></div>
   </div>
 
@@ -1678,7 +1671,7 @@
       '<button type="button" class="btn btn-outline-warning text-white" onclick="openBarcodeScanner(this, \'' + readerId + '\')"><i class="fa-solid fa-qrcode"></i> Scan QR</button>' +
       '<button type="button" class="btn btn-outline-primary text-white" onclick="parseAndFillAktivaQR(this)">Parse</button></div>' +
       
-      '<!-- VIEWFINDER & SCANNER CONTAINER DENGAN EFEK LASER DAN SENTER -->' +
+      '<!-- VIEWFINDER & SCANNER CONTAINER -->' +
       '<div class="scanner-container mt-2" style="display:none; position:relative;">' +
         '<div id="' + readerId + '" style="width:100%; max-height:280px; overflow:hidden; border-radius:8px;"></div>' +
         '<div class="scanner-laser-line"></div>' +
@@ -1795,7 +1788,7 @@
   }
 
   /* ========================================================
-     SCANNER QR CODE HIGH-PERFORMANCE & PRECISE (30 FPS + TORCH)
+     SCANNER QR CODE HIGH-PERFORMANCE (STABIL & TANPA ERROR)
      ======================================================== */
   function startScannerInstance(scannerContainer, readerId) {
     scannerContainer.style.display = 'block';
@@ -1803,30 +1796,20 @@
     activeTorchState = false;
     currentVideoTrack = null;
 
-    // Konfigurasi performa tinggi ala kamera HP mutakhir
+    // Konfigurasi performa tinggi dengan format parameter yang valid
     const config = { 
-      fps: 30, // Kecepatan tangkap 30 frame per detik agar instan
-      qrbox: function(viewfinderWidth, viewfinderHeight) {
-        let minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-        let size = Math.floor(minEdge * 0.75);
-        return { width: size, height: size };
-      },
+      fps: 30, // Tangkapan 30 FPS super cepat
+      qrbox: { width: 250, height: 250 },
       aspectRatio: 1.0,
       experimentalFeatures: {
-        useBarCodeDetectorIfSupported: true // Memanfaatkan API Native Smartphone jika didukung browser
+        useBarCodeDetectorIfSupported: true
       }
     };
-
-    // Constraint kamera resolusi tinggi dengan fokus kontinu
-    const qrConstraints = {
-      facingMode: "environment",
-      focusMode: "continuous",
-      width: { ideal: 1280 },
-      height: { ideal: 720 }
-    };
     
+    // Parameter pertama menggunakan objek sederhana facingMode agar kompatibel
     activeHtml5QrCode.start(
-      qrConstraints, config,
+      { facingMode: "environment" }, 
+      config,
       (decodedText) => {
         playBeep();
         if (activeCardElement) {
@@ -1837,7 +1820,7 @@
       },
       () => {}
     ).then(() => {
-      // Deteksi ketersediaan Senter/Torch perangkat hardware
+      // Mendeteksi tombol senter/torch hardware perangkat
       setTimeout(() => {
         try {
           const videoEl = scannerContainer.querySelector('video');
