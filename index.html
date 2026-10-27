@@ -299,6 +299,44 @@
       border-radius: 6px;
       transition: width 0.4s ease, background-color 0.4s ease;
     }
+
+    /* STYLING SCANNER VIEWFINDER MODERN ALA SMARTPHONE */
+    .scanner-container {
+      position: relative;
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid rgba(56, 189, 248, 0.5);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+    }
+    .scanner-laser-line {
+      position: absolute;
+      top: 25%;
+      left: 15%;
+      width: 70%;
+      height: 2px;
+      background: #38bdf8;
+      box-shadow: 0 0 10px #38bdf8, 0 0 20px #38bdf8;
+      animation: scanLaserAnim 1.6s infinite ease-in-out;
+      z-index: 20;
+    }
+    @keyframes scanLaserAnim {
+      0%, 100% { top: 25%; opacity: 0.7; }
+      50% { top: 75%; opacity: 1; }
+    }
+    .scanner-overlay-text {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: #fff;
+      font-size: 11px;
+      background: rgba(0,0,0,0.65);
+      padding: 5px;
+      z-index: 20;
+      letter-spacing: 0.4px;
+    }
   </style>
 </head>
 <body>
@@ -858,6 +896,8 @@
   let activeHtml5QrCode = null;
   let activeCardElement = null;
   let activeCameraStream = null;
+  let activeTorchState = false;
+  let currentVideoTrack = null;
 
   function playBeep() {
     try {
@@ -1018,6 +1058,7 @@
   }
 
   function navigateTo(pageId) {
+    stopAndCloseScanner();
     stopActiveCameraStream();
     document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
     document.getElementById(pageId).classList.add('active');
@@ -1347,6 +1388,7 @@
   }
 
   function logout() {
+    stopAndCloseScanner();
     stopActiveCameraStream();
     localStorage.removeItem("user_nik");
     localStorage.removeItem("user_manual_profile");
@@ -1635,10 +1677,18 @@
       '<div class="input-group input-group-sm mb-1"><input type="text" class="form-control input-aktiva" placeholder="Scan Label QR Code Aktiva...">' +
       '<button type="button" class="btn btn-outline-warning text-white" onclick="openBarcodeScanner(this, \'' + readerId + '\')"><i class="fa-solid fa-qrcode"></i> Scan QR</button>' +
       '<button type="button" class="btn btn-outline-primary text-white" onclick="parseAndFillAktivaQR(this)">Parse</button></div>' +
+      
+      '<!-- VIEWFINDER & SCANNER CONTAINER DENGAN EFEK LASER DAN SENTER -->' +
       '<div class="scanner-container mt-2" style="display:none; position:relative;">' +
         '<div id="' + readerId + '" style="width:100%; max-height:280px; overflow:hidden; border-radius:8px;"></div>' +
-        '<button type="button" class="btn btn-sm btn-danger w-100 mt-1" onclick="closeBarcodeScanner()"><i class="fa-solid fa-xmark"></i> Tutup Kamera</button>' +
+        '<div class="scanner-laser-line"></div>' +
+        '<div class="scanner-overlay-text">Letakkan kode QR dalam bingkai</div>' +
+        '<div class="d-flex gap-1 mt-1 p-1 bg-dark bg-opacity-75">' +
+          '<button type="button" class="btn btn-sm btn-secondary text-white w-50 btn-torch-toggle" style="display:none; font-size:11px;" onclick="toggleTorchLight(this)"><i class="fa-solid fa-bolt"></i> Senter</button>' +
+          '<button type="button" class="btn btn-sm btn-danger w-50" style="font-size:11px;" onclick="closeBarcodeScanner()"><i class="fa-solid fa-xmark"></i> Tutup Kamera</button>' +
+        '</div>' +
       '</div>' +
+
       '<div class="aktiva-info alert success-result-box py-1 px-2 mt-1 mb-0 small" style="display:none; font-size: 11px;"></div>' +
       '<div class="manual-aktiva-box border border-warning bg-dark p-2 rounded mt-1" style="display:none;">' +
       '<small class="text-warning fw-bold d-block mb-1">⚠️ Input manual nama aktiva:</small>' +
@@ -1744,14 +1794,39 @@
     }
   }
 
+  /* ========================================================
+     SCANNER QR CODE HIGH-PERFORMANCE & PRECISE (30 FPS + TORCH)
+     ======================================================== */
   function startScannerInstance(scannerContainer, readerId) {
     scannerContainer.style.display = 'block';
     activeHtml5QrCode = new Html5Qrcode(readerId);
-    
-    const config = { fps: 25, qrbox: { width: 250, height: 250 } };
+    activeTorchState = false;
+    currentVideoTrack = null;
+
+    // Konfigurasi performa tinggi ala kamera HP mutakhir
+    const config = { 
+      fps: 30, // Kecepatan tangkap 30 frame per detik agar instan
+      qrbox: function(viewfinderWidth, viewfinderHeight) {
+        let minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+        let size = Math.floor(minEdge * 0.75);
+        return { width: size, height: size };
+      },
+      aspectRatio: 1.0,
+      experimentalFeatures: {
+        useBarCodeDetectorIfSupported: true // Memanfaatkan API Native Smartphone jika didukung browser
+      }
+    };
+
+    // Constraint kamera resolusi tinggi dengan fokus kontinu
+    const qrConstraints = {
+      facingMode: "environment",
+      focusMode: "continuous",
+      width: { ideal: 1280 },
+      height: { ideal: 720 }
+    };
     
     activeHtml5QrCode.start(
-      { facingMode: "environment" }, config,
+      qrConstraints, config,
       (decodedText) => {
         playBeep();
         if (activeCardElement) {
@@ -1761,15 +1836,47 @@
         }
       },
       () => {}
-    ).catch(err => {
+    ).then(() => {
+      // Deteksi ketersediaan Senter/Torch perangkat hardware
+      setTimeout(() => {
+        try {
+          const videoEl = scannerContainer.querySelector('video');
+          if (videoEl && videoEl.srcObject) {
+            currentVideoTrack = videoEl.srcObject.getVideoTracks()[0];
+            const capabilities = currentVideoTrack.getCapabilities ? currentVideoTrack.getCapabilities() : {};
+            const torchBtn = scannerContainer.querySelector('.btn-torch-toggle');
+            if (torchBtn && capabilities.torch) {
+              torchBtn.style.display = 'inline-block';
+            }
+          }
+        } catch(e) {}
+      }, 500);
+    }).catch(err => {
       showCustomAlert("Gagal Kamera", "Tidak dapat membuka kamera: " + err, "error");
       scannerContainer.style.display = 'none';
     });
   }
 
+  function toggleTorchLight(btn) {
+    if (!currentVideoTrack) return;
+    activeTorchState = !activeTorchState;
+    currentVideoTrack.applyConstraints({
+      advanced: [{ torch: activeTorchState }]
+    }).then(() => {
+      btn.innerHTML = activeTorchState ? '<i class="fa-solid fa-bolt text-warning"></i> Senter ON' : '<i class="fa-solid fa-bolt"></i> Senter';
+      btn.className = activeTorchState ? 'btn btn-sm btn-warning text-dark fw-bold w-50' : 'btn btn-sm btn-secondary text-white w-50';
+    }).catch(err => console.log("Torch error:", err));
+  }
+
   function closeBarcodeScanner() { stopAndCloseScanner(); }
 
   function stopAndCloseScanner() {
+    if (activeTorchState && currentVideoTrack) {
+      currentVideoTrack.applyConstraints({ advanced: [{ torch: false }] }).catch(() => {});
+      activeTorchState = false;
+    }
+    currentVideoTrack = null;
+
     if (activeHtml5QrCode) {
       activeHtml5QrCode.stop().then(() => {
         activeHtml5QrCode.clear();
@@ -2122,7 +2229,6 @@
     loadTrackingData(tab);
   }
 
-  // --- TANPA PROGRESS LOADING (TAMPIL INSTAN) ---
   function loadTrackingData(tab) {
     const listDiv = document.getElementById("trackingList");
 
