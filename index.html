@@ -297,7 +297,7 @@
       transition: width 0.4s ease, background-color 0.4s ease;
     }
 
-    /* STYLING SCANNER VIEWFINDER MODERN */
+    /* STYLING SCANNER VIEWFINDER MODERN & PRESISI TINGGI */
     .scanner-container {
       position: relative;
       background: #000;
@@ -726,6 +726,34 @@
       </div>
     </div>
 
+    <!-- PANEL PENCARIAN & FILTER DI MENU TRACKING -->
+    <div class="card p-3 mb-3 shadow-sm">
+      <div class="row g-2">
+        <div class="col-12">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text bg-dark border-secondary text-white"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <input type="text" id="trackSearchKeyword" class="form-control form-control-sm text-white" placeholder="Cari No. Tiket, Nama Barang, No. Aktiva, Toko..." oninput="filterTrackingData()">
+          </div>
+        </div>
+        <div class="col-6">
+          <label class="form-label small mb-1 text-info fw-bold" style="font-size:11px;">Filter Tanggal</label>
+          <input type="date" id="trackFilterDate" class="form-control form-control-sm text-white" onchange="filterTrackingData()">
+        </div>
+        <div class="col-6">
+          <label class="form-label small mb-1 text-info fw-bold" style="font-size:11px;">Filter Status</label>
+          <select id="trackFilterStatus" class="form-select form-select-sm text-white" onchange="filterTrackingData()">
+            <option value="all">Semua Status (All)</option>
+            <option value="pending">Pending / Menunggu</option>
+            <option value="selesai">Selesai / Diterima</option>
+          </select>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top border-secondary border-opacity-25" style="font-size: 11px;">
+        <span class="text-muted" id="trackResultCount">Memuat data...</span>
+        <button type="button" class="btn btn-outline-secondary btn-sm py-0.5 px-2 text-white" onclick="resetTrackingFilters()">Reset Filter</button>
+      </div>
+    </div>
+
     <div id="trackingList"></div>
   </div>
 
@@ -891,6 +919,7 @@
   let activeCameraStream = null;
   let activeTorchState = false;
   let currentVideoTrack = null;
+  let currentRawTrackingData = [];
 
   function playBeep() {
     try {
@@ -1539,6 +1568,12 @@
     customBox.style.display = select.value === 'Lainnya' ? 'block' : 'none';
   }
 
+  function toggleManualCustomCategory(select) {
+    const card = select.closest('.item-card');
+    const customBox = card.querySelector('.manual-custom-category-box');
+    customBox.style.display = select.value === 'Lainnya' ? 'block' : 'none';
+  }
+
   function addItemCard(containerId, type) {
     let count = 1;
     if (type === 'service') count = ++serviceItemCount;
@@ -1671,11 +1706,11 @@
       '<button type="button" class="btn btn-outline-warning text-white" onclick="openBarcodeScanner(this, \'' + readerId + '\')"><i class="fa-solid fa-qrcode"></i> Scan QR</button>' +
       '<button type="button" class="btn btn-outline-primary text-white" onclick="parseAndFillAktivaQR(this)">Parse</button></div>' +
       
-      '<!-- VIEWFINDER & SCANNER CONTAINER -->' +
+      '<!-- VIEWFINDER & SCANNER CONTAINER HIGH-PRECISION -->' +
       '<div class="scanner-container mt-2" style="display:none; position:relative;">' +
         '<div id="' + readerId + '" style="width:100%; max-height:280px; overflow:hidden; border-radius:8px;"></div>' +
         '<div class="scanner-laser-line"></div>' +
-        '<div class="scanner-overlay-text">Letakkan kode QR dalam bingkai</div>' +
+        '<div class="scanner-overlay-text">Arahkan kamera ke QR Code Aktiva</div>' +
         '<div class="d-flex gap-1 mt-1 p-1 bg-dark bg-opacity-75">' +
           '<button type="button" class="btn btn-sm btn-secondary text-white w-50 btn-torch-toggle" style="display:none; font-size:11px;" onclick="toggleTorchLight(this)"><i class="fa-solid fa-bolt"></i> Senter</button>' +
           '<button type="button" class="btn btn-sm btn-danger w-50" style="font-size:11px;" onclick="closeBarcodeScanner()"><i class="fa-solid fa-xmark"></i> Tutup Kamera</button>' +
@@ -1683,10 +1718,30 @@
       '</div>' +
 
       '<div class="aktiva-info alert success-result-box py-1 px-2 mt-1 mb-0 small" style="display:none; font-size: 11px;"></div>' +
-      '<div class="manual-aktiva-box border border-warning bg-dark p-2 rounded mt-1" style="display:none;">' +
-      '<small class="text-warning fw-bold d-block mb-1">⚠️ Input manual nama aktiva:</small>' +
-      '<input type="text" class="form-control form-control-sm input-manual-nama mb-1" placeholder="Nama Barang...">' +
-      '<button type="button" class="btn btn-warning btn-sm w-100 fw-bold text-dark" style="font-size: 11px;" onclick="simpanManual(this)">Gunakan Manual</button></div></div>' +
+      
+      '<!-- MANUAL INPUT BOX JIKA QR HANYA NOMOR AKTIVA -->' +
+      '<div class="manual-aktiva-box border border-warning bg-dark p-3 rounded mt-2" style="display:none;">' +
+        '<small class="text-warning fw-bold d-block mb-2"><i class="fa-solid fa-triangle-exclamation me-1"></i> No. Aktiva terdeteksi tanpa format detail:</small>' +
+        '<div class="mb-2">' +
+          '<label class="form-label small mb-1 text-white">Nama Barang & Merk</label>' +
+          '<input type="text" class="form-control form-control-sm input-manual-nama mb-1" placeholder="Contoh: AC Split Daikin 1.5 PK...">' +
+        '</div>' +
+        '<div class="mb-2">' +
+          '<label class="form-label small mb-1 text-white">Jenis Kategori Aktiva</label>' +
+          '<select class="form-select form-select-sm input-manual-kategori-select" onchange="toggleManualCustomCategory(this)">' +
+            '<option value="">-- Pilih Jenis Kategori --</option>' +
+            '<option value="Peralatan Komputer / EDP">Peralatan Komputer / EDP</option>' +
+            '<option value="Peralatan Elektronik">Peralatan Elektronik</option>' +
+            '<option value="Peralatan Non Elektronik">Peralatan Non Elektronik</option>' +
+            '<option value="Lainnya">Lainnya</option>' +
+          '</select>' +
+        '</div>' +
+        '<div class="mb-2 manual-custom-category-box" style="display: none;">' +
+          '<label class="form-label small mb-1 text-warning">Tulis Kategori Lainnya</label>' +
+          '<input type="text" class="form-control form-control-sm input-manual-kategori-custom" placeholder="Ketik jenis kategori barang...">' +
+        '</div>' +
+        '<button type="button" class="btn btn-warning btn-sm w-100 fw-bold text-dark mt-1" style="font-size: 11px;" onclick="simpanManual(this)">Gunakan & Simpan Data Aktiva</button>' +
+      '</div></div>' +
       
       '<!-- SECTION NON DAT -->' +
       '<div class="nondat-section mb-2" style="display: none;">' +
@@ -1788,7 +1843,7 @@
   }
 
   /* ========================================================
-     SCANNER QR CODE HIGH-PERFORMANCE (STABIL & TANPA ERROR)
+     SCANNER QR CODE HIGH-PERFORMANCE (PRESISI TINGGI)
      ======================================================== */
   function startScannerInstance(scannerContainer, readerId) {
     scannerContainer.style.display = 'block';
@@ -1796,20 +1851,17 @@
     activeTorchState = false;
     currentVideoTrack = null;
 
-    // Konfigurasi performa tinggi dengan format parameter yang valid
     const config = { 
-      fps: 30, // Tangkapan 30 FPS super cepat
-      qrbox: { width: 250, height: 250 },
+      fps: 30, // 30 FPS super cepat
+      qrbox: { width: 260, height: 260 },
       aspectRatio: 1.0,
       experimentalFeatures: {
         useBarCodeDetectorIfSupported: true
       }
     };
     
-    // Parameter pertama menggunakan objek sederhana facingMode agar kompatibel
     activeHtml5QrCode.start(
-      { facingMode: "environment" }, 
-      config,
+      { facingMode: "environment" }, config,
       (decodedText) => {
         playBeep();
         if (activeCardElement) {
@@ -1820,7 +1872,6 @@
       },
       () => {}
     ).then(() => {
-      // Mendeteksi tombol senter/torch hardware perangkat
       setTimeout(() => {
         try {
           const videoEl = scannerContainer.querySelector('video');
@@ -1903,10 +1954,9 @@
       infoBox.style.display = 'block';
       manualBox.style.display = 'none';
     } else {
+      // Hanya nomor aktiva -> munculkan form manual Nama Barang & Merk serta Kategori
       card.dataset.aktivaKode = rawText;
-      card.dataset.aktivaNama = rawText;
-      card.dataset.kategoriAktiva = "-";
-      card.dataset.lokasiAktiva = "-";
+      infoBox.style.display = 'none';
       manualBox.style.display = 'block';
     }
   }
@@ -1915,15 +1965,33 @@
     const card = btn.closest('.item-card');
     const inputAktiva = card.querySelector('.input-aktiva').value.trim();
     const namaManual = card.querySelector('.input-manual-nama').value.trim();
+    const categorySelect = card.querySelector('.input-manual-kategori-select').value;
+    const categoryCustom = card.querySelector('.input-manual-kategori-custom').value.trim();
     const infoBox = card.querySelector('.aktiva-info');
     const manualBox = card.querySelector('.manual-aktiva-box');
 
+    if (!namaManual || !categorySelect) {
+      showCustomAlert("Peringatan", "Nama Barang & Merk serta Jenis Kategori wajib diisi!", "warning");
+      return;
+    }
+
+    const kategoriFinal = (categorySelect === 'Lainnya') ? categoryCustom : categorySelect;
+    
+    // Otomatis mengambil lokasi dari asal lokasi (Toko atau Non Toko)
+    let lokasiFinal = "-";
+    const sourceType = card.querySelector('.source-radio:checked') ? card.querySelector('.source-radio:checked').value : 'toko';
+    if (sourceType === 'toko') {
+      lokasiFinal = card.dataset.tokoKode || "-";
+    } else {
+      lokasiFinal = "DEPT: " + (card.querySelector('.input-dept') ? card.querySelector('.input-dept').value.trim() : "-");
+    }
+
     card.dataset.aktivaKode = inputAktiva;
     card.dataset.aktivaNama = namaManual;
-    card.dataset.kategoriAktiva = "MANUAL";
-    card.dataset.lokasiAktiva = "MANUAL";
+    card.dataset.kategoriAktiva = kategoriFinal;
+    card.dataset.lokasiAktiva = lokasiFinal;
 
-    infoBox.innerHTML = `<strong>${namaManual} (Manual)</strong><br>Kode: ${inputAktiva}`;
+    infoBox.innerHTML = `<strong>${namaManual}</strong><br>No: ${inputAktiva}<br>Kat: ${kategoriFinal}<br>Lokasi: ${lokasiFinal}`;
     infoBox.style.display = 'block';
     manualBox.style.display = 'none';
   }
@@ -2043,7 +2111,7 @@
         kodeAktiva: aktivaKode,
         namaAktiva: aktivaNama,
         kategoriAktiva: kategoriAktiva,
-        kondisi: kondisiVal,
+        kondisi:kondisiVal,
         fotoBase64: fotoBase64
       });
     }
@@ -2125,7 +2193,7 @@
         aktivaKode = card.dataset.aktivaKode;
         aktivaNama = card.dataset.aktivaNama;
         kategoriAktiva = card.dataset.kategoriAktiva || "-";
-        lokasiAktiva = card.dataset.lokasiAktiva || "-";
+        lokasiAktiva = card.dataset.lokasiAktiva || tokoVal;
 
         if (!aktivaKode || !aktivaNama) {
           showCustomAlert("Peringatan", "Item #" + (i + 1) + ": Scan atau Parse QR Code aktiva terlebih dahulu!", "warning");
@@ -2220,36 +2288,12 @@
       return;
     }
 
-    listDiv.innerHTML = "";
+    listDiv.innerHTML = '<div class="text-center py-3"><div class="spinner-border spinner-border-sm text-info"></div><span class="small ms-2 text-muted">Memuat data riwayat...</span></div>';
 
     const handleHistorySuccess = function(res) {
       if(res && res.success) {
-        if(!res.data || res.data.length === 0) {
-          listDiv.innerHTML = '<div class="card p-3 text-center text-muted small">Belum ada riwayat pengajuan.</div>';
-          return;
-        }
-
-        const htmlItems = res.data.map(function(item) {
-          let statusText = item.status ? item.status : "Pending";
-          let badgeBg = (statusText.toLowerCase().includes("selesai") || statusText.toLowerCase().includes("diterima")) ? "bg-success text-white" : "bg-warning text-dark";
-
-          return '<div class="card p-3 mb-3 shadow-sm text-light">' +
-            '<div class="d-flex justify-content-between align-items-center mb-1">' +
-            '<span class="fw-bold text-info" style="font-size: 12px;">' + (item.tiketId || '-') + '</span>' +
-            '<span class="badge ' + badgeBg + '" style="font-size: 10px;">' + statusText + '</span></div>' +
-            '<div style="font-size: 11px;" class="text-muted">' + (item.timestamp || '-') + ' | Toko/Dept: <strong class="text-white">' + (item.kodeToko || '-') + '</strong></div>' +
-            '<div style="font-size: 11px;" class="text-muted">No SJ: <strong class="text-white">' + (item.noSj || '-') + '</strong></div>' +
-            '<div class="mt-2 small text-light">' +
-            '<div><strong>No. Aktiva:</strong> ' + (item.kodeAktiva || '-') + '</div>' +
-            '<div><strong>Nama Barang:</strong> ' + (item.namaAktiva || '-') + '</div>' +
-            '<div><strong>Kategori:</strong> ' + (item.kategoriAktiva || '-') + '</div>' +
-            '<div><strong>Lokasi:</strong> ' + (item.lokasiAktiva || '-') + '</div>' +
-            (item.kondisi ? '<div><strong>Kondisi:</strong> <span class="text-warning">' + item.kondisi + '</span></div>' : '') +
-            '</div>' +
-            '<div class="small bg-black bg-opacity-50 p-2 rounded mt-2 border border-secondary border-opacity-25 text-muted" style="font-size: 11px;">' + (item.deskripsi || '-') + '</div></div>';
-        });
-
-        listDiv.innerHTML = htmlItems.join('');
+        currentRawTrackingData = res.data || [];
+        filterTrackingData();
       } else {
         listDiv.innerHTML = '<div class="card p-3 text-center text-danger small">Gagal memuat data riwayat dari server.</div>';
       }
@@ -2262,6 +2306,80 @@
     if (tab === 'service') callApi("getServiceHistory", { nik: currentUser.nik }, handleHistorySuccess, handleHistoryError);
     else if (tab === 'return') callApi("getReturnHistory", { nik: currentUser.nik }, handleHistorySuccess, handleHistoryError);
     else callApi("getWithdrawalHistory", { nik: currentUser.nik }, handleHistorySuccess, handleHistoryError);
+  }
+
+  function filterTrackingData() {
+    const keyword = (document.getElementById("trackSearchKeyword").value || "").toLowerCase().trim();
+    const filterDate = document.getElementById("trackFilterDate").value;
+    const filterStatus = document.getElementById("trackFilterStatus").value;
+
+    let filtered = currentRawTrackingData.filter(item => {
+      const textMatch = !keyword || 
+        (item.tiketId && item.tiketId.toLowerCase().includes(keyword)) ||
+        (item.namaAktiva && item.namaAktiva.toLowerCase().includes(keyword)) ||
+        (item.kodeAktiva && item.kodeAktiva.toLowerCase().includes(keyword)) ||
+        (item.noSj && item.noSj.toLowerCase().includes(keyword)) ||
+        (item.kodeToko && item.kodeToko.toLowerCase().includes(keyword));
+
+      let dateMatch = true;
+      if (filterDate) {
+        const parts = item.timestamp.split(" ")[0].split("/");
+        if (parts.length === 3) {
+          const itemDateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+          dateMatch = (itemDateStr === filterDate);
+        } else {
+          dateMatch = item.timestamp.includes(filterDate);
+        }
+      }
+
+      let statusMatch = true;
+      const statusText = (item.status || "").toLowerCase();
+      if (filterStatus === 'pending') {
+        statusMatch = !statusText.includes("selesai") && !statusText.includes("diterima");
+      } else if (filterStatus === 'selesai') {
+        statusMatch = statusText.includes("selesai") || statusText.includes("diterima");
+      }
+
+      return textMatch && dateMatch && statusMatch;
+    });
+
+    const listDiv = document.getElementById("trackingList");
+    const countEl = document.getElementById("trackResultCount");
+    if(countEl) countEl.innerText = `Menampilkan ${filtered.length} dari ${currentRawTrackingData.length} data`;
+
+    if(filtered.length === 0) {
+      listDiv.innerHTML = '<div class="card p-3 text-center text-muted small">Tidak ada riwayat pengajuan yang sesuai dengan filter.</div>';
+      return;
+    }
+
+    const htmlItems = filtered.map(function(item) {
+      let statusText = item.status ? item.status : "Pending";
+      let badgeBg = (statusText.toLowerCase().includes("selesai") || statusText.toLowerCase().includes("diterima")) ? "bg-success text-white" : "bg-warning text-dark";
+
+      return '<div class="card p-3 mb-3 shadow-sm text-light">' +
+        '<div class="d-flex justify-content-between align-items-center mb-1">' +
+        '<span class="fw-bold text-info" style="font-size: 12px;">' + (item.tiketId || '-') + '</span>' +
+        '<span class="badge ' + badgeBg + '" style="font-size: 10px;">' + statusText + '</span></div>' +
+        '<div style="font-size: 11px;" class="text-muted">' + (item.timestamp || '-') + ' | Toko/Dept: <strong class="text-white">' + (item.kodeToko || '-') + '</strong></div>' +
+        '<div style="font-size: 11px;" class="text-muted">No SJ: <strong class="text-white">' + (item.noSj || '-') + '</strong></div>' +
+        '<div class="mt-2 small text-light">' +
+        '<div><strong>No. Aktiva:</strong> ' + (item.kodeAktiva || '-') + '</div>' +
+        '<div><strong>Nama Barang:</strong> ' + (item.namaAktiva || '-') + '</div>' +
+        '<div><strong>Kategori:</strong> ' + (item.kategoriAktiva || '-') + '</div>' +
+        '<div><strong>Lokasi:</strong> ' + (item.lokasiAktiva || '-') + '</div>' +
+        (item.kondisi ? '<div><strong>Kondisi:</strong> <span class="text-warning">' + item.kondisi + '</span></div>' : '') +
+        '</div>' +
+        '<div class="small bg-black bg-opacity-50 p-2 rounded mt-2 border border-secondary border-opacity-25 text-muted" style="font-size: 11px;">' + (item.deskripsi || '-') + '</div></div>';
+    });
+
+    listDiv.innerHTML = htmlItems.join('');
+  }
+
+  function resetTrackingFilters() {
+    document.getElementById("trackSearchKeyword").value = "";
+    document.getElementById("trackFilterDate").value = "";
+    document.getElementById("trackFilterStatus").value = "all";
+    filterTrackingData();
   }
 </script>
 </body>
