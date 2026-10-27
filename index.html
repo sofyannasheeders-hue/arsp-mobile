@@ -39,18 +39,17 @@
       padding: 16px;
     }
 
-    /* Sticky Header untuk Profil & Navigasi Atas yang Dikunci */
+    /* Sticky Header dibuat Transparan / Semi-Transparan dengan Efek Blur */
     .sticky-header {
       position: sticky;
       top: 0;
       z-index: 990;
-      background: rgba(7, 9, 14, 0.88) !important;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      padding-top: 8px;
-      padding-bottom: 8px;
-      margin-bottom: 14px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      background: transparent !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding-top: 4px;
+      padding-bottom: 4px;
+      margin-bottom: 10px;
     }
 
     /* Efek Glassmorphism pada Card & Login */
@@ -695,11 +694,7 @@
       </div>
     </div>
 
-    <div id="trackingLoading" class="text-center py-4">
-      <div class="spinner-border spinner-border-sm text-info" role="status"></div>
-      <span class="small ms-2">Memuat data dari server...</span>
-    </div>
-
+    <!-- Spinner loading dihapus agar langsung tampil instan tanpa jeda -->
     <div id="trackingList"></div>
   </div>
 
@@ -2127,29 +2122,24 @@
     loadTrackingData(tab);
   }
 
-  // --- OPTIMASI & ERROR HANDLING TRACKING (CEPAT & AMAN) ---
+  // --- TANPA PROGRESS LOADING (TAMPIL INSTAN) ---
   function loadTrackingData(tab) {
     const listDiv = document.getElementById("trackingList");
-    const loadingEl = document.getElementById("trackingLoading");
 
     if (!currentUser || !currentUser.nik) {
-      loadingEl.style.display = "none";
       listDiv.innerHTML = '<div class="card p-3 text-center text-muted small">Sesi pegawai tidak ditemukan. Silakan login ulang.</div>';
       return;
     }
 
-    loadingEl.style.display = "block";
     listDiv.innerHTML = "";
 
     const handleHistorySuccess = function(res) {
-      loadingEl.style.display = "none"; // Spinner PASTI dimatikan
       if(res && res.success) {
         if(!res.data || res.data.length === 0) {
           listDiv.innerHTML = '<div class="card p-3 text-center text-muted small">Belum ada riwayat pengajuan.</div>';
           return;
         }
 
-        // Render menggunakan .map().join('') agar jauh lebih cepat dan ringan
         const htmlItems = res.data.map(function(item) {
           let statusText = item.status ? item.status : "Pending";
           let badgeBg = (statusText.toLowerCase().includes("selesai") || statusText.toLowerCase().includes("diterima")) ? "bg-success text-white" : "bg-warning text-dark";
@@ -2177,7 +2167,6 @@
     };
 
     const handleHistoryError = function(err) {
-      loadingEl.style.display = "none"; // Spinner PASTI dimatikan saat gagal koneksi
       listDiv.innerHTML = '<div class="card p-3 text-center text-danger small">Terjadi kesalahan koneksi internet atau server timeout.</div>';
     };
 
