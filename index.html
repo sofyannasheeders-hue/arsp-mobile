@@ -8,7 +8,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Pustaka Barcode & QR Scanner html5-qrcode -->
+  <!-- Pustaka QR Scanner html5-qrcode -->
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
     :root {
@@ -297,49 +297,67 @@
       transition: width 0.4s ease, background-color 0.4s ease;
     }
 
-    /* STYLING SCANNER VIEWFINDER KOTAK & RAPI */
-    .scanner-container {
-      position: relative;
-      background: #000;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 2px solid rgba(56, 189, 248, 0.5);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+    /* STYLING SCANNER POP-UP FULLSCREEN/MAXIMAL */
+    #scannerModal .modal-dialog {
+      max-width: 100% !important;
+      height: 100vh;
+      margin: 0;
     }
-    /* Membatasi video html5-qrcode agar tidak melebar */
-    .scanner-container video {
+    #scannerModal .modal-content {
+      height: 100vh;
+      border-radius: 0 !important;
+      background-color: #000 !important;
+      border: none !important;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    #scannerModal .modal-body {
+      padding: 0;
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      overflow: hidden;
+    }
+    #qr-reader-fullscreen {
       width: 100% !important;
-      height: 240px !important;
+      height: 100% !important;
+      border: none !important;
+    }
+    #qr-reader-fullscreen video {
+      width: 100% !important;
+      height: 100% !important;
       object-fit: cover !important;
-      border-radius: 10px !important;
     }
     .scanner-laser-line {
       position: absolute;
-      top: 35%;
-      left: 15%;
-      width: 70%;
+      top: 30%;
+      left: 10%;
+      width: 80%;
       height: 2px;
       background: #38bdf8;
-      box-shadow: 0 0 10px #38bdf8, 0 0 20px #38bdf8;
+      box-shadow: 0 0 12px #38bdf8, 0 0 25px #38bdf8;
       animation: scanLaserAnim 1.6s infinite ease-in-out;
       z-index: 20;
     }
     @keyframes scanLaserAnim {
-      0%, 100% { top: 30%; opacity: 0.7; }
-      50% { top: 70%; opacity: 1; }
+      0%, 100% { top: 25%; opacity: 0.6; }
+      50% { top: 75%; opacity: 1; }
     }
-    .scanner-overlay-text {
+    .scanner-overlay-box {
       position: absolute;
-      bottom: 10px;
-      left: 0;
-      right: 0;
-      text-align: center;
-      color: #fff;
-      font-size: 11px;
-      background: rgba(0,0,0,0.65);
-      padding: 5px;
-      z-index: 20;
-      letter-spacing: 0.4px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 280px;
+      height: 280px;
+      border: 2px dashed rgba(56, 189, 248, 0.6);
+      border-radius: 20px;
+      pointer-events: none;
+      z-index: 15;
     }
   </style>
 </head>
@@ -806,6 +824,31 @@
 
 </div>
 
+<!-- MODAL POP-UP SCANNER QR CODE (FULLSCREEN / MAXIMAL) -->
+<div class="modal fade" id="scannerModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-bottom border-secondary bg-dark px-3 py-2">
+        <h6 class="modal-title fw-bold text-info"><i class="fa-solid fa-qrcode me-2"></i>Scan QR Code Aktiva</h6>
+        <button type="button" class="btn-close btn-close-white" onclick="closePopupScanner()"></button>
+      </div>
+      <div class="modal-body">
+        <div id="qr-reader-fullscreen"></div>
+        <div class="scanner-overlay-box"></div>
+        <div class="scanner-laser-line"></div>
+      </div>
+      <div class="modal-footer border-top border-secondary bg-dark p-3 justify-content-between">
+        <button type="button" id="btnPopupTorch" class="btn btn-sm btn-secondary text-white fw-bold px-3 py-2 rounded-pill" style="display:none;" onclick="togglePopupTorch()">
+          <i class="fa-solid fa-bolt me-1"></i> Senter
+        </button>
+        <button type="button" class="btn btn-sm btn-danger fw-bold px-4 py-2 rounded-pill ms-auto" onclick="closePopupScanner()">
+          <i class="fa-solid fa-xmark me-1"></i> Tutup Kamera
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL FILTER DOWNLOAD CSV -->
 <div class="modal fade" id="exportExcelModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -942,11 +985,13 @@
   let currentExecutionCategory = null;
   let currentExecutionStatus = null;
   let allLoadedAdminTickets = [];
-  let activeHtml5QrCode = null;
+  
+  // Variabel Global Pop-Up Scanner QR Code Saja
+  let popupHtml5QrCode = null;
   let activeCardElement = null;
   let activeCameraStream = null;
-  let activeTorchState = false;
-  let currentVideoTrack = null;
+  let popupVideoTrack = null;
+  let popupTorchState = false;
   let currentRawTrackingData = [];
 
   function playBeep() {
@@ -1138,7 +1183,7 @@
   }
 
   function navigateTo(pageId) {
-    stopAndCloseScanner();
+    closePopupScanner();
     stopActiveCameraStream();
     document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
     document.getElementById(pageId).classList.add('active');
@@ -1468,7 +1513,7 @@
   }
 
   function logout() {
-    stopAndCloseScanner();
+    closePopupScanner();
     stopActiveCameraStream();
     localStorage.removeItem("user_nik");
     localStorage.removeItem("user_manual_profile");
@@ -1481,7 +1526,7 @@
   }
 
   function initFormService() {
-    stopAndCloseScanner();
+    closePopupScanner();
     stopActiveCameraStream();
     document.getElementById("itemListContainerService").innerHTML = "";
     serviceItemCount = 0;
@@ -1490,7 +1535,7 @@
   }
 
   function initFormReturn() {
-    stopAndCloseScanner();
+    closePopupScanner();
     stopActiveCameraStream();
     document.getElementById("itemListContainerReturn").innerHTML = "";
     returnItemCount = 0;
@@ -1499,7 +1544,7 @@
   }
 
   function initFormWithdrawal() {
-    stopAndCloseScanner();
+    closePopupScanner();
     stopActiveCameraStream();
     document.getElementById("withdrawalStoreCode").value = "";
     const storeInfo = document.getElementById("withdrawalStoreInfo");
@@ -1640,7 +1685,6 @@
 
     const container = document.getElementById(containerId);
     const cardId = type + "_card_" + count;
-    const readerId = "reader_" + type + "_" + count;
     const camVideoId = "camVideo_" + type + "_" + count;
     const camCanvasId = "camCanvas_" + type + "_" + count;
     
@@ -1761,19 +1805,8 @@
       '<!-- SECTION DAT -->' +
       '<div class="dat-section mb-2"><label class="form-label small mb-1">No. Aktiva / Hasil Scan QR</label>' +
       '<div class="input-group input-group-sm mb-1"><input type="text" class="form-control input-aktiva" placeholder="Scan Label QR Code Aktiva...">' +
-      '<button type="button" class="btn btn-outline-warning text-white" onclick="openBarcodeScanner(this, \'' + readerId + '\')"><i class="fa-solid fa-qrcode"></i> Scan QR</button>' +
+      '<button type="button" class="btn btn-outline-warning text-white" onclick="openPopupScanner(this)"><i class="fa-solid fa-qrcode"></i> Scan QR</button>' +
       '<button type="button" class="btn btn-outline-primary text-white" onclick="parseAndFillAktivaQR(this)">Parse</button></div>' +
-      
-      '<!-- VIEWFINDER & SCANNER CONTAINER KOTAK PAS -->' +
-      '<div class="scanner-container mt-2" style="display:none; position:relative;">' +
-        '<div id="' + readerId + '" style="width:100%; height:240px; overflow:hidden; border-radius:8px;"></div>' +
-        '<div class="scanner-laser-line"></div>' +
-        '<div class="scanner-overlay-text">Arahkan kamera ke QR Code Aktiva</div>' +
-        '<div class="d-flex gap-1 mt-1 p-1 bg-dark bg-opacity-75">' +
-          '<button type="button" class="btn btn-sm btn-secondary text-white w-50 btn-torch-toggle" style="display:none; font-size:11px;" onclick="toggleTorchLight(this)"><i class="fa-solid fa-bolt"></i> Senter</button>' +
-          '<button type="button" class="btn btn-sm btn-danger w-50" style="font-size:11px;" onclick="closeBarcodeScanner()"><i class="fa-solid fa-xmark"></i> Tutup Kamera</button>' +
-        '</div>' +
-      '</div>' +
 
       '<div class="aktiva-info alert success-result-box py-1 px-2 mt-1 mb-0 small" style="display:none; font-size: 11px;"></div>' +
       
@@ -1884,116 +1917,116 @@
     }
   }
 
-  function openBarcodeScanner(btn, readerId) {
-    const card = btn.closest('.item-card');
-    const scannerContainer = card.querySelector('.scanner-container');
-    activeCardElement = card;
+  /* ========================================================
+     MODEL POP-UP SCANNER QR CODE HANYA QR (FULLSCREEN / LUAS)
+     ======================================================== */
+  function openPopupScanner(btn) {
+    activeCardElement = btn.closest('.item-card');
+    const modalEl = document.getElementById('scannerModal');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
 
-    if (activeHtml5QrCode) {
-      try {
-        activeHtml5QrCode.stop().then(() => {
-          startScannerInstance(scannerContainer, readerId);
-        }).catch(() => {
-          startScannerInstance(scannerContainer, readerId);
-        });
-      } catch (e) {
-        startScannerInstance(scannerContainer, readerId);
-      }
+    modalEl.addEventListener('shown.bs.modal', function onModalShown() {
+      modalEl.removeEventListener('shown.bs.modal', onModalShown);
+      initPopupQrScanner();
+    });
+  }
+
+  function initPopupQrScanner() {
+    if (popupHtml5QrCode) {
+      popupHtml5QrCode.stop().catch(() => {}).finally(() => {
+        popupHtml5QrCode.clear();
+        popupHtml5QrCode = null;
+        startPopupScannerInstance();
+      });
     } else {
-      startScannerInstance(scannerContainer, readerId);
+      startPopupScannerInstance();
     }
   }
 
-  /* ========================================================
-     SCANNER QR CODE STABIL & KOTAK PRESISI DI HP
-     ======================================================== */
-  function startScannerInstance(scannerContainer, readerId) {
-    scannerContainer.style.display = 'block';
-    activeHtml5QrCode = new Html5Qrcode(readerId);
-    activeTorchState = false;
-    currentVideoTrack = null;
+  function startPopupScannerInstance() {
+    popupTorchState = false;
+    popupVideoTrack = null;
+    document.getElementById("btnPopupTorch").style.display = "none";
 
-    const config = { 
-      fps: 20,
-      qrbox: { width: 220, height: 220 },
+    popupHtml5QrCode = new Html5Qrcode("qr-reader-fullscreen", {
+      // Pembatasan format: HANYA membaca QR Code dan mengabaikan jenis barcode lain
+      formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ]
+    });
+
+    const config = {
+      fps: 30,
+      qrbox: { width: 280, height: 280 },
       aspectRatio: 1.0,
       experimentalFeatures: {
         useBarCodeDetectorIfSupported: true
       }
     };
-    
-    activeHtml5QrCode.start(
-      { facingMode: "environment" }, config,
+
+    popupHtml5QrCode.start(
+      { facingMode: "environment" },
+      config,
       (decodedText) => {
         playBeep();
         if (activeCardElement) {
           activeCardElement.querySelector('.input-aktiva').value = decodedText;
-          stopAndCloseScanner();
           parseAndFillAktivaQR(activeCardElement.querySelector('.btn-outline-primary'));
         }
+        closePopupScanner();
       },
       () => {}
     ).then(() => {
       setTimeout(() => {
         try {
-          const videoEl = scannerContainer.querySelector('video');
-          if (videoEl) {
-            videoEl.style.width = "100%";
-            videoEl.style.height = "240px";
-            videoEl.style.objectFit = "cover";
-            if (videoEl.srcObject) {
-              currentVideoTrack = videoEl.srcObject.getVideoTracks()[0];
-              const capabilities = currentVideoTrack.getCapabilities ? currentVideoTrack.getCapabilities() : {};
-              const torchBtn = scannerContainer.querySelector('.btn-torch-toggle');
-              if (torchBtn && capabilities.torch) {
-                torchBtn.style.display = 'inline-block';
-              }
+          const videoEl = document.querySelector('#qr-reader-fullscreen video');
+          if (videoEl && videoEl.srcObject) {
+            popupVideoTrack = videoEl.srcObject.getVideoTracks()[0];
+            const caps = popupVideoTrack.getCapabilities ? popupVideoTrack.getCapabilities() : {};
+            if (caps.torch) {
+              document.getElementById("btnPopupTorch").style.display = "inline-block";
             }
           }
-        } catch(e) {}
-      }, 400);
+        } catch (e) {}
+      }, 600);
     }).catch(err => {
-      showCustomAlert("Gagal Kamera", "Tidak dapat membuka kamera: " + err, "error");
-      scannerContainer.style.display = 'none';
+      showCustomAlert("Gagal Kamera", "Tidak dapat membuka kamera pop-up: " + err, "error");
+      closePopupScanner();
     });
   }
 
-  function toggleTorchLight(btn) {
-    if (!currentVideoTrack) return;
-    activeTorchState = !activeTorchState;
-    currentVideoTrack.applyConstraints({
-      advanced: [{ torch: activeTorchState }]
+  function togglePopupTorch() {
+    if (!popupVideoTrack) return;
+    popupTorchState = !popupTorchState;
+    popupVideoTrack.applyConstraints({
+      advanced: [{ torch: popupTorchState }]
     }).then(() => {
-      btn.innerHTML = activeTorchState ? '<i class="fa-solid fa-bolt text-warning"></i> Senter ON' : '<i class="fa-solid fa-bolt"></i> Senter';
-      btn.className = activeTorchState ? 'btn btn-sm btn-warning text-dark fw-bold w-50' : 'btn btn-sm btn-secondary text-white w-50';
+      const btn = document.getElementById("btnPopupTorch");
+      btn.innerHTML = popupTorchState ? '<i class="fa-solid fa-bolt text-warning me-1"></i> Senter ON' : '<i class="fa-solid fa-bolt me-1"></i> Senter';
+      btn.className = popupTorchState ? 'btn btn-sm btn-warning text-dark fw-bold px-3 py-2 rounded-pill' : 'btn btn-sm btn-secondary text-white fw-bold px-3 py-2 rounded-pill';
     }).catch(err => console.log("Torch error:", err));
   }
 
-  function closeBarcodeScanner() { stopAndCloseScanner(); }
-
-  function stopAndCloseScanner() {
-    if (activeTorchState && currentVideoTrack) {
-      currentVideoTrack.applyConstraints({ advanced: [{ torch: false }] }).catch(() => {});
-      activeTorchState = false;
+  function closePopupScanner() {
+    if (popupTorchState && popupVideoTrack) {
+      popupVideoTrack.applyConstraints({ advanced: [{ torch: false }] }).catch(() => {});
+      popupTorchState = false;
     }
-    currentVideoTrack = null;
+    popupVideoTrack = null;
 
-    if (activeHtml5QrCode) {
-      activeHtml5QrCode.stop().then(() => {
-        activeHtml5QrCode.clear();
-        activeHtml5QrCode = null;
-        hideAllScanners();
+    if (popupHtml5QrCode) {
+      popupHtml5QrCode.stop().then(() => {
+        popupHtml5QrCode.clear();
+        popupHtml5QrCode = null;
       }).catch(() => {
-        activeHtml5QrCode = null;
-        hideAllScanners();
+        popupHtml5QrCode = null;
       });
-    } else {
-      hideAllScanners();
     }
-  }
 
-  function hideAllScanners() {
-    document.querySelectorAll('.scanner-container').forEach(el => el.style.display = 'none');
+    const modalEl = document.getElementById('scannerModal');
+    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+    if (modalInstance) {
+      modalInstance.hide();
+    }
     activeCardElement = null;
   }
 
